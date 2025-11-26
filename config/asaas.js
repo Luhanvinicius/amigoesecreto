@@ -1,8 +1,17 @@
 const axios = require('axios');
 
-const ASAAS_API_URL = 'https://sandbox.asaas.com/api/v3';
 // O token do Asaas deve começar com $ (obrigatório)
 const ASAAS_TOKEN = process.env.ASAAS_API_KEY || '$aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmZjMDljMWE5LWFiZTQtNDQ2OC1iMzMxLTZhZjAxNzdjYmZiNjo6JGFhY2hfNzA5MmRmY2UtOTVjYS00OGY0LWFjN2MtMjcyM2I5YmQzZmJj';
+
+// Detectar automaticamente se é sandbox ou produção baseado na chave
+// Chaves de sandbox contêm "hmlg" (homologação)
+const isSandbox = ASAAS_TOKEN.includes('hmlg') || ASAAS_TOKEN.includes('_hmlg_');
+const ASAAS_API_URL = isSandbox 
+    ? 'https://sandbox.asaas.com/api/v3'
+    : 'https://api.asaas.com/v3';
+
+console.log('🔑 Ambiente Asaas detectado:', isSandbox ? 'SANDBOX (Teste)' : 'PRODUÇÃO');
+console.log('🌐 URL da API:', ASAAS_API_URL);
 
 // Garantir que o token comece com $
 if (!ASAAS_TOKEN.startsWith('$')) {

@@ -365,27 +365,32 @@ const appointmentController = {
       let pixCopiaECola = null;
       
       try {
-        // IMPORTANTE: Para todos os pagamentos PIX, usar sempre o mesmo cliente do teste
-        // Isso garante que todos os QR codes usem os mesmos dados do cliente cadastrado no Asaas
-        const TEST_CUSTOMER_ID = 'cus_000007051085';
+        // Buscar ou criar cliente no Asaas usando os dados do usuário
+        console.log('🔑 Buscando/criando cliente no Asaas...');
+        console.log('   Nome:', finalName);
+        console.log('   Email:', finalEmail);
+        console.log('   Telefone:', finalContact);
         
-        console.log('🔑 Usando cliente fixo do teste para todos os pagamentos PIX');
-        console.log('   Cliente ID:', TEST_CUSTOMER_ID);
+        // Preparar dados do cliente para o Asaas
+        const customerData = {
+          name: finalName,
+          email: finalEmail,
+          phone: finalContact || null
+        };
         
-        // Buscar o cliente específico do teste diretamente por ID
-        const asaasCustomer = await asaas.findCustomerById(TEST_CUSTOMER_ID);
+        // Buscar ou criar cliente no Asaas
+        const asaasCustomer = await asaas.getOrCreateCustomer(customerData);
         
-        if (!asaasCustomer) {
-          throw new Error('Cliente de teste não encontrado no Asaas. ID: ' + TEST_CUSTOMER_ID);
+        if (!asaasCustomer || !asaasCustomer.id) {
+          throw new Error('Não foi possível criar ou encontrar o cliente no Asaas');
         }
         
-        console.log('✅ Cliente de teste encontrado:');
+        console.log('✅ Cliente no Asaas:');
         console.log('   ID:', asaasCustomer.id);
         console.log('   Nome:', asaasCustomer.name);
         console.log('   Email:', asaasCustomer.email);
-        console.log('   CPF:', asaasCustomer.cpfCnpj);
+        console.log('   CPF:', asaasCustomer.cpfCnpj || 'Não informado');
 
-        // O ID do cliente já é conhecido (cliente fixo)
         const customerId = asaasCustomer.id;
 
         if (!customerId) {
@@ -596,35 +601,37 @@ const appointmentController = {
       console.log('=== INICIANDO TESTE PIX DE R$ 10,00 ===');
       
       // Criar um pagamento PIX de teste de R$ 10,00
-      // IMPORTANTE: Usar sempre o mesmo cliente do teste para todos os pagamentos
-      const TEST_CUSTOMER_ID = 'cus_000007051085';
+      // Usar cliente de teste padrão
+      const TEST_CUSTOMER_EMAIL = 'luhandev.vini@gmail.com';
+      const TEST_CUSTOMER_NAME = 'Cliente Teste';
+      const TEST_CUSTOMER_CPF = '09170048339';
       
-      console.log('1. Buscando cliente de teste...');
-      console.log('   Cliente ID:', TEST_CUSTOMER_ID);
+      console.log('1. Buscando/criando cliente de teste no Asaas...');
+      console.log('   Email:', TEST_CUSTOMER_EMAIL);
       
-      // Buscar o cliente específico do teste diretamente por ID
-      const asaasCustomer = await asaas.findCustomerById(TEST_CUSTOMER_ID);
+      // Buscar ou criar cliente de teste no Asaas
+      const customerData = {
+        name: TEST_CUSTOMER_NAME,
+        email: TEST_CUSTOMER_EMAIL,
+        cpfCnpj: TEST_CUSTOMER_CPF
+      };
+      
+      const asaasCustomer = await asaas.getOrCreateCustomer(customerData);
       
       console.log('=== RESPOSTA COMPLETA DO CLIENTE ===');
       console.log(JSON.stringify(asaasCustomer, null, 2));
       console.log('=====================================');
       
-      if (!asaasCustomer) {
-        throw new Error('Cliente de teste não encontrado no Asaas. ID: ' + TEST_CUSTOMER_ID);
+      if (!asaasCustomer || !asaasCustomer.id) {
+        throw new Error('Não foi possível criar ou encontrar o cliente de teste no Asaas');
       }
       
-      // O ID do cliente já é conhecido
       const customerId = asaasCustomer.id;
-      
-      if (!customerId) {
-        console.error('❌ Cliente sem ID válido. Resposta completa:', JSON.stringify(asaasCustomer, null, 2));
-        throw new Error('Cliente sem ID válido no Asaas');
-      }
       
       console.log('✅ Cliente ID:', customerId);
       console.log('   Nome:', asaasCustomer.name);
       console.log('   Email:', asaasCustomer.email);
-      console.log('   CPF:', asaasCustomer.cpfCnpj);
+      console.log('   CPF:', asaasCustomer.cpfCnpj || 'Não informado');
       
       // Criar pagamento PIX de R$ 10,00
       const today = new Date();
