@@ -19,9 +19,9 @@ const dbConfig = {
     // Para conexão remota com Hostinger (rodando localmente):
     // Use o hostname ou IP fornecido pelo Hostinger
     host: process.env.DB_HOST || 'srv848.hstgr.io', // Hostname do MySQL Hostinger
-    user: 'u342978456_appamigo',
-    password: '+eO8dj=f@T',
-    database: 'u342978456_appamigo',
+    user: process.env.DB_USER || 'u342978456_appamigo',
+    password: process.env.DB_PASSWORD || '+eO8dj=f@T',
+    database: process.env.DB_NAME || 'u342978456_appamigo',
     port: parseInt(process.env.DB_PORT) || 3306,
     waitForConnections: true,
     connectionLimit: 10,

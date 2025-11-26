@@ -472,9 +472,25 @@ const path = require('path');
 const fs = require('fs');
 
 // Criar diretório de uploads se não existir
-const uploadsDir = path.join(__dirname, '../uploads/whatsapp');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+// No Vercel, usar /tmp (único diretório writable)
+let uploadsDir;
+if (process.env.VERCEL) {
+  uploadsDir = '/tmp/uploads/whatsapp';
+} else {
+  uploadsDir = path.join(__dirname, '../uploads/whatsapp');
+}
+
+// Criar diretório apenas se não for Vercel ou se /tmp existir
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (error) {
+  console.warn('⚠️ Não foi possível criar diretório de uploads:', error.message);
+  // Fallback para /tmp se no Vercel
+  if (process.env.VERCEL) {
+    uploadsDir = '/tmp';
+  }
 }
 
 const storage = multer.diskStorage({
