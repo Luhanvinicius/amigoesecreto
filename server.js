@@ -44,17 +44,11 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
 app.use('/form_layouts', express.static(path.join(__dirname, 'public/form_layouts')));
 app.use('/module_assets', express.static(path.join(__dirname, 'public/module_assets')));
-app.use('/images', express.static(path.join(__dirname, 'public/images')));
+app.use('/images', express.static(path.join(__dirname, 'public/images'), {
+  // Não logar 404 de imagens (não crítico)
+  fallthrough: true
+}));
 app.use('/js', express.static(path.join(__dirname, 'public/js')));
-
-// Middleware para ignorar 404 de imagens (não crítico)
-app.use((req, res, next) => {
-  if (req.path.startsWith('/images/uploads/')) {
-    // Silenciosamente ignora 404 de imagens
-    return res.status(404).end();
-  }
-  next();
-});
 
 // Helper para tradução
 const translations = require('./config/translations/pt.json');
