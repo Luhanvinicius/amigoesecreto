@@ -33,23 +33,32 @@ asaasClient.interceptors.request.use((config) => {
     // Garantir que o token comece com $ e esteja completo
     let token = (ASAAS_TOKEN || '').toString().trim();
     
-    // Remover espaços extras e quebras de linha
-    token = token.replace(/\s+/g, '');
+    // Remover TODOS os espaços, quebras de linha e caracteres invisíveis
+    token = token.replace(/\s+/g, '').replace(/\r/g, '').replace(/\n/g, '');
     
     // Garantir que comece com $
     if (!token.startsWith('$')) {
         token = '$' + token;
     }
     
-    // Verificar se o token está completo (deve ter pelo menos 50 caracteres)
-    if (token.length < 50) {
-        console.error('❌ Token Asaas parece estar incompleto!');
+    // Validar tamanho mínimo (tokens Asaas têm pelo menos 100 caracteres)
+    if (token.length < 100) {
+        console.error('❌ Token Asaas parece estar incompleto ou truncado!');
         console.error('📏 Tamanho do token:', token.length, 'caracteres');
         console.error('⚠️ Primeiros 30 caracteres:', token.substring(0, 30));
-        console.error('⚠️ Verifique a variável de ambiente ASAAS_API_KEY no Render');
+        console.error('⚠️ Últimos 20 caracteres:', token.substring(token.length - 20));
+        console.error('⚠️ VERIFIQUE a variável de ambiente ASAAS_API_KEY no Render');
+        console.error('⚠️ O token pode ter sido truncado ao copiar/colar');
+    }
+    
+    // Log completo do token para debug (apenas em desenvolvimento)
+    if (process.env.NODE_ENV !== 'production') {
+        console.log('🔑 Token completo (primeiros 50 + últimos 20):', 
+            token.substring(0, 50) + '...' + token.substring(token.length - 20));
     }
     
     // Adicionar token como header (Formato correto do Asaas)
+    // IMPORTANTE: O Asaas espera o token EXATAMENTE como está, sem modificações
     config.headers['access_token'] = token;
     
     // Log para debug (apenas primeira parte do token por segurança)
