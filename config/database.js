@@ -26,14 +26,36 @@ const dbConfig = {
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    // Configurações adicionais para conexões
-    connectTimeout: 60000
+    // Configurações adicionais para conexões - otimizado para Render
+    connectTimeout: 60000,
+    acquireTimeout: 60000,
+    timeout: 60000,
+    // Reconexão automática
+    reconnect: true,
+    // Manter conexões vivas
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 0,
+    // SSL se necessário
+    ssl: false
 };
 
 console.log(`🔌 Tentando conectar ao MySQL em: ${dbConfig.host}:${dbConfig.port}`);
 
 // Criar pool de conexões
 const pool = mysql.createPool(dbConfig);
+
+// Tratamento de erros do pool
+pool.on('connection', (connection) => {
+    console.log('✅ Nova conexão MySQL estabelecida:', connection.threadId);
+    
+    // Configurar reconexão automática em caso de erro
+    connection.on('error', (err) => {
+        console.error('❌ Erro na conexão MySQL:', err.code);
+        if (err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ECONNRESET') {
+            console.log('🔄 Tentando reconectar...');
+        }
+    });
+});
 
 // Testar conexão (apenas se não estiver em modo de teste)
 if (process.env.NODE_ENV !== 'test') {
@@ -48,6 +70,25 @@ if (process.env.NODE_ENV !== 'test') {
             console.error('💡 Para servidores remotos, verifique o arquivo .env e configure DB_HOST');
         });
 }
+
+// Wrapper para queries com retry automático
+const queryWithRetry = async (query, params, retries = 3) => {
+    for (let i = 0; i < retries; i++) {
+        try {
+            return await pool.query(query, params);
+        } catch (error) {
+            if ((error.code === 'ECONNRESET' || error.code === 'PROTOCOL_CONNECTION_LOST') && i < retries - 1) {
+                console.log(`🔄 Tentativa ${i + 1} falhou, tentando novamente...`);
+                await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1))); // Espera progressiva
+                continue;
+            }
+            throw error;
+        }
+    }
+};
+
+module.exports = pool;
+module.exports.queryWithRetry = queryWithRetry;
 
 module.exports = pool;
 
