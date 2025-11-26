@@ -1,0 +1,96 @@
+=== VARIÁVEIS DE AMBIENTE PARA RENDER ===
+
+Copie e cole estas variáveis no painel do Render:
+Settings → Environment → Add Environment Variable
+
+==========================================
+BANCO DE DADOS MYSQL (HOSTINGER)
+==========================================
+
+DB_HOST=srv848.hstgr.io
+DB_PORT=3306
+DB_USER=u342978456_appamigo
+DB_PASSWORD=+eO8dj=f@T
+DB_NAME=u342978456_appamigo
+
+==========================================
+SESSÃO E SEGURANÇA
+==========================================
+
+SESSION_SECRET=amigo-secreto-render-production-2024-key-ultra-segura-xyz123abc456def789ghi012jkl345mno678pqr901stu234vwx567yz
+
+⚠️ IMPORTANTE: Gere uma chave aleatória segura!
+Use: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+
+==========================================
+AMBIENTE E PORTA
+==========================================
+
+NODE_ENV=production
+PORT=3000
+
+==========================================
+ASAAS (PAGAMENTOS PIX)
+==========================================
+
+ASAAS_API_KEY=$aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmZjMDljMWE5LWFiZTQtNDQ2OC1iMzMxLTZhZjAxNrdjYmZiNjo6JGFhY2hfNzA5MmRmY2UtOTVjYS00OGY0LWFjN2MtMjcyM2I5YmQzZmJj
+
+⚠️ IMPORTANTE: Este é o token de SANDBOX/TESTE
+Para produção, substitua pelo token REAL do Asaas
+
+==========================================
+WHATSAPP (HABILITADO NO RENDER)
+==========================================
+
+ENABLE_WHATSAPP=true
+
+✅ IMPORTANTE: WhatsApp FUNCIONA no Render!
+(Mantém processos persistentes)
+
+==========================================
+INSTRUÇÕES RENDER
+==========================================
+
+1. Acesse: https://dashboard.render.com
+2. Clique em: "New +" → "Web Service"
+3. Conecte o repositório: Luhanvinicius/amigoesecreto
+4. Configure:
+   - Name: amigoesecreto
+   - Root Directory: appointment-nodejs ⚠️ IMPORTANTE!
+   - Build Command: npm install
+   - Start Command: node server.js
+   - Plan: Free
+5. Vá em: Environment → Add Environment Variable
+6. Adicione todas as variáveis acima
+7. Clique em: "Create Web Service"
+8. Aguarde o deploy (5-10 minutos)
+
+==========================================
+VERIFICAÇÕES
+==========================================
+
+✅ Todas as variáveis configuradas
+✅ SESSION_SECRET gerado (chave aleatória)
+✅ Firewall MySQL liberado para IPs do Render
+✅ ASAAS_API_KEY configurado
+✅ ENABLE_WHATSAPP=true
+✅ Root Directory: appointment-nodejs
+
+==========================================
+NOTAS IMPORTANTES
+==========================================
+
+⚠️ PLANO GRATUITO:
+- App "spins down" após 15 minutos de inatividade
+- Primeira requisição após spin down pode levar 30-60 segundos
+- Para evitar: use serviço de ping (uptimerobot.com)
+- Ou faça upgrade para plano pago ($7/mês)
+
+✅ VANTAGENS DO RENDER:
+- WhatsApp funciona perfeitamente
+- Processos persistentes
+- WebSockets suportados
+- Ambiente similar a servidor tradicional
+
+==========================================
+

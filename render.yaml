@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: amigoesecreto
+    runtime: node
+    rootDir: appointment-nodejs
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+

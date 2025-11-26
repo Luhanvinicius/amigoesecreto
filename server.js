@@ -92,6 +92,15 @@ dashboardRoutes.stack.forEach((r) => {
   }
 });
 
+// Health check endpoint para Render/Vercel
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 // Rota raiz - Landing Page (deve vir DEPOIS das rotas específicas)
 app.get('/', (req, res) => {
   res.render('index', {
@@ -126,22 +135,30 @@ app.use((req, res, next) => {
   res.status(404).send(`Rota não encontrada: ${req.method} ${req.originalUrl}`);
 });
 
-// Iniciar servidor apenas localmente
-// No Vercel, o servidor é gerenciado automaticamente e não precisa de app.listen()
-if (!process.env.VERCEL) {
-  app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
-    
-    // Inicializar WhatsApp Service (opcional - pode ser inicializado manualmente)
-    // Descomente a linha abaixo se quiser inicializar automaticamente ao iniciar o servidor
-    // const whatsappService = require('./services/whatsappService');
-    // whatsappService.initialize();
-  });
-} else {
-  // Aviso sobre WhatsApp no Vercel
+// Iniciar servidor
+// No Vercel, o servidor é gerenciado automaticamente
+// No Render e localmente, iniciamos o servidor normalmente
+if (process.env.VERCEL) {
+  // Vercel: não iniciar servidor (gerenciado automaticamente)
   console.log('⚠️ WhatsApp desabilitado no Vercel (não suportado em serverless functions)');
+} else {
+  // Render ou Local: iniciar servidor normalmente
+  app.listen(PORT, () => {
+    console.log(`✅ Servidor rodando em http://localhost:${PORT}`);
+    console.log(`🌍 Ambiente: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🔌 Porta: ${PORT}`);
+    
+    // Inicializar WhatsApp Service automaticamente (se habilitado)
+    if (process.env.ENABLE_WHATSAPP === 'true' || !process.env.ENABLE_WHATSAPP) {
+      console.log('🚀 Inicializando WhatsApp Service...');
+      const whatsappService = require('./services/whatsappService');
+      whatsappService.initialize();
+    } else {
+      console.log('⚠️ WhatsApp desabilitado (ENABLE_WHATSAPP=false)');
+    }
+  });
 }
 
-// Exportar para Vercel
+// Exportar para Vercel (se necessário)
 module.exports = app;
 
