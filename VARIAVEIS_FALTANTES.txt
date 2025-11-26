@@ -1,0 +1,63 @@
+=== VARIÁVEIS QUE FALTAM ADICIONAR ===
+
+Adicione estas 2 variáveis no Vercel:
+
+==========================================
+1. NODE_ENV
+==========================================
+
+Key: NODE_ENV
+Value: production
+Environments: Production, Preview, Development
+
+==========================================
+2. PORT
+==========================================
+
+Key: PORT
+Value: 3000
+Environments: Production, Preview, Development
+
+==========================================
+VERIFICAR ASAAS_API_KEY
+==========================================
+
+O valor do ASAAS_API_KEY parece estar incompleto.
+
+Valor CORRETO completo:
+$aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmZjMDljMWE5LWFiZTQtNDQ2OC1iMzMxLTZhZjAxNzdjYmZiNjo6JGFhY2hfNzA5MmRmY2UtOTVjYS00OGY0LWFjN2MtMjcyM2I5YmQzZmJj
+
+⚠️ IMPORTANTE: O token DEVE começar com $ e ter o valor completo acima.
+
+Se estiver cortado, edite a variável e cole o valor completo.
+
+==========================================
+RESUMO COMPLETO - TODAS AS VARIÁVEIS
+==========================================
+
+DB_HOST=srv848.hstgr.io
+DB_PORT=3306
+DB_USER=u342978456_appamigo
+DB_PASSWORD=+eO8dj=f@T
+DB_NAME=u342978456_appamigo
+NODE_ENV=production
+PORT=3000
+ASAAS_API_KEY=$aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmZjMDljMWE5LWFiZTQtNDQ2OC1iMzMxLTZhZjAxNrdjYmZiNjo6JGFhY2hfNzA5MmRmY2UtOTVjYS00OGY0LWFjN2MtMjcyM2I5YmQzZmJj
+ENABLE_WHATSAPP=false
+SESSION_SECRET=[seu_valor_atual]
+
+==========================================
+CHECKLIST FINAL
+==========================================
+
+✅ DB_HOST - OK
+✅ DB_PORT - OK
+✅ DB_USER - OK
+✅ DB_PASSWORD - OK
+✅ DB_NAME - OK
+❌ NODE_ENV - FALTA ADICIONAR
+❌ PORT - FALTA ADICIONAR
+⚠️ ASAAS_API_KEY - VERIFICAR SE ESTÁ COMPLETO
+✅ ENABLE_WHATSAPP - OK
+✅ SESSION_SECRET - OK
+
