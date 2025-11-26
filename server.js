@@ -22,11 +22,17 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'amigo-secreto-session-secret-key-change-in-production',
   resave: false,
   saveUninitialized: false,
+  name: 'sessionId', // Nome do cookie de sessão
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    // No Render, usar secure apenas se realmente estiver em HTTPS
+    secure: process.env.NODE_ENV === 'production' && process.env.FORCE_HTTPS !== 'false',
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000 // 24 horas
-  }
+    sameSite: 'lax', // Melhor compatibilidade com diferentes navegadores
+    maxAge: 24 * 60 * 60 * 1000, // 24 horas
+    path: '/' // Garantir que o cookie seja válido para todo o site
+  },
+  // Garantir que sessões sejam salvas mesmo em erros
+  rolling: true // Renovar cookie a cada requisição
 }));
 
 // Middleware para disponibilizar dados do usuário nas views
