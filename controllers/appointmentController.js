@@ -371,9 +371,17 @@ const appointmentController = {
         console.log('   Email:', finalEmail);
         console.log('   Telefone:', finalContact);
         
+        // Validar nome antes de enviar ao Asaas (nome é obrigatório)
+        // Se não tiver nome, usar email ou valor padrão
+        let customerName = finalName;
+        if (!customerName || customerName.trim() === '' || customerName === 'null') {
+          console.warn('⚠️ Nome não fornecido. Usando email como nome para o Asaas.');
+          customerName = finalEmail || 'Cliente';
+        }
+        
         // Preparar dados do cliente para o Asaas
         const customerData = {
-          name: finalName,
+          name: customerName.trim(),
           email: finalEmail,
           phone: finalContact || null
         };
