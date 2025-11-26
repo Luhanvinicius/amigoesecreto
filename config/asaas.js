@@ -209,10 +209,24 @@ async function updateCustomer(customerId, customerData) {
  */
 async function createCustomer(customerData) {
     try {
+        // Validar e preparar o nome (obrigatório no Asaas)
+        // Se não tiver nome, usar email ou valor padrão
+        let customerName = customerData.name;
+        if (!customerName || customerName.trim() === '' || customerName === 'null' || customerName === null) {
+            console.warn('⚠️ Nome não fornecido ou inválido. Usando email como nome.');
+            customerName = customerData.email || 'Cliente';
+        }
+        customerName = String(customerName).trim();
+        
+        // Validar email (obrigatório)
+        if (!customerData.email || customerData.email.trim() === '') {
+            throw new Error('Email é obrigatório para criar cliente no Asaas');
+        }
+        
         // Preparar dados do cliente (remover campos null/undefined)
         const customerPayload = {
-            name: customerData.name,
-            email: customerData.email
+            name: customerName,
+            email: customerData.email.trim()
         };
         
         // Adicionar telefone apenas se fornecido e no formato correto
