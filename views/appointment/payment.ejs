@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento PIX - <%= business.name %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+           <!-- Tentar carregar QRCode de múltiplas fontes -->
+           <script>
+               (function() {
+                   var sources = [
+                       '/js/qrcode.min.js',
+                       'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js',
+                       'https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js'
+                   ];
+                   
+                   var loaded = false;
+                   var currentIndex = 0;
+                   
+                   function loadNext() {
+                       if (currentIndex >= sources.length) {
+                           console.error('Não foi possível carregar a biblioteca QRCode de nenhuma fonte.');
+                           return;
+                       }
+                       
+                       var script = document.createElement('script');
+                       script.src = sources[currentIndex];
+                       script.onload = function() {
+                           loaded = true;
+                           console.log('✅ Biblioteca QRCode carregada de:', sources[currentIndex]);
+                       };
+                       script.onerror = function() {
+                           console.warn('❌ Falha ao carregar de:', sources[currentIndex]);
+                           currentIndex++;
+                           loadNext();
+                       };
+                       document.head.appendChild(script);
+                   }
+                   
+                   loadNext();
+               })();
+           </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .payment-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .payment-header {
+            margin-bottom: 30px;
+        }
+        
+        .payment-header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .payment-header p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .amount {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .amount-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .amount-value {
+            font-size: 36px;
+            font-weight: bold;
+        }
+        
+        .qr-code-container {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        
+        #qrcode {
+            display: inline-block;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .pix-code-container {
+            margin: 30px 0;
+        }
+        
+        .pix-code-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .pix-code-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .pix-code-input:hover {
+            border-color: #667eea;
+            background: white;
+        }
+        
+        .pix-code-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+        
+        .copy-button {
+            margin-top: 15px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+        
+        .copy-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .copy-button:active {
+            transform: translateY(0);
+        }
+        
+        .instructions {
+            margin-top: 30px;
+            padding: 20px;
+            background: #fff3cd;
+            border-radius: 10px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .instructions h3 {
+            color: #856404;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ol {
+            text-align: left;
+            color: #856404;
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+        
+        .back-button {
+            margin-top: 30px;
+            padding: 12px 30px;
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .back-button:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .success-message {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 8px;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <div class="payment-header">
+            <h1>Pagamento via PIX</h1>
+            <p>Escaneie o QR Code ou copie o código para pagar</p>
+        </div>
+        
+        <div class="amount">
+            <div class="amount-label">Valor a pagar</div>
+            <div class="amount-value">R$ <%= parseFloat(appointment.total_amount || appointment.price || 0).toFixed(2).replace('.', ',') %></div>
+        </div>
+        
+        <% if (pixQrCode || pixCopiaECola) { %>
+        <div class="qr-code-container">
+            <div id="qrcode"></div>
+        </div>
+        <% } %>
+        
+        <% if (pixCopiaECola) { %>
+        <div class="pix-code-container">
+            <div class="pix-code-label">Código PIX (Copiar e Colar)</div>
+            <input type="text" 
+                   class="pix-code-input" 
+                   id="pixCode" 
+                   value="<%= pixCopiaECola %>" 
+                   readonly>
+            <button class="copy-button" onclick="copyPixCode()">Copiar Código PIX</button>
+            <div class="success-message" id="successMessage">
+                ✓ Código copiado com sucesso!
+            </div>
+        </div>
+        <% } %>
+        
+        <div class="instructions">
+            <h3>Como pagar:</h3>
+            <ol>
+                <li>Abra o app do seu banco</li>
+                <li>Escaneie o QR Code acima ou cole o código PIX</li>
+                <li>Confirme o pagamento</li>
+                <li>O pagamento será confirmado automaticamente</li>
+            </ol>
+        </div>
+        
+        <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: center;">
+            <a href="/appointments/<%= slug %>" class="back-button">Voltar</a>
+        </div>
+        
+        <div id="payment-status" style="margin-top: 20px; padding: 15px; background: #e3f2fd; border-radius: 10px; display: none;">
+            <p style="margin: 0; color: #1976d2; font-weight: 600; text-align: center;">
+                <span id="status-message">Verificando pagamento...</span>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        (function() {
+            var pixQrCodeData = <% if (pixQrCode) { %>'<%= pixQrCode %>'<% } else { %>null<% } %>;
+            var pixCopiaEColaData = <% if (pixCopiaECola) { %>'<%= pixCopiaECola %>'<% } else { %>null<% } %>;
+            var qrCodeContainer = document.getElementById('qrcode');
+            
+            // Função para tentar gerar o QR Code
+            function tryGenerateQRCode(attemptsLeft) {
+                attemptsLeft = attemptsLeft || 10;
+                
+                // Se temos imagem base64 do QR Code
+                if (pixQrCodeData) {
+                    // Verificar se é base64 sem prefixo
+                    if (pixQrCodeData.startsWith('iVBORw0KGgo') || pixQrCodeData.startsWith('/9j/')) {
+                        // Adicionar prefixo data:image se não tiver
+                        var imgSrc = pixQrCodeData;
+                        if (!imgSrc.startsWith('data:image')) {
+                            // Detectar tipo de imagem pelo início do base64
+                            if (pixQrCodeData.startsWith('iVBORw0KGgo')) {
+                                imgSrc = 'data:image/png;base64,' + pixQrCodeData;
+                            } else if (pixQrCodeData.startsWith('/9j/')) {
+                                imgSrc = 'data:image/jpeg;base64,' + pixQrCodeData;
+                            }
+                        }
+                        
+                        var img = document.createElement('img');
+                        img.src = imgSrc;
+                        img.style.maxWidth = '300px';
+                        img.style.height = 'auto';
+                        img.style.display = 'block';
+                        img.style.margin = '0 auto';
+                        img.alt = 'QR Code PIX';
+                        
+                        img.onload = function() {
+                            console.log('✅ QR Code (imagem base64) carregado com sucesso!');
+                            qrCodeContainer.innerHTML = '';
+                            qrCodeContainer.appendChild(img);
+                        };
+                        
+                        img.onerror = function() {
+                            console.error('❌ Erro ao carregar imagem base64. Tentando gerar a partir do código copia e cola...');
+                            // Se falhar, tentar gerar a partir do código copia e cola
+                            if (pixCopiaEColaData) {
+                                generateQRFromPayload(attemptsLeft);
+                            } else {
+                                qrCodeContainer.innerHTML = '<p style="color: red;">Erro ao exibir QR Code. Use o código copia e cola abaixo.</p>';
+                            }
+                        };
+                        
+                        qrCodeContainer.innerHTML = '';
+                        qrCodeContainer.appendChild(img);
+                        return;
+                    } else if (pixQrCodeData.startsWith('data:image')) {
+                        // Já tem prefixo data:image
+                        var img = document.createElement('img');
+                        img.src = pixQrCodeData;
+                        img.style.maxWidth = '300px';
+                        img.style.height = 'auto';
+                        img.style.display = 'block';
+                        img.style.margin = '0 auto';
+                        img.alt = 'QR Code PIX';
+                        
+                        img.onload = function() {
+                            console.log('✅ QR Code (data:image) carregado com sucesso!');
+                            qrCodeContainer.innerHTML = '';
+                            qrCodeContainer.appendChild(img);
+                        };
+                        
+                        img.onerror = function() {
+                            console.error('❌ Erro ao carregar imagem. Tentando gerar a partir do código copia e cola...');
+                            if (pixCopiaEColaData) {
+                                generateQRFromPayload(attemptsLeft);
+                            } else {
+                                qrCodeContainer.innerHTML = '<p style="color: red;">Erro ao exibir QR Code. Use o código copia e cola abaixo.</p>';
+                            }
+                        };
+                        
+                        qrCodeContainer.innerHTML = '';
+                        qrCodeContainer.appendChild(img);
+                        return;
+                    }
+                }
+                
+                // Se não tem imagem base64, gerar a partir do código copia e cola
+                if (pixCopiaEColaData) {
+                    generateQRFromPayload(attemptsLeft);
+                } else {
+                    qrCodeContainer.innerHTML = '<p style="color: orange;">QR Code não disponível. Entre em contato com o suporte.</p>';
+                }
+            }
+            
+            // Função para gerar QR Code a partir do código copia e cola
+            function generateQRFromPayload(attemptsLeft) {
+                attemptsLeft = attemptsLeft || 10;
+                
+                if (typeof QRCode !== 'undefined') {
+                    try {
+                        QRCode.toCanvas(qrCodeContainer, pixCopiaEColaData, {
+                            width: 300,
+                            margin: 2,
+                            color: {
+                                dark: '#000000',
+                                light: '#FFFFFF'
+                            }
+                        }, function (error) {
+                            if (error) {
+                                console.error('Erro ao gerar QR Code:', error);
+                                // Fallback: usar API online
+                                useOnlineQRAPI();
+                            } else {
+                                console.log('✅ QR Code gerado com sucesso a partir do código copia e cola!');
+                            }
+                        });
+                    } catch (e) {
+                        console.error('Erro ao chamar QRCode.toCanvas:', e);
+                        if (attemptsLeft > 0) {
+                            setTimeout(function() { generateQRFromPayload(attemptsLeft - 1); }, 500);
+                        } else {
+                            useOnlineQRAPI();
+                        }
+                    }
+                } else {
+                    if (attemptsLeft > 0) {
+                        console.log('Aguardando biblioteca QRCode carregar... (' + (10 - attemptsLeft + 1) + '/10)');
+                        setTimeout(function() { generateQRFromPayload(attemptsLeft - 1); }, 500);
+                    } else {
+                        console.warn('Biblioteca QRCode não carregou. Usando API online como fallback.');
+                        useOnlineQRAPI();
+                    }
+                }
+            }
+            
+            // Função fallback: usar API online para gerar QR Code
+            function useOnlineQRAPI() {
+                if (pixCopiaEColaData) {
+                    var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(pixCopiaEColaData);
+                    var img = document.createElement('img');
+                    img.src = qrUrl;
+                    img.alt = 'QR Code PIX';
+                    img.style.maxWidth = '300px';
+                    img.style.height = 'auto';
+                    img.style.display = 'block';
+                    img.style.margin = '0 auto';
+                    
+                    img.onload = function() {
+                        console.log('✅ QR Code gerado via API online com sucesso!');
+                    };
+                    
+                    img.onerror = function() {
+                        qrCodeContainer.innerHTML = '<p style="color: red;">Erro ao gerar QR Code. Use o código copia e cola abaixo.</p>';
+                    };
+                    
+                    qrCodeContainer.innerHTML = '';
+                    qrCodeContainer.appendChild(img);
+                } else {
+                    qrCodeContainer.innerHTML = '<p style="color: red;">Não foi possível gerar o QR Code. Use o código copia e cola abaixo.</p>';
+                }
+            }
+            
+            // Iniciar geração do QR Code após um pequeno delay para garantir que o DOM está pronto
+            setTimeout(function() {
+                tryGenerateQRCode(10);
+            }, 500);
+        })();
+        
+        function copyPixCode() {
+            const pixCodeInput = document.getElementById('pixCode');
+            pixCodeInput.select();
+            pixCodeInput.setSelectionRange(0, 99999); // Para mobile
+            
+            try {
+                document.execCommand('copy');
+                const successMessage = document.getElementById('successMessage');
+                successMessage.classList.add('show');
+                
+                setTimeout(function() {
+                    successMessage.classList.remove('show');
+                }, 3000);
+            } catch (err) {
+                alert('Erro ao copiar. Por favor, selecione e copie manualmente.');
+            }
+        }
+        
+        // Verificar status do pagamento automaticamente
+        var paymentCheckInterval = null;
+        var checkCount = 0;
+        var maxChecks = 120; // Verificar por até 10 minutos (120 * 5 segundos)
+        
+        function checkPaymentStatus() {
+            if (checkCount >= maxChecks) {
+                // Parar de verificar após 10 minutos
+                clearInterval(paymentCheckInterval);
+                var statusDiv = document.getElementById('payment-status');
+                statusDiv.style.display = 'block';
+                statusDiv.style.background = '#fff3cd';
+                document.getElementById('status-message').textContent = 'Aguardando confirmação do pagamento. Você pode fechar esta página e retornar mais tarde.';
+                return;
+            }
+            
+            checkCount++;
+            
+            fetch('/api/appointments/<%= appointment.id %>/payment-status')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('HTTP error! status: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Resposta da verificação de pagamento:', data);
+                    
+                    var statusDiv = document.getElementById('payment-status');
+                    statusDiv.style.display = 'block';
+                    
+                    if (data.success && data.paid) {
+                        // Pagamento confirmado!
+                        console.log('✅ Pagamento confirmado! Redirecionando...');
+                        clearInterval(paymentCheckInterval);
+                        statusDiv.style.background = '#d4edda';
+                        statusDiv.style.border = '2px solid #28a745';
+                        document.getElementById('status-message').textContent = '✅ Pagamento confirmado! Redirecionando...';
+                        
+                        // Redirecionar para página de conclusão após 2 segundos
+                        setTimeout(function() {
+                            console.log('Redirecionando para página de conclusão...');
+                            window.location.href = '/appointments/<%= slug %>/done/<%= appointment.id %>';
+                        }, 2000);
+                    } else if (data.success && !data.paid) {
+                        // Ainda aguardando pagamento
+                        statusDiv.style.background = '#e3f2fd';
+                        statusDiv.style.border = '1px solid #2196f3';
+                        var statusText = 'Aguardando confirmação do pagamento...';
+                        if (data.status) {
+                            statusText += ' (Status: ' + data.status + ')';
+                        }
+                        document.getElementById('status-message').textContent = statusText;
+                        console.log('Aguardando pagamento. Status:', data.status, 'Tentativa:', checkCount);
+                    } else {
+                        // Erro ao verificar
+                        statusDiv.style.background = '#fff3cd';
+                        document.getElementById('status-message').textContent = 'Verificando pagamento... (tentativa ' + checkCount + ')';
+                        console.warn('Resposta sem sucesso:', data);
+                    }
+                })
+                .catch(error => {
+                    console.error('❌ Erro ao verificar status do pagamento:', error);
+                    // Continuar tentando mesmo em caso de erro
+                    var statusDiv = document.getElementById('payment-status');
+                    if (statusDiv) {
+                        statusDiv.style.display = 'block';
+                        statusDiv.style.background = '#fff3cd';
+                        document.getElementById('status-message').textContent = 'Erro ao verificar. Tentando novamente... (tentativa ' + checkCount + ')';
+                    }
+                });
+        }
+        
+        // Iniciar verificação após 5 segundos e repetir a cada 5 segundos
+        setTimeout(function() {
+            checkPaymentStatus(); // Primeira verificação
+            paymentCheckInterval = setInterval(checkPaymentStatus, 5000); // Verificar a cada 5 segundos
+        }, 5000);
+    </script>
+</body>
+</html>
+

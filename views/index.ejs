@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amigo e Secreto - Precisa de Alguém Para Conversar?</title>
+    <meta name="description" content="Se você tem algo no coração, um segredo ou só precisa de um amigo secreto para conversar, eu estou à disposição. Não importa o que seja, você pode confiar que estou aqui para ouvir.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --text-dark: #1a202c;
+            --text-gray: #4a5568;
+            --text-light: #718096;
+            --bg-light: #f7fafc;
+            --white: #ffffff;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+            --shadow-xl: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.7;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        
+        /* Header Moderno */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        header.scrolled {
+            box-shadow: var(--shadow-md);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 2rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            transition: transform 0.3s;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .logo-img {
+            height: 65px;
+            width: auto;
+            object-fit: contain;
+            transition: transform 0.3s;
+        }
+        
+        .logo:hover .logo-img {
+            transform: scale(1.1);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-gray);
+            font-weight: 600;
+            font-size: 0.95rem;
+            position: relative;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-1);
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .nav-links a[style*="background"]:hover::after {
+            display: none;
+        }
+        
+        /* Hero Section Moderno */
+        .hero {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 6rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 20s infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-30px, -30px) rotate(180deg); }
+        }
+        
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-text {
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+        
+        .hero h1 span {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2.5rem;
+            color: var(--text-gray);
+            line-height: 1.8;
+            max-width: 90%;
+        }
+        
+        .hero-image {
+            position: relative;
+            animation: fadeInRight 0.8s ease 0.2s both;
+        }
+        
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .hero-image::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-1);
+            border-radius: 30px;
+            z-index: -1;
+            opacity: 0.2;
+            transform: rotate(-5deg);
+        }
+        
+        .hero-image img {
+            width: 100%;
+            max-width: 550px;
+            height: auto;
+            border-radius: 30px;
+            box-shadow: var(--shadow-xl);
+            object-fit: cover;
+            transform: rotate(2deg);
+            transition: transform 0.3s;
+        }
+        
+        .hero-image:hover img {
+            transform: rotate(0deg) scale(1.02);
+        }
+        
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            padding: 1.1rem 2.75rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-primary span {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Features Section Moderno */
+        .features {
+            padding: 6rem 0;
+            background: var(--white);
+            position: relative;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            margin-top: 4rem;
+        }
+        
+        .feature-card {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-1);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s;
+        }
+        
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary-light);
+        }
+        
+        .feature-card h3 {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            font-size: 1.75rem;
+            font-weight: 800;
+        }
+        
+        .feature-card p {
+            color: var(--text-gray);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+        
+        /* About Section Moderno */
+        .about {
+            padding: 6rem 0;
+            background: linear-gradient(180deg, var(--white) 0%, var(--bg-light) 100%);
+        }
+        
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        
+        .about-image {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .about-image::after {
+            content: '';
+            position: absolute;
+            inset: -20px;
+            background: var(--gradient-1);
+            border-radius: 30px;
+            opacity: 0.1;
+            z-index: -1;
+            transform: rotate(-3deg);
+        }
+        
+        .about-image img {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            object-fit: cover;
+            transition: transform 0.4s;
+        }
+        
+        .about-image:hover img {
+            transform: scale(1.05) rotate(1deg);
+        }
+        
+        .about-text h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+        
+        .about-text h3 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            margin-top: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        
+        .about-text p {
+            font-size: 1.1rem;
+            color: var(--text-gray);
+            margin-bottom: 1.25rem;
+            line-height: 1.9;
+        }
+        
+        /* Pricing Section Moderno */
+        .pricing {
+            padding: 6rem 0;
+            background: var(--bg-light);
+            position: relative;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            margin-bottom: 1rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-gray);
+            margin-bottom: 4rem;
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .pricing-card {
+            background: var(--white);
+            padding: 3rem 2.5rem;
+            border-radius: 28px;
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--gradient-1);
+            transform: scaleX(0);
+            transition: transform 0.4s;
+        }
+        
+        .pricing-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary-light);
+        }
+        
+        .pricing-card.featured {
+            background: var(--gradient-1);
+            color: white;
+            transform: scale(1.08);
+            border: none;
+        }
+        
+        .pricing-card.featured::before {
+            display: none;
+        }
+        
+        .pricing-card.featured h3,
+        .pricing-card.featured .price,
+        .pricing-card.featured .price-details {
+            color: white;
+        }
+        
+        .pricing-card h3 {
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+        
+        .price {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 1.5rem 0;
+            line-height: 1;
+        }
+        
+        .pricing-card.featured .price {
+            -webkit-text-fill-color: white;
+        }
+        
+        .price-details {
+            color: var(--text-gray);
+            margin: 2rem 0;
+            min-height: 60px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+        
+        .btn-buy {
+            background: var(--gradient-1);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1.5rem;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+        
+        .pricing-card.featured .btn-buy {
+            background: white;
+            color: var(--primary);
+        }
+        
+        .btn-buy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4);
+        }
+        
+        /* FAQ Section Moderno */
+        .faq {
+            padding: 6rem 0;
+            background: var(--white);
+        }
+        
+        .faq-item {
+            background: var(--white);
+            margin-bottom: 1.25rem;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .faq-item:hover {
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .faq-item.active {
+            border-color: var(--primary-light);
+        }
+        
+        .faq-question {
+            padding: 2rem;
+            background: var(--bg-light);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            color: var(--text-dark);
+        }
+        
+        .faq-question:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        .faq-question span:last-child {
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+            color: var(--primary);
+        }
+        
+        .faq-item.active .faq-question span:last-child {
+            transform: rotate(45deg);
+        }
+        
+        .faq-answer {
+            padding: 0 2rem 2rem;
+            color: var(--text-gray);
+            display: none;
+            line-height: 1.8;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        
+        /* Testimonials Moderno */
+        .testimonials {
+            padding: 6rem 0;
+            background: var(--bg-light);
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            margin-top: 4rem;
+        }
+        
+        .testimonial-card {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.4s;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            position: relative;
+        }
+        
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            font-size: 6rem;
+            color: var(--primary-light);
+            opacity: 0.2;
+            font-family: serif;
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            color: var(--text-gray);
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .testimonial-author {
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: 1.1rem;
+        }
+        
+        /* CTA Section Moderno */
+        .cta {
+            background: var(--gradient-1);
+            color: white;
+            padding: 6rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: move 20s linear infinite;
+        }
+        
+        @keyframes move {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .cta > * {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .cta h2 {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+        }
+        
+        .cta p {
+            font-size: 1.3rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.95;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .btn-whatsapp {
+            background: #25d366;
+            color: white;
+            padding: 1.2rem 3rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
+        }
+        
+        .btn-whatsapp:hover {
+            background: #20ba5a;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(37, 211, 102, 0.5);
+        }
+        
+        /* Footer Moderno */
+        footer {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            color: white;
+            padding: 4rem 0 2rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .footer-section p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .footer-section a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* WhatsApp Float Button Moderno */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #25d366 0%, #20ba5a 100%);
+            color: white;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4); }
+            50% { box-shadow: 0 8px 35px rgba(37, 211, 102, 0.6); }
+        }
+        
+        .whatsapp-float:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 12px 40px rgba(37, 211, 102, 0.6);
+        }
+        
+        .whatsapp-float svg {
+            width: 34px;
+            height: 34px;
+        }
+        
+        /* Scroll Animations */
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-content,
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .nav-links {
+                gap: 1.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+            
+            .features-grid,
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .whatsapp-float {
+                width: 56px;
+                height: 56px;
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .container {
+                padding: 0 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="container">
+            <a href="/" class="logo">
+                <img src="/images/logo-amigo-secreto.png" alt="Amigo Secreto" class="logo-img" />
+            </a>
+            <ul class="nav-links">
+                <li><a href="#inicio">Início</a></li>
+                <li><a href="#contato">Contato</a></li>
+                <li><a href="/appointments/amigo-secreto">Rastreie seu agendamento</a></li>
+                <% if (user) { %>
+                <li><a href="<%= user.role === 'admin' ? '/admin/dashboard' : '/dashboard' %>" style="background: var(--gradient-1); color: white; padding: 0.5rem 1.25rem; border-radius: 8px; font-weight: 600;">Painel</a></li>
+                <li><a href="/logout" style="color: var(--text-gray);">Sair</a></li>
+                <% } else { %>
+                <li><a href="/login" style="background: var(--gradient-1); color: white; padding: 0.5rem 1.25rem; border-radius: 8px; font-weight: 600;">Login</a></li>
+                <% } %>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="inicio">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>Precisa de Alguém Para <span>Conversar?</span> Eu Estou Aqui Para Ouvir.</h1>
+                    <p>Se você tem algo no coração, um segredo ou só precisa de um amigo secreto para conversar, eu estou à disposição. Não importa o que seja, você pode confiar que estou aqui para ouvir.</p>
+                    <a href="/appointments/amigo-secreto" class="btn-primary"><span>Vamos Conversar?</span></a>
+                </div>
+                <div class="hero-image">
+                    <img src="/images/uploads/Lucid_Origin_Create_an_image_of_Lia_a_young_woman_with_mediuml_0-2-1080x1080.jpg" alt="Lia - Amigo e Secreto" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Escuta Ativa</h3>
+                    <p>Se você tem algo para compartilhar, um segredo ou algo que precisa de desabafo, estou disponível para te ouvir. Você pode me contar tudo, sem pressa e com total discrição.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Seu Segredo está seguro comigo</h3>
+                    <p>Tenho total sigilo e respeito pelo que você compartilha. Eu estarei aqui para ouvir, sem julgamentos, apenas para dar um espaço seguro para você se expressar e encontrar um pouco de paz.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Converse quando quiser</h3>
+                    <p>Você pode me procurar no momento que for mais confortável para você. Seja no meio do dia ou à noite, estarei disponível para ouvir você, no horário que se encaixar melhor na sua rotina.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-image">
+                    <img src="/images/uploads/about-1024x709.jpg" alt="Sobre a Lia" />
+                </div>
+                <div class="about-text">
+                    <h2>Eu sou a Lia,</h2>
+                    <p>Em um mundo que muitas vezes parece apressado e impessoal, o <strong>Amigo e Secreto</strong> é um espaço onde você pode se expressar livremente, sem pressões e sem julgamentos.</p>
+                    <p>Eu, Lia, sou uma pessoa real, e meu propósito é oferecer escuta ativa, acolhimento e o apoio emocional que você precisa, no momento em que você mais precisa.</p>
+                    <a href="/appointments/amigo-secreto" class="btn-primary" style="margin-top: 1.5rem;">chame a Sua amiga secreta!</a>
+                </div>
+            </div>
+            <div class="about-content" style="margin-top: 4rem;">
+                <div class="about-text">
+                    <h3>O que eu faço de melhor para você</h3>
+                    <p><strong>Eu sou boa em criar um ambiente de confiança, onde você pode ser você mesmo. Seja qual for a razão para a conversa, você pode confiar que estarei disponível para ouvir e apoiar.</strong></p>
+                    <h3 style="margin-top: 2rem;">Como Funciona o Amigo e Secreto</h3>
+                    <p>O processo é simples e direto. Você escolhe o melhor horário para a conversa, escolhe se prefere falar por texto ou áudio, e pronto. Eu estarei lá para ouvir você com total discrição e sem julgamentos. Sem pressa, sem pressões, apenas um espaço seguro para você se expressar.</p>
+                </div>
+                <div class="about-image">
+                    <img src="/images/uploads/content1-721x1080.jpg" alt="Como funciona" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing">
+        <div class="container">
+            <h2 class="section-title">Escolha o plano ideal para você</h2>
+            <p class="section-subtitle">Opções simples, valores justos, apoio de verdade. <strong>Invista em você: reserve um tempo para ser ouvido.</strong></p>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Conversa Rápida</h3>
+                    <div class="price">R$20,00</div>
+                    <div class="price-details">30 minutos de conversa</div>
+                    <a href="/appointments/amigo-secreto?service=2" class="btn-buy">Comprar</a>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3>Conversa Profunda</h3>
+                    <div class="price">R$40,00</div>
+                    <div class="price-details">1 hora de conversa</div>
+                    <a href="/appointments/amigo-secreto?service=3" class="btn-buy">Comprar</a>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3>Mensagem de texto e Áudio</h3>
+                    <div class="price">R$30,00</div>
+                    <div class="price-details">Companhia durante o todo dia</div>
+                    <a href="/appointments/amigo-secreto?service=4" class="btn-buy">Comprar</a>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3>Assinatura Semanal</h3>
+                    <div class="price">R$70,00</div>
+                    <div class="price-details">3 conversas de 30min na semana. Suporte contínuo e companhia ao longo da semana, por mensagens.</div>
+                    <a href="/appointments/amigo-secreto?service=8" class="btn-buy">Comprar</a>
+                </div>
+                
+                <div class="pricing-card featured">
+                    <h3>Assinatura Mensal texto e áudio</h3>
+                    <div class="price">R$150,00</div>
+                    <div class="price-details">Suporte contínuo e companhia ao longo do mês, por mensagens de texto e áudio.</div>
+                    <a href="/appointments/amigo-secreto?service=5" class="btn-buy">Comprar</a>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3>Assinatura Mensal</h3>
+                    <div class="price">R$240,00</div>
+                    <div class="price-details">12 conversas no mês. Suporte contínuo e companhia ao longo do mês, por mensagens.</div>
+                    <a href="/appointments/amigo-secreto?service=6" class="btn-buy">Comprar</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+        <div class="container">
+            <h2 class="section-title">Perguntas Frequentes</h2>
+            <p class="section-subtitle">Tudo o que você precisa saber antes de começar a conversar comigo</p>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Como funciona o serviço?</span>
+                    <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Meu nome é Lia, e estou aqui para te ouvir. O processo é simples e flexível. Você pode escolher o horário que melhor se adapta à sua rotina, seja por texto ou áudio. Não importa o que você precisa compartilhar, estou disponível para escutar sem pressa e sem julgamentos. Você pode agendar sua conversa diretamente pelo site ou falar comigo a qualquer momento. A conversa é totalmente confidencial, e o principal objetivo é oferecer um espaço seguro onde você se sinta à vontade.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Como posso agendar uma conversa?</span>
+                    <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Agendar uma conversa é fácil! Basta acessar a página de agendamento no nosso site, escolher o melhor horário para você e confirmar o agendamento. Você também pode optar por falar comigo imediatamente, caso prefira iniciar uma conversa sem agendar com antecedência. Estou aqui para atender você de acordo com sua disponibilidade, então não se preocupe com horários rígidos!</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Posso ser anônimo?</span>
+                    <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Sim, você pode ser totalmente anônimo. No momento do agendamento, você pode usar um apelido ou nome fictício para se sentir mais confortável. A privacidade é uma prioridade para mim, e todo o conteúdo das conversas é mantido em sigilo. Você pode falar abertamente, sabendo que seu anonimato será respeitado.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>É uma terapia?</span>
+                    <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Não, o <strong>Amigo e Secreto</strong> não é um serviço terapêutico. Sou uma pessoa real, disponível para te ouvir e oferecer apoio emocional, mas não substituo a orientação profissional de um psicólogo ou terapeuta. Se em algum momento você sentir que precisa de ajuda especializada, posso orientá-lo a buscar um profissional de saúde mental. Aqui, o foco é oferecer um espaço seguro para você desabafar, refletir e encontrar apoio sem pressões.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <div class="container">
+            <h2 class="section-title">O que o pessoal está dizendo</h2>
+            <p class="section-subtitle">Pessoas reais, conversas verdadeiras. Veja o que elas dizem.</p>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">Estava num momento complicado e não sabia a quem recorrer. Falar com a Lia me ajudou a respirar melhor. Ela me ouviu, sem querer dar conselho, só ouvindo mesmo. Me senti muito mais leve depois. Agora sei que sempre posso contar com ela.</p>
+                    <p class="testimonial-author">Ana – 34 anos</p>
+                </div>
+                
+                <div class="testimonial-card">
+                    <p class="testimonial-text">Eu não costumo conversar com qualquer pessoa, mas a Lia foi diferente. Me ouviu de verdade, sem me interromper, sem me julgar. A gente só precisa de alguém pra dar atenção, e ela fez isso. Tô mais tranquilo depois de falar com ela.</p>
+                    <p class="testimonial-author">Lucas – 24 anos</p>
+                </div>
+                
+                <div class="testimonial-card">
+                    <p class="testimonial-text">Eu tinha um segredo e estava mal com isso, não sabia o que fazer. Falar com a Lia foi um alívio. Eu falei o que precisava e ela só escutou, sem ficar me pressionando. Agora, sinto que meu segredo tá em boas mãos.</p>
+                    <p class="testimonial-author">Carlos – 42 anos</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Está pronto para conversar?</h2>
+            <p>Não importa o que esteja passando, estou pronta para ouvir você, com todo o cuidado e respeito que merece. E pode ter certeza, o que você compartilhar ficará entre nós, com total discrição.</p>
+            <a href="https://wa.me/551151922702" class="btn-whatsapp" target="_blank">Me chame no whatsap</a>
+        </div>
+    </section>
+
+    <!-- WhatsApp Float Button -->
+    <a href="https://wa.me/551151922702" class="whatsapp-float" target="_blank" aria-label="WhatsApp">
+        <svg fill="currentColor" viewBox="0 0 24 24">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+        </svg>
+    </a>
+
+    <!-- Footer -->
+    <footer id="contato">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Entre em Contato</h3>
+                    <p>Estou sempre disponível para ouvir você. Se precisar de ajuda, tiver dúvidas ou quiser agendar uma conversa, pode me contatar pelas opções abaixo.</p>
+                    <a href="tel:+551151922702">(11) 5192-2702</a>
+                    <a href="mailto:contato@amigoesecreto.com">contato@amigoesecreto.com</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Sobre</h3>
+                    <a href="#inicio">Início</a>
+                    <a href="#contato">Contato</a>
+                    <a href="/appointments/amigo-secreto">Rastreie seu agendamento</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <a href="#">Politica de Privacidade</a>
+                    <a href="#">Termos de Serviço</a>
+                    <a href="#">Política de Cookies</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>© 2025 amigoesecreto.com. Created with ❤ using Node.js and Express</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // FAQ Toggle com animação suave
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const item = question.parentElement;
+                const isActive = item.classList.contains('active');
+                
+                // Close all
+                document.querySelectorAll('.faq-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+                
+                // Open clicked if it wasn't active
+                if (!isActive) {
+                    item.classList.add('active');
+                }
+            });
+        });
+        
+        // Header scroll effect
+        let lastScroll = 0;
+        const header = document.querySelector('header');
+        
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+            
+            lastScroll = currentScroll;
+        });
+        
+        // Smooth scroll para links âncora
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Intersection Observer para animações
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Observar elementos para animação
+        document.querySelectorAll('.feature-card, .pricing-card, .testimonial-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

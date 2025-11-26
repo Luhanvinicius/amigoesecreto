@@ -1,0 +1,378 @@
+<main>
+    <section class="appointment-sec align-center pt pb">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-12">
+                    <div class="form-steps-left">
+                        <div class="section-title">
+                            <h2>Agendamento de Consulta</h2>
+                        </div>
+                        <div class="steps">
+                            <ul>
+                                <li class="stapes_status">
+                                    Serviço
+                                </li>
+                                <li class="stapes_status">
+                                    Escolha um Horário
+                                </li>
+                                <% if ((files && files.value === 'on') || (customField === 'on')) { %>
+                                <li class="stapes_status">
+                                    Detalhes Adicionais
+                                </li>
+                                <% } %>
+                                <li class="stapes_status">
+                                    Compartilhe seus Detalhes
+                                </li>
+                                <li class="stapes_status">
+                                    Pagamento
+                                </li>
+                                <li class="stapes_status">
+                                    Concluído
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-12">
+                    <form method="POST" action="/appointments/book" id="appointment-form" class="appointment-forms" enctype="multipart/form-data" novalidate>
+                        <input type="hidden" name="_token" value="<%= csrfToken %>">
+                        <div class="myContainer">
+                            <div class="step-container active" id="step-first">
+                                <div class="appointment-wrp Shoppint-Cart-btn">
+                                    <h2 class="mb-4">Agendamento de Consulta</h2>
+                                    <div class="appointment-form">
+                                        <h3>Por favor, selecione os serviços:</h3>
+                                        <div class="row">
+                                            <div class="col-md-6 col-12">
+                                                <div class="form-group">
+                                                    <label>Escolha um Serviço</label>
+                                                    <select id="serviceSelect" name="service" required>
+                                                        <option value="" disabled<% if (!selectedService) { %> selected<% } %>>
+                                                            Selecione Serviços
+                                                        </option>
+                                                        <% services.forEach(function(service) { %>
+                                                        <option value="<%= service.id %>" class="service" data-price="<%= service.price || 0 %>"<% if (selectedService && selectedService == service.id) { %> selected<% } %>>
+                                                            <%= service.name %>
+                                                        </option>
+                                                        <% }); %>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-12">
+                                                <div class="form-group">
+                                                    <label>Escolha um Local</label>
+                                                    <select id="locationSelect" name="location" required>
+                                                        <option value="" disabled selected>
+                                                            Selecione Localização
+                                                        </option>
+                                                        <% locations.forEach(function(location) { %>
+                                                        <option value="<%= location.id %>"><%= location.name %></option>
+                                                        <% }); %>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="step-btns">
+                                        <div class="action-btn">
+                                            <button type="button" name="next" class="next btn sequential_button">
+                                                Próximo
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step-container">
+                                <div class="appointment-wrp Shoppint-Cart-btn">
+                                    <div class="appointment-form">
+                                        <h3>Agendamento:</h3>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label>Data do Agendamento</label>
+                                                    <input class="datepicker" type="text" id="datepicker"
+                                                        name="appointment_date" autocomplete="off" required="required"
+                                                        value="<%= new Date().toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit', year: 'numeric'}).replace(/\//g, '-') %>">
+                                                </div>
+                                            </div>
+                                            <ul class="check-box-div" id="timeSlotsContainer"></ul>
+                                        </div>
+                                    </div>
+                                    <div class="step-btns">
+                                        <div class="action-btn">
+                                            <button type="button" name="back" class="back btn btn-transparent">
+                                                Voltar
+                                            </button>
+                                            <button type="button" name="next" class="cart-save next btn">
+                                                Próximo
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <% if ((files && files.value === 'on') || (customField === 'on')) { %>
+                            <div class="step-container">
+                                <div class="appointment-wrp">
+                                    <div class="appointment-form">
+                                        <h3>Detalhes Adicionais:</h3>
+                                        <% if (customField === 'on' && customFields && customFields.length > 0) { %>
+                                        <div class="row">
+                                            <% customFields.forEach(function(customField) { %>
+                                            <div class="col-md-6 col-12 form-group">
+                                                <% if (['textfield', 'textarea', 'date', 'number'].includes(customField.type)) { %>
+                                                <label for="<%= customField.label %>"><%= customField.label %></label>
+                                                <% } %>
+                                                <% if (customField.type === 'textfield') { %>
+                                                <input type="text"
+                                                    name="values[textfield][<%= customField.label %>]"
+                                                    placeholder="Valor" value="<%= customField.value || '' %>"
+                                                    class="form-control">
+                                                <% } else if (customField.type === 'textarea') { %>
+                                                <textarea name="values[textarea][<%= customField.label %>]" 
+                                                    placeholder="Valor" class="form-control"><%= customField.value || '' %></textarea>
+                                                <% } else if (customField.type === 'date') { %>
+                                                <input type="date" class="form-control"
+                                                    name="values[date][<%= customField.label %>]"
+                                                    value="<%= customField.value || '' %>">
+                                                <% } else if (customField.type === 'number') { %>
+                                                <input type="number" class="form-control"
+                                                    name="values[number][<%= customField.label %>]"
+                                                    placeholder="Valor"
+                                                    value="<%= customField.value || '' %>">
+                                                <% } %>
+                                            </div>
+                                            <% }); %>
+                                        </div>
+                                        <% } %>
+
+                                        <% if (files && files.value === 'on') { %>
+                                        <div class="row">
+                                            <div class="col-sm-3 col-12">
+                                                <div class="form-group">
+                                                    <label for="attachment"><%= files.label || 'Anexo' %></label>
+                                                    <div class="chose-files" id="myfile">
+                                                        <i class="ti ti-upload px-1"></i>
+                                                        <span>Escolha o arquivo aqui</span>
+                                                        <input type="file" name="attachment" id="attachment"
+                                                            data-filename="attachment"
+                                                            placeholder="Choose file here">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% } %>
+                                    </div>
+                                    <div class="step-btns">
+                                        <button type="button" name="back" class="back btn btn-transparent">
+                                            Voltar
+                                        </button>
+                                        <button type="button" name="next" class="next btn">
+                                            Próximo
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>
+
+                            <div class="step-container final_stepss">
+                                <div class="appointment-wrp tab-wrp">
+                                    <div class="tabs-wrapper">
+                                        <div class="alert alert-danger flex align-center d-none" role="alert">
+                                            <svg height="26" viewBox="0 0 128 128" width="26" xmlns="http://www.w3.org/2000/svg" id="fi_4201973">
+                                                <g>
+                                                    <path d="m57.362 26.54-37.262 64.535a7.666 7.666 0 0 0 6.639 11.5h74.518a7.666 7.666 0 0 0 6.639-11.5l-37.258-64.535a7.665 7.665 0 0 0 -13.276 0z" fill="#ee404c"></path>
+                                                    <g fill="#fff7ed">
+                                                        <rect height="29.377" rx="4.333" width="9.638" x="59.181" y="46.444"></rect>
+                                                        <circle cx="64" cy="87.428" r="4.819"></circle>
+                                                    </g>
+                                                </g>
+                                            </svg>
+                                            <div class="error-msg"></div>
+                                        </div>
+                                        <ul class="tabs">
+                                            <% if (!bookingModes || bookingModes.includes('1')) { %>
+                                            <li data-tab="new-user" class="tab-link<% if (bookingModes && bookingModes.includes('1')) { %> active<% } %>">
+                                                <a href="javascript:;">1. Novo Cadastro</a>
+                                            </li>
+                                            <% } %>
+                                            <% if (!bookingModes || bookingModes.includes('1')) { %>
+                                            <li data-tab="existing-user" class="tab-link">
+                                                <a href="javascript:;">2. Já Tenho Conta</a>
+                                            </li>
+                                            <% } %>
+                                            <% if (bookingModes && bookingModes.includes('2')) { %>
+                                            <li data-tab="guest-user" class="tab-link<% if (!bookingModes.includes('1') && bookingModes.includes('2')) { %> active<% } %>">
+                                                <a href="javascript:;">3. Agendamento como Convidado</a>
+                                            </li>
+                                            <% } %>
+                                        </ul>
+                                        <input type="hidden" name="type" id="selected_tab" value="new-user">
+                                        <div class="tabs-container">
+                                            <% if (!bookingModes || bookingModes.includes('1')) { %>
+                                            <div id="new-user" class="tab-content active" style="display: block;">
+                                                <div class="row">
+                                                    <div class="col-md-6 col-12">
+                                                        <div class="form-group">
+                                                            <label>Nome</label>
+                                                            <input type="text" class="form-control" name="name"
+                                                                id="name_new" placeholder="Seu Nome" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-12">
+                                                        <div class="form-group">
+                                                            <label>E-mail</label>
+                                                            <input type="email" class="form-control" name="email"
+                                                                id="email_new" placeholder="Seu E-mail" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-12">
+                                                        <div class="form-group">
+                                                            <label>Senha</label>
+                                                            <input type="password" class="form-control" name="password"
+                                                                id="password" placeholder="Sua Senha" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-12">
+                                                        <div class="form-group">
+                                                            <label>Contato</label>
+                                                            <small class="text-muted">(+5511999999999)</small>
+                                                            <input type="text" class="form-control" name="contact"
+                                                                id="contact" placeholder="Número de Telefone" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% } %>
+                                            <% if (!bookingModes || bookingModes.includes('1')) { %>
+                                            <div id="existing-user" class="tab-content" style="display: none;">
+                                                <div class="row">
+                                                    <div class="col-md-6 col-12">
+                                                        <div class="form-group">
+                                                            <label>E-mail</label>
+                                                            <input type="email" class="form-control" name="email"
+                                                                id="email_existing" placeholder="Seu E-mail" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-12">
+                                                        <div class="form-group">
+                                                            <label>Senha</label>
+                                                            <input type="password" class="form-control" name="password"
+                                                                id="password_existing" placeholder="Sua Senha" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% } %>
+                                            <div id="guest-user" class="tab-content<% if (bookingModes && !bookingModes.includes('1') && bookingModes.includes('2')) { %> active<% } %>"<% if (!(bookingModes && !bookingModes.includes('1') && bookingModes.includes('2'))) { %> style="display: none;"<% } %>>
+                                                <div class="row">
+                                                    <div class="col-md-6 col-12">
+                                                        <div class="form-group">
+                                                            <label>Nome</label>
+                                                            <input type="text" class="form-control" name="name"
+                                                                id="name_guest" placeholder="Seu Nome" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-12">
+                                                        <div class="form-group">
+                                                            <label>E-mail</label>
+                                                            <input type="email" class="form-control" name="email"
+                                                                id="email_guest" placeholder="Seu E-mail" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-12">
+                                                        <div class="form-group">
+                                                            <label>Contato</label>
+                                                            <small class="text-muted">(+5511999999999)</small>
+                                                            <input type="text" class="form-control" name="contact"
+                                                                id="contact_guest" placeholder="Número de Telefone" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="step-btns">
+                                        <button type="button" name="BACK" class="back btn btn-transparent">
+                                            Voltar
+                                        </button>
+                                        <button type="button" name="next" class="next btn">
+                                            Próximo
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step-container">
+                                <div class="appointment-wrp">
+                                    <div class="free-appointment"></div>
+                                    <div class="appointment-form payment-method-form">
+                                        <div class="section-title">
+                                            <h3>Pagamento:</h3>
+                                            <div class="flex appointment_info_details">
+                                                <p class="h6" id="serviceAmount"></p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6 col-lg-4 col-12">
+                                                <div class="radio-group">
+                                                    <input class="form-check-input payment_method" name="payment_method"
+                                                        type="radio" id="asaas_pix" data-payment="asaas_pix"
+                                                        data-payment-action="/appointments/book" checked>
+                                                    <label for="asaas_pix">
+                                                        <div class="radio-img">
+                                                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                <rect width="24" height="24" rx="4" fill="#32BCAD"/>
+                                                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="white"/>
+                                                            </svg>
+                                                        </div>
+                                                        <p>PIX (Asaas)</p>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="payment-info" style="margin-top: 20px; padding: 15px; background: #f0f9ff; border-radius: 8px; display: none;">
+                                            <p style="margin: 0; color: #0369a1; font-weight: 600;">Você será redirecionado para o pagamento após confirmar o agendamento.</p>
+                                        </div>
+                                    </div>
+                                           <div class="step-btns finle-step-btn flex align-center">
+                                               <div class="action-btn">
+                                                   <div class="step-btn-wrapper">
+                                                       <button type="button" name="back" class="back btn btn-transparent">Voltar</button>
+                                                       <button type="submit" name="submit" class="btn appointment_payment" id="generate-payment-btn">Gerar Pagamento</button>
+                                                   </div>
+                                               </div>
+                                           </div>
+                                </div>
+                            </div>
+
+                            <div class="step-container" id="final_step">
+                                <div class="appointment-wrp">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group">
+                                                <span>
+                                                    <svg id="fi_13965236" enable-background="new 0 0 100 100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="20px">
+                                                        <path d="m92.8660965 38.8007011c-1.4883041-1.4884987-2.6493912-3.2300644-3.4410553-5.1301155-.7916718-1.9000511-1.2033539-3.9583321-1.2033539-6.0588779 0-4.3804531-1.7733231-8.3284779-4.6339035-11.1995583-2.8710785-2.8605137-6.8189087-4.6337748-11.1994247-4.6337748-4.2010956 0-8.2227554-1.66786-11.1889305-4.6443415-3.0927697-3.0929631-7.1460686-4.6340331-11.1994286-4.6340331-4.053299 0-8.1066589 1.54107-11.1994286 4.6340332-1.4883041 1.4882402-3.2299995 2.6491966-5.1299858 3.4408636s-3.9583321 1.2034779-6.0588779 1.2034779c-4.3805809 0-8.3283482 1.7732611-11.1994934 4.6337748-2.8605137 2.8710804-4.6338396 6.8191051-4.6338396 11.1995583 0 2.1005459-.4116821 4.1588268-1.2033482 6.0588779-.791667 1.9000511-1.952817 3.6416168-3.4411216 5.1301155-3.0927701 3.0927047-4.6339042 7.145874-4.6339042 11.1992988 0 4.0531693 1.5411341 8.1065941 4.6339045 11.1992989 1.4883046 1.4884987 2.6494546 3.2300606 3.4411216 5.1301155.791666 1.9000473 1.2033482 3.9583359 1.2033482 6.058876 0 4.380455 1.7733259 8.328476 4.6338396 11.1995621 2.8711452 2.8605118 6.8189125 4.6337738 11.1994934 4.6337738 2.1005459 0 4.1588917.4118118 6.0588779 1.203476s3.6416817 1.9526215 5.1299858 3.4408646c3.0927694 3.0929641 7.1461293 4.6340331 11.1994283 4.6340331 4.05336 0 8.1066589-1.541069 11.1994286-4.6340332 1.488369-1.4882431 3.2300606-2.6492004 5.1300468-3.4408646s3.9583359-1.203476 6.0588837-1.203476c4.3805161 0 8.3283463-1.773262 11.1994247-4.6337738 2.8605804-2.8710861 4.6339035-6.8191071 4.6339035-11.1995621 0-2.1005402.4116821-4.1588287 1.2033539-6.058876.7916641-1.9000549 1.9527512-3.6416168 3.4410553-5.1301155 3.0928345-3.0927047 4.6339035-7.1461295 4.6339035-11.1992988 0-4.0534248-1.541069-8.1065941-4.6339035-11.1992989zm-19.8655014.1476632-28.0672493 28.0673141c-.7916679.7916641-1.8683548 1.2349167-2.9872398 1.2349167s-2.1955109-.4432526-2.987175-1.2349167l-11.9594632-11.9595261c-1.6466637-1.6467285-1.6466637-4.3173141 0-5.9746094 1.6466637-1.6464691 4.3277512-1.6464691 5.9744167 0l8.9722214 8.9830475 25.0800095-25.0802689c1.6466675-1.646471 4.3278198-1.646471 5.9744797 0 1.6466675 1.6467286 1.6466675 4.3173142 0 5.9640428z"></path>
+                                                    </svg>
+                                                    <label id="appointment_number"></label>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="step-btns">
+                                        <a href="/appointments/<%= slug %>" class="btn btn-transparent">Agendar uma Consulta</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="business_id" value="<%= business.id %>">
+                            <input type="hidden" name="payment" value="manually">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamento Concluído</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .success-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 50px 40px;
+            text-align: center;
+        }
+        
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            color: white;
+        }
+        
+        .success-container h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .success-container .appointment-number {
+            background: #f8f9fa;
+            padding: 15px 30px;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 20px 0;
+            font-size: 18px;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .success-container .contact-message {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        
+        .success-container .contact-message h3 {
+            color: #1976d2;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .success-container .contact-message p {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .success-container .contact-icons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .success-container .contact-icons a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .success-container .contact-icons a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .back-button {
+            margin-top: 30px;
+            padding: 12px 30px;
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .back-button:hover {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-icon">✓</div>
+        <h1>Agendamento Realizado com Sucesso!</h1>
+        <p style="color: #666; font-size: 18px; margin-bottom: 20px;">
+            Seu pagamento foi confirmado e seu agendamento está ativo.
+        </p>
+        <div class="appointment-number">
+            Número do agendamento: <strong>#<%= appointmentId %></strong>
+        </div>
+        
+        <% if (userRegistered) { %>
+        <div class="contact-message" style="background: #d4edda; border-left-color: #28a745; margin-bottom: 20px;">
+            <h3 style="color: #155724;">✅ Conta Criada com Sucesso!</h3>
+            <p style="color: #155724;">
+                Sua conta foi criada com sucesso! Você pode fazer login usando o e-mail <strong><%= userEmail %></strong> 
+                e a senha que você cadastrou para acessar seu painel e acompanhar seus agendamentos.
+            </p>
+        </div>
+        <% } %>
+        
+        <div class="contact-message">
+            <h3>📱 Em breve entraremos em contato!</h3>
+            <p>
+                Nossa equipe entrará em contato com você em breve através do <strong>Instagram</strong> ou <strong>WhatsApp</strong> 
+                para confirmar os detalhes do seu agendamento e fornecer mais informações.
+            </p>
+        </div>
+        
+        <div class="contact-icons">
+            <a href="https://instagram.com/amigoesecreto" target="_blank" rel="noopener">
+                📷 Instagram
+            </a>
+            <a href="https://wa.me/5511999999999" target="_blank" rel="noopener">
+                💬 WhatsApp
+            </a>
+        </div>
+        
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+            <a href="/login" class="back-button" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
+                🔐 Fazer Login
+            </a>
+            <a href="/appointments/<%= slug %>" class="back-button">Fazer Novo Agendamento</a>
+        </div>
+    </div>
+</body>
+</html>
+

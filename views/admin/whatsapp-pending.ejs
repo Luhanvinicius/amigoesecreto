@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .header-nav {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        
+        .header-nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+        
+        .header-nav a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h2 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-header p {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .appointments-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e4e6eb;
+        }
+        
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .btn-start-chat {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-start-chat:hover {
+            background: #1da851;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+        }
+        
+        .btn-start-chat:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .no-appointments {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+        }
+        
+        .no-appointments-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .user-contact {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .appointment-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .appointment-date {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .appointment-time {
+            font-size: 0.85rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>💬 WhatsApp - Atendimentos Pendentes</h1>
+            <nav class="header-nav">
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/appointments">Agendamentos</a>
+                <a href="/admin/users">Usuários</a>
+                <a href="/admin/services">Serviços</a>
+                <a href="/admin/agenda">Agenda</a>
+                <a href="/admin/whatsapp">WhatsApp</a>
+                <a href="/admin/whatsapp/pending" style="background: rgba(255,255,255,0.2);">Pendentes</a>
+                <a href="/logout">Sair</a>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="page-header">
+            <h2>📋 Atendimentos Pendentes</h2>
+            <p>Lista de agendamentos que ainda não foram contatados. Clique em "Iniciar Chat" para começar o atendimento.</p>
+        </div>
+        
+        <div class="appointments-table">
+            <% if (appointments.length > 0) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Serviço</th>
+                        <th>Data/Hora</th>
+                        <th>Local</th>
+                        <th>Contato</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% appointments.forEach(function(apt) { %>
+                    <tr>
+                        <td>
+                            <div class="user-info">
+                                <div class="user-name"><%= apt.user_name || 'N/A' %></div>
+                                <div class="user-contact"><%= apt.user_email || 'N/A' %></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="appointment-info">
+                                <div><%= apt.service_name || 'N/A' %></div>
+                                <div class="appointment-time"><%= apt.service_duration || 30 %> min</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="appointment-info">
+                                <div class="appointment-date">
+                                    <%= new Date(apt.appointment_date).toLocaleDateString('pt-BR') %>
+                                </div>
+                                <div class="appointment-time">
+                                    <%= apt.appointment_time.substring(0, 5) %>
+                                </div>
+                            </div>
+                        </td>
+                        <td><%= apt.location_name || 'N/A' %></td>
+                        <td>
+                            <% 
+                            var whatsappNumber = null;
+                            if (apt.user_contact) {
+                                var cleaned = String(apt.user_contact).replace(/\D/g, '');
+                                if (cleaned.length > 0) {
+                                    cleaned = cleaned.replace(/^0+/, '');
+                                    if (cleaned.indexOf('55') === 0) {
+                                        whatsappNumber = cleaned;
+                                    } else if (cleaned.length >= 10 && cleaned.length <= 11) {
+                                        whatsappNumber = '55' + cleaned;
+                                    } else if (cleaned.length >= 12) {
+                                        whatsappNumber = cleaned;
+                                    }
+                                }
+                            }
+                            %>
+                            <% if (whatsappNumber) { %>
+                                <div class="user-contact">+<%= whatsappNumber.substring(0, 2) %> <%= whatsappNumber.substring(2, 7) %>-<%= whatsappNumber.substring(7) %></div>
+                            <% } else { %>
+                                <div class="user-contact" style="color: #999;">Sem contato</div>
+                            <% } %>
+                        </td>
+                        <td>
+                            <span class="status-badge status-pending">Pendente</span>
+                        </td>
+                        <td>
+                            <button 
+                                class="btn-start-chat" 
+                                onclick="startChat(<%= apt.id %>, '<%= whatsappNumber || '' %>', '<%= (apt.user_name || '').replace(/'/g, "\\'") %>')"
+                                <%= !whatsappNumber ? 'disabled title="Telefone do cliente não disponível"' : '' %>>
+                                💬 Iniciar Chat
+                            </button>
+                        </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            <% } else { %>
+            <div class="no-appointments">
+                <div class="no-appointments-icon">✅</div>
+                <h3>Nenhum atendimento pendente</h3>
+                <p>Todos os agendamentos foram contatados!</p>
+            </div>
+            <% } %>
+        </div>
+    </div>
+    
+    <script>
+        async function startChat(appointmentId, whatsappNumber, userName) {
+            const button = event.target.closest('.btn-start-chat');
+            const originalText = button.innerHTML;
+            
+            // Desabilitar botão e mostrar loading
+            button.disabled = true;
+            button.innerHTML = '<span class="loading"></span> Iniciando...';
+            
+            try {
+                // Atualizar status e obter dados do chat
+                const response = await fetch(`/admin/whatsapp/pending/${appointmentId}/start`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Se tiver número do WhatsApp, redirecionar para o chat
+                    if (data.chatId) {
+                        // Redirecionar para WhatsApp com o chat selecionado
+                        window.location.href = `/admin/whatsapp?chat=${encodeURIComponent(data.chatId)}&name=${encodeURIComponent(data.userName || userName)}`;
+                    } else {
+                        // Apenas atualizar a página para remover o item da lista
+                        alert('Status atualizado para confirmado!');
+                        location.reload();
+                    }
+                } else {
+                    alert('Erro ao iniciar atendimento: ' + (data.error || 'Erro desconhecido'));
+                    button.disabled = false;
+                    button.innerHTML = originalText;
+                }
+            } catch (error) {
+                console.error('Erro ao iniciar chat:', error);
+                alert('Erro ao iniciar atendimento. Tente novamente.');
+                button.disabled = false;
+                button.innerHTML = originalText;
+            }
+        }
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'WhatsApp Web' %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            color: #333;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            position: relative;
+        }
+        .header h1 { 
+            font-size: 1.3rem; 
+            font-weight: 700; 
+        }
+        .header-nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .header-nav a:hover { 
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        .whatsapp-container {
+            height: calc(100vh - 70px);
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+        .whatsapp-header {
+            background: #075e54;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .whatsapp-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .whatsapp-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        .btn-action {
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .btn-action:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .whatsapp-frame-container {
+            flex: 1;
+            position: relative;
+            background: #e5ddd5;
+            overflow: hidden;
+        }
+        .whatsapp-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+        .qr-code-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            color: white;
+        }
+        .qr-code-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            max-width: 400px;
+        }
+        .qr-code-box h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        .qr-code-placeholder {
+            width: 250px;
+            height: 250px;
+            background: #f0f0f0;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: #999;
+            font-size: 0.9rem;
+        }
+        .qr-code-instructions {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-top: 1rem;
+        }
+        .btn-close-overlay {
+            margin-top: 1.5rem;
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-close-overlay:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem;
+            text-align: center;
+        }
+        .chat-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e4e6eb;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .chat-item:hover {
+            background: #e4e6eb;
+        }
+        .chat-item.active {
+            background: #d9dbde;
+        }
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .chat-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .chat-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chat-last-message {
+            font-size: 0.85rem;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chat-time {
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 0.25rem;
+        }
+        .message {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .message.from-me {
+            align-items: flex-end;
+        }
+        .message.from-them {
+            align-items: flex-start;
+        }
+        .message-bubble {
+            max-width: 70%;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            word-wrap: break-word;
+            position: relative;
+        }
+        .message.from-me .message-bubble {
+            background: #dcf8c6;
+            border-bottom-right-radius: 4px;
+        }
+        .message.from-them .message-bubble {
+            background: white;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .message-time {
+            font-size: 0.7rem;
+            color: #999;
+            margin-top: 0.25rem;
+            padding: 0 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>💬 WhatsApp Web</h1>
+                    <nav class="header-nav">
+                        <a href="/admin/dashboard">Dashboard</a>
+                        <a href="/admin/appointments">Agendamentos</a>
+                        <a href="/admin/users">Usuários</a>
+                        <a href="/admin/services">Serviços</a>
+                        <a href="/admin/agenda">Agenda</a>
+                        <a href="/admin/whatsapp">WhatsApp</a>
+                        <a href="/admin/whatsapp/pending">Pendentes</a>
+                        <a href="/logout">Sair</a>
+                    </nav>
+    </div>
+    
+    <div class="whatsapp-container">
+        <div class="whatsapp-header">
+            <h2>
+                <span>💬</span>
+                WhatsApp Web
+            </h2>
+            <div class="whatsapp-actions">
+                <button class="btn-action" onclick="refreshWhatsApp()">🔄 Atualizar</button>
+                <button class="btn-action" onclick="openInNewTab()">🔗 Abrir em Nova Aba</button>
+            </div>
+        </div>
+        
+        <div class="whatsapp-frame-container" id="frameContainer">
+            <div class="qr-code-overlay" id="qrOverlay" style="display: none;">
+                <div class="qr-code-box">
+                    <h3>Escaneie o QR Code</h3>
+                    <div class="qr-code-placeholder" id="qrPlaceholder">
+                        <div>
+                            <div class="loading-spinner"></div>
+                            <p style="margin-top: 1rem;">Carregando QR Code...</p>
+                        </div>
+                    </div>
+                    <div class="qr-code-instructions">
+                        <p><strong>Como usar:</strong></p>
+                        <p>1. Abra o WhatsApp no seu celular</p>
+                        <p>2. Toque em Menu ou Configurações</p>
+                        <p>3. Selecione "Aparelhos conectados"</p>
+                        <p>4. Toque em "Conectar um aparelho"</p>
+                        <p>5. Aponte seu celular para esta tela para capturar o código</p>
+                    </div>
+                    <button class="btn-close-overlay" onclick="closeQROverlay()">Fechar</button>
+                </div>
+            </div>
+            
+            <!-- Tela de QR Code -->
+            <div id="qrCodeScreen" class="qr-code-overlay" style="display: flex;">
+                <div class="qr-code-box">
+                    <h3>📱 Escaneie o QR Code</h3>
+                    <div id="qrCodeImage" class="qr-code-placeholder">
+                        <div>
+                            <div class="loading-spinner"></div>
+                            <p style="margin-top: 1rem;">Gerando QR Code...</p>
+                        </div>
+                    </div>
+                    <div class="qr-code-instructions">
+                        <p><strong>Como conectar:</strong></p>
+                        <p>1. Abra o WhatsApp no seu celular</p>
+                        <p>2. Toque em Menu (☰) ou Configurações</p>
+                        <p>3. Selecione "Aparelhos conectados"</p>
+                        <p>4. Toque em "Conectar um aparelho"</p>
+                        <p>5. Aponte seu celular para esta tela para capturar o código</p>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <button class="btn-action" onclick="initializeWhatsApp()" style="background: #25D366; color: white; margin-right: 0.5rem;">
+                            🔄 Gerar Novo QR Code
+                        </button>
+                        <button class="btn-close-overlay" onclick="closeQROverlay()">Fechar</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tela de WhatsApp Conectado com Mensagens -->
+            <div id="whatsappConnected" style="display: none; height: 100%; display: flex; flex-direction: column;">
+                <!-- Lista de Chats (Sidebar) -->
+                <div style="display: flex; height: 100%;">
+                    <div id="chatsSidebar" style="width: 350px; background: #f0f2f5; border-right: 1px solid #e4e6eb; display: flex; flex-direction: column; height: 100%;">
+                        <div style="background: #f0f2f5; padding: 1rem; border-bottom: 1px solid #e4e6eb;">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div style="font-size: 1.5rem;">💬</div>
+                                <h3 style="margin: 0; color: #667eea;">Conversas</h3>
+                            </div>
+                            <button onclick="loadChats()" class="btn-action" style="margin-top: 0.5rem; background: #25D366; color: white; width: 100%;">
+                                🔄 Atualizar Conversas
+                            </button>
+                        </div>
+                        <div id="chatsList" style="flex: 1; overflow-y: auto; padding: 0.5rem;">
+                            <div style="text-align: center; padding: 2rem; color: #999;">
+                                <p>Carregando conversas...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Área de Mensagens -->
+                    <div id="messagesArea" style="flex: 1; display: flex; flex-direction: column; background: #efeae2; background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2U0ZTZlYiIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+');">
+                        <div id="noChatSelected" style="flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #999;">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;">💬</div>
+                            <h3>Selecione uma conversa</h3>
+                            <p>Escolha uma conversa da lista ao lado para ver as mensagens</p>
+                        </div>
+                        
+                        <!-- Cabeçalho do Chat -->
+                        <div id="chatHeader" style="display: none; background: #f0f2f5; padding: 1rem; border-bottom: 1px solid #e4e6eb;">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div id="chatAvatar" style="width: 50px; height: 50px; border-radius: 50%; background: #667eea; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: 700;">
+                                    👤
+                                </div>
+                                <div style="flex: 1;">
+                                    <h3 id="chatName" style="margin: 0; color: #333;">Nome do Chat</h3>
+                                    <p id="chatStatus" style="margin: 0; color: #999; font-size: 0.85rem;">Online</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Mensagens -->
+                        <div id="messagesContainer" style="flex: 1; overflow-y: auto; padding: 1rem; display: none;">
+                            <div id="messagesList"></div>
+                        </div>
+                        
+                        <!-- Input de Mensagem -->
+                        <div id="messageInputContainer" style="display: none; background: #f0f2f5; padding: 1rem; border-top: 1px solid #e4e6eb;">
+                            <form id="messageForm" onsubmit="sendMessage(event)" style="display: flex; gap: 0.5rem; align-items: center;">
+                                <input type="file" id="fileInput" style="display: none;" accept="*/*" onchange="handleFileSelect(event)">
+                                
+                                <button 
+                                    type="button" 
+                                    onclick="document.getElementById('fileInput').click()"
+                                    style="padding: 0.75rem; background: #667eea; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 1.2rem; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; transition: all 0.3s;"
+                                    title="Enviar arquivo">
+                                    📎
+                                </button>
+                                
+                                <button 
+                                    type="button" 
+                                    id="audioRecordButton"
+                                    onmousedown="startAudioRecording()"
+                                    onmouseup="stopAudioRecording()"
+                                    ontouchstart="startAudioRecording(event)"
+                                    ontouchend="stopAudioRecording(event)"
+                                    style="padding: 0.75rem; background: #667eea; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 1.2rem; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; transition: all 0.3s;"
+                                    title="Segure para gravar áudio">
+                                    🎤
+                                </button>
+                                
+                                <input 
+                                    type="text" 
+                                    id="messageInput" 
+                                    placeholder="Digite uma mensagem..." 
+                                    style="flex: 1; padding: 0.75rem 1rem; border: none; border-radius: 24px; font-size: 0.95rem; outline: none;"
+                                    required>
+                                <button 
+                                    type="submit" 
+                                    id="sendButton"
+                                    style="padding: 0.75rem 1.5rem; background: #25D366; color: white; border: none; border-radius: 24px; cursor: pointer; font-weight: 600; transition: all 0.3s;"
+                                    onmouseover="this.style.background='#1da851'"
+                                    onmouseout="this.style.background='#25D366'">
+                                    Enviar
+                                </button>
+                            </form>
+                            <div id="filePreview" style="margin-top: 0.5rem; display: none;">
+                                <div style="background: white; padding: 0.75rem; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span id="fileName" style="font-size: 0.9rem; color: #333;"></span>
+                                    </div>
+                                    <button onclick="clearFileSelection()" style="background: #dc3545; color: white; border: none; border-radius: 4px; padding: 0.25rem 0.5rem; cursor: pointer; font-size: 0.8rem;">
+                                        ✕
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="audioRecordingStatus" style="margin-top: 0.5rem; display: none; background: #dc3545; color: white; padding: 0.75rem; border-radius: 8px; text-align: center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                    <div class="recording-indicator" style="width: 12px; height: 12px; background: white; border-radius: 50%; animation: pulse 1s infinite;"></div>
+                                    <span id="recordingTime">Gravando... 0:00</span>
+                                    <button onclick="cancelAudioRecording()" style="background: rgba(255,255,255,0.3); color: white; border: none; border-radius: 4px; padding: 0.25rem 0.5rem; cursor: pointer; font-size: 0.8rem; margin-left: 1rem;">
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tela de Erro -->
+            <div id="errorMessage" class="error-message" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 3rem;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>
+                <p style="font-size: 1.2rem; margin-bottom: 1rem;"><strong>Erro ao conectar WhatsApp</strong></p>
+                <p id="errorText" style="margin-bottom: 1.5rem; text-align: center; max-width: 600px;"></p>
+                <button onclick="initializeWhatsApp()" style="padding: 1rem 2rem; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                    🔄 Tentar Novamente
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let statusCheckInterval;
+        let qrCheckInterval;
+        
+        // Inicializar WhatsApp ao carregar a página
+        window.addEventListener('load', () => {
+            checkWhatsAppStatus();
+            initializeWhatsApp();
+            
+            // Verificar se há parâmetros de chat na URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const chatId = urlParams.get('chat');
+            const chatName = urlParams.get('name');
+            
+            if (chatId && chatName) {
+                // Aguardar um pouco para garantir que o WhatsApp está conectado
+                setTimeout(() => {
+                    selectChatFromURL(chatId, decodeURIComponent(chatName));
+                }, 2000);
+            }
+        });
+        
+        // Selecionar chat a partir da URL
+        async function selectChatFromURL(chatId, chatName) {
+            // Primeiro, verificar se o WhatsApp está conectado
+            try {
+                const statusResponse = await fetch('/admin/whatsapp/status');
+                const status = await statusResponse.json();
+                
+                if (status.status !== 'ready' && status.status !== 'authenticated') {
+                    console.log('WhatsApp não está conectado ainda. Aguardando...');
+                    // Tentar novamente após 3 segundos
+                    setTimeout(() => selectChatFromURL(chatId, chatName), 3000);
+                    return;
+                }
+            } catch (error) {
+                console.error('Erro ao verificar status:', error);
+            }
+            
+            // Carregar as conversas
+            await loadChats();
+            
+            // Aguardar um pouco para a lista renderizar
+            setTimeout(() => {
+                // Procurar o chat na lista
+                const chatItems = document.querySelectorAll('.chat-item');
+                let found = false;
+                
+                // Extrair número do chatId (remover @c.us)
+                const numberFromChatId = chatId.replace('@c.us', '');
+                
+                chatItems.forEach(item => {
+                    const onclick = item.getAttribute('onclick');
+                    if (onclick) {
+                        // Extrair chatId do onclick
+                        const match = onclick.match(/selectChat\('([^']+)'/);
+                        if (match && match[1]) {
+                            const itemChatId = match[1];
+                            // Comparar números (sem @c.us)
+                            if (itemChatId.replace('@c.us', '') === numberFromChatId || itemChatId === chatId) {
+                                item.click();
+                                found = true;
+                            }
+                        }
+                    }
+                });
+                
+                // Se não encontrou na lista, tentar selecionar diretamente
+                if (!found) {
+                    console.log('Chat não encontrado na lista, selecionando diretamente...');
+                    selectChat(chatId, chatName, null);
+                }
+            }, 2000);
+        }
+        
+        // Verificar status periodicamente
+        function checkWhatsAppStatus() {
+            statusCheckInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('/admin/whatsapp/status');
+                    const status = await response.json();
+                    updateUI(status);
+                } catch (error) {
+                    console.error('Erro ao verificar status:', error);
+                }
+            }, 2000); // Verificar a cada 2 segundos
+        }
+        
+        // Verificar QR Code periodicamente
+        function checkQRCode() {
+            qrCheckInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('/admin/whatsapp/qrcode');
+                    const data = await response.json();
+                    
+                    if (data.qrCode) {
+                        showQRCode(data.qrCode);
+                    }
+                } catch (error) {
+                    console.error('Erro ao verificar QR Code:', error);
+                }
+            }, 1000); // Verificar a cada 1 segundo
+        }
+        
+        // Inicializar WhatsApp
+        async function initializeWhatsApp() {
+            try {
+                const response = await fetch('/admin/whatsapp/initialize', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    console.log('WhatsApp inicializando...');
+                    showQRCodeScreen();
+                    checkQRCode();
+                }
+            } catch (error) {
+                console.error('Erro ao inicializar WhatsApp:', error);
+                showError('Erro ao inicializar WhatsApp. Tente novamente.');
+            }
+        }
+        
+        // Reiniciar WhatsApp
+        async function restartWhatsApp() {
+            try {
+                const response = await fetch('/admin/whatsapp/restart', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    console.log('WhatsApp reiniciando...');
+                    showQRCodeScreen();
+                    checkQRCode();
+                }
+            } catch (error) {
+                console.error('Erro ao reiniciar WhatsApp:', error);
+                showError('Erro ao reiniciar WhatsApp. Tente novamente.');
+            }
+        }
+        
+        // Mostrar QR Code
+        function showQRCode(qrCodeDataURL) {
+            const qrImage = document.getElementById('qrCodeImage');
+            qrImage.innerHTML = `<img src="${qrCodeDataURL}" alt="QR Code" style="width: 100%; height: 100%; border-radius: 8px;">`;
+            document.getElementById('qrCodeScreen').style.display = 'flex';
+            document.getElementById('whatsappConnected').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+        
+        // Mostrar tela de QR Code
+        function showQRCodeScreen() {
+            document.getElementById('qrCodeScreen').style.display = 'flex';
+            document.getElementById('whatsappConnected').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+        
+        let currentChatId = null;
+        
+        // Atualizar UI baseado no status
+        function updateUI(status) {
+            if (status.status === 'qr') {
+                // QR Code disponível - será mostrado pelo checkQRCode
+                showQRCodeScreen();
+            } else if (status.status === 'ready' || status.status === 'authenticated') {
+                // WhatsApp conectado
+                document.getElementById('qrCodeScreen').style.display = 'none';
+                document.getElementById('whatsappConnected').style.display = 'flex';
+                document.getElementById('errorMessage').style.display = 'none';
+                if (qrCheckInterval) {
+                    clearInterval(qrCheckInterval);
+                }
+                // Carregar conversas automaticamente
+                loadChats();
+            } else if (status.status === 'auth_failure') {
+                showError('Falha na autenticação. Por favor, reinicie a conexão.');
+            } else if (status.status === 'disconnected') {
+                showQRCodeScreen();
+            }
+        }
+        
+        // Carregar lista de conversas
+        async function loadChats() {
+            try {
+                const response = await fetch('/admin/whatsapp/chats');
+                const data = await response.json();
+                
+                if (data.success && data.chats) {
+                    renderChats(data.chats);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar conversas:', error);
+            }
+        }
+        
+        // Renderizar lista de conversas
+        function renderChats(chats) {
+            const chatsList = document.getElementById('chatsList');
+            
+            if (chats.length === 0) {
+                chatsList.innerHTML = '<div style="text-align: center; padding: 2rem; color: #999;"><p>Nenhuma conversa encontrada</p></div>';
+                return;
+            }
+            
+            chatsList.innerHTML = chats.map((chat, index) => {
+                const safeName = chat.name.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
+                const safeLastMessage = chat.lastMessage ? chat.lastMessage.body.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ') : '';
+                return `
+                    <div class="chat-item" onclick="selectChat('${chat.id}', '${safeName}', this)">
+                        <div class="chat-avatar">${chat.name.charAt(0).toUpperCase()}</div>
+                        <div class="chat-info">
+                            <div class="chat-name">${chat.name}</div>
+                            ${chat.lastMessage ? `<div class="chat-last-message">${safeLastMessage.substring(0, 50)}${safeLastMessage.length > 50 ? '...' : ''}</div>` : ''}
+                            ${chat.timestamp ? `<div class="chat-time">${formatTime(chat.timestamp * 1000)}</div>` : ''}
+                        </div>
+                        ${chat.unreadCount > 0 ? `<div style="background: #25D366; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700;">${chat.unreadCount}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Carregar mensagens
+        async function loadMessages(chatId) {
+            if (!chatId) return;
+            
+            try {
+                const response = await fetch(`/admin/whatsapp/chats/${encodeURIComponent(chatId)}/messages?limit=50&t=${Date.now()}`);
+                const data = await response.json();
+                
+                if (data.success && data.messages) {
+                    renderMessages(data.messages);
+                } else if (data.messages && data.messages.length === 0) {
+                    // Se retornou array vazio, ainda renderizar (pode ser chat sem LID)
+                    renderMessages([]);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar mensagens:', error);
+                // Não mostrar erro ao usuário, apenas logar
+            }
+        }
+        
+        // Renderizar mensagens
+        function renderMessages(messages) {
+            const messagesList = document.getElementById('messagesList');
+            
+            if (!messages || messages.length === 0) {
+                messagesList.innerHTML = '<div style="text-align: center; padding: 2rem; color: #999;"><p>Nenhuma mensagem ainda</p></div>';
+                return;
+            }
+            
+            // Ordenar mensagens por timestamp (mais antigas primeiro)
+            const sortedMessages = [...messages].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+            
+            // Guardar última mensagem para verificar se há novas
+            const lastMessageId = messagesList.querySelector('.message:last-child')?.dataset?.messageId;
+            const hasNewMessages = sortedMessages.length > 0 && 
+                sortedMessages[sortedMessages.length - 1].id !== lastMessageId;
+            
+            messagesList.innerHTML = sortedMessages.map(msg => {
+                const messageBody = msg.body || '';
+                const messageTime = msg.timestamp ? formatTime(msg.timestamp * 1000) : 'Agora';
+                return `
+                    <div class="message ${msg.fromMe ? 'from-me' : 'from-them'}" data-message-id="${msg.id || ''}">
+                        <div class="message-bubble">${escapeHtml(messageBody)}</div>
+                        <div class="message-time">${messageTime}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Scroll para o final apenas se houver novas mensagens ou se for a primeira renderização
+            const container = document.getElementById('messagesContainer');
+            if (hasNewMessages || !lastMessageId) {
+                setTimeout(() => {
+                    container.scrollTop = container.scrollHeight;
+                }, 100);
+            }
+        }
+        
+        let selectedFile = null;
+        let audioRecorder = null;
+        let audioChunks = [];
+        let recordingStartTime = null;
+        let recordingInterval = null;
+        
+        // Lidar com seleção de arquivo
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedFile = file;
+                showFilePreview(file.name);
+            }
+        }
+        
+        // Iniciar gravação de áudio
+        async function startAudioRecording(event) {
+            if (event) {
+                event.preventDefault();
+            }
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                
+                audioRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+                
+                audioRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/ogg; codecs=opus' });
+                    const audioFile = new File([audioBlob], 'audio.ogg', { type: 'audio/ogg; codecs=opus' });
+                    selectedFile = audioFile;
+                    
+                    // Parar o stream
+                    stream.getTracks().forEach(track => track.stop());
+                    
+                    // Mostrar preview
+                    showFilePreview('Áudio gravado');
+                    
+                    // Enviar automaticamente
+                    await sendAudioFile(audioFile);
+                };
+                
+                audioRecorder.start();
+                recordingStartTime = Date.now();
+                
+                // Mostrar status de gravação
+                document.getElementById('audioRecordingStatus').style.display = 'block';
+                document.getElementById('audioRecordButton').style.background = '#dc3545';
+                
+                // Atualizar tempo de gravação
+                recordingInterval = setInterval(() => {
+                    const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+                    const minutes = Math.floor(elapsed / 60);
+                    const seconds = elapsed % 60;
+                    document.getElementById('recordingTime').textContent = `Gravando... ${minutes}:${String(seconds).padStart(2, '0')}`;
+                }, 100);
+                
+            } catch (error) {
+                console.error('Erro ao iniciar gravação:', error);
+                alert('Erro ao acessar o microfone. Verifique as permissões.');
+            }
+        }
+        
+        // Parar gravação de áudio
+        function stopAudioRecording(event) {
+            if (event) {
+                event.preventDefault();
+            }
+            
+            if (audioRecorder && audioRecorder.state !== 'inactive') {
+                audioRecorder.stop();
+            }
+            
+            // Esconder status
+            document.getElementById('audioRecordingStatus').style.display = 'none';
+            document.getElementById('audioRecordButton').style.background = '#667eea';
+            
+            // Limpar intervalo
+            if (recordingInterval) {
+                clearInterval(recordingInterval);
+                recordingInterval = null;
+            }
+        }
+        
+        // Cancelar gravação
+        function cancelAudioRecording() {
+            if (audioRecorder && audioRecorder.state !== 'inactive') {
+                audioRecorder.stop();
+            }
+            
+            audioChunks = [];
+            selectedFile = null;
+            
+            // Esconder status
+            document.getElementById('audioRecordingStatus').style.display = 'none';
+            document.getElementById('audioRecordButton').style.background = '#667eea';
+            
+            // Limpar intervalo
+            if (recordingInterval) {
+                clearInterval(recordingInterval);
+                recordingInterval = null;
+            }
+        }
+        
+        // Enviar arquivo de áudio
+        async function sendAudioFile(audioFile) {
+            if (!currentChatId) return;
+            
+            const sendButton = document.getElementById('sendButton');
+            sendButton.disabled = true;
+            sendButton.textContent = 'Enviando áudio...';
+            
+            try {
+                const formData = new FormData();
+                formData.append('number', currentChatId);
+                // Enviar como 'file' - o backend detecta automaticamente se é áudio
+                formData.append('file', audioFile, 'audio.ogg');
+                
+                const response = await fetch('/admin/whatsapp/send', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    selectedFile = null;
+                    clearFileSelection();
+                    
+                    // Atualizar mensagens com polling frequente
+                    await refreshMessagesAfterSend();
+                } else {
+                    alert('Erro ao enviar áudio: ' + (data.error || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                console.error('Erro ao enviar áudio:', error);
+                alert('Erro ao enviar áudio: ' + error.message);
+            } finally {
+                sendButton.disabled = false;
+                sendButton.textContent = 'Enviar';
+            }
+        }
+        
+        // Mostrar preview do arquivo
+        function showFilePreview(fileName) {
+            const preview = document.getElementById('filePreview');
+            const fileNameSpan = document.getElementById('fileName');
+            fileNameSpan.textContent = fileName;
+            preview.style.display = 'block';
+        }
+        
+        // Limpar seleção de arquivo
+        function clearFileSelection() {
+            selectedFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('filePreview').style.display = 'none';
+        }
+        
+        // Enviar mensagem
+        async function sendMessage(event) {
+            event.preventDefault();
+            
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            const sendButton = document.getElementById('sendButton');
+            
+            if ((!message && !selectedFile) || !currentChatId) return;
+            
+            // Desabilitar botão
+            sendButton.disabled = true;
+            sendButton.textContent = 'Enviando...';
+            
+            try {
+                const formData = new FormData();
+                formData.append('number', currentChatId);
+                
+                if (selectedFile) {
+                    formData.append('file', selectedFile);
+                    if (message) {
+                        formData.append('caption', message);
+                    }
+                } else {
+                    formData.append('message', message);
+                }
+                
+                const response = await fetch('/admin/whatsapp/send', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    input.value = '';
+                    clearFileSelection();
+                    
+                    // Atualizar mensagens com polling frequente
+                    await refreshMessagesAfterSend();
+                } else {
+                    alert('Erro ao enviar mensagem: ' + (data.error || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                console.error('Erro ao enviar mensagem:', error);
+                alert('Erro ao enviar mensagem: ' + error.message);
+            } finally {
+                // Reabilitar botão
+                sendButton.disabled = false;
+                sendButton.textContent = 'Enviar';
+            }
+        }
+        
+        // Funções auxiliares
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return 'Agora';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)}min atrás`;
+            if (date.toDateString() === now.toDateString()) {
+                return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            }
+            return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Atualizar mensagens periodicamente quando um chat estiver selecionado
+        let messagesUpdateInterval;
+        function startMessagesUpdate() {
+            if (messagesUpdateInterval) clearInterval(messagesUpdateInterval);
+            messagesUpdateInterval = setInterval(() => {
+                if (currentChatId) {
+                    loadMessages(currentChatId);
+                }
+            }, 2000); // Atualizar a cada 2 segundos para tempo real
+        }
+        
+        // Atualizar mensagens após envio com polling mais frequente
+        async function refreshMessagesAfterSend() {
+            if (!currentChatId) return;
+            
+            // Atualizar imediatamente
+            await loadMessages(currentChatId);
+            
+            // Atualizar várias vezes para garantir que a mensagem apareça
+            for (let i = 0; i < 5; i++) {
+                setTimeout(async () => {
+                    await loadMessages(currentChatId);
+                    if (i === 4) {
+                        // Na última atualização, também atualizar a lista de chats
+                        await loadChats();
+                    }
+                }, (i + 1) * 500); // 500ms, 1s, 1.5s, 2s, 2.5s
+            }
+        }
+        
+        
+        // Mostrar erro
+        function showError(message) {
+            const errorText = document.getElementById('errorText');
+            if (message) {
+                errorText.textContent = message;
+            }
+            document.getElementById('errorMessage').style.display = 'flex';
+            document.getElementById('qrCodeScreen').style.display = 'none';
+            document.getElementById('whatsappConnected').style.display = 'none';
+        }
+        
+        // Fechar overlay de QR Code
+        function closeQROverlay() {
+            document.getElementById('qrCodeScreen').style.display = 'none';
+        }
+        
+        // Limpar intervalos ao sair da página
+        window.addEventListener('beforeunload', () => {
+            if (statusCheckInterval) clearInterval(statusCheckInterval);
+            if (qrCheckInterval) clearInterval(qrCheckInterval);
+        });
+        
+        // Função para abrir em nova aba (mantida para compatibilidade)
+        function openInNewTab() {
+            window.open('https://web.whatsapp.com', '_blank');
+        }
+        
+        // Função refresh (mantida para compatibilidade)
+        function refreshWhatsApp() {
+            restartWhatsApp();
+        }
+        
+        // Selecionar chat
+        window.selectChat = async function(chatId, chatName, element) {
+            currentChatId = chatId;
+            
+            // Atualizar UI
+            document.querySelectorAll('.chat-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            if (element) {
+                element.classList.add('active');
+            }
+            
+            // Mostrar área de mensagens
+            document.getElementById('noChatSelected').style.display = 'none';
+            document.getElementById('chatHeader').style.display = 'block';
+            document.getElementById('messagesContainer').style.display = 'block';
+            document.getElementById('messageInputContainer').style.display = 'block';
+            
+            // Atualizar cabeçalho
+            document.getElementById('chatName').textContent = chatName;
+            document.getElementById('chatAvatar').textContent = chatName.charAt(0).toUpperCase();
+            
+            // Carregar mensagens
+            await loadMessages(chatId);
+            startMessagesUpdate();
+        };
+    </script>
+</body>
+</html>
+

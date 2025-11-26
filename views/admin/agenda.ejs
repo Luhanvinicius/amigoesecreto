@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Agenda' %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 { font-size: 1.5rem; font-weight: 700; }
+        .header-nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .header-nav a:hover { 
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .agenda-controls {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .month-navigation {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .month-navigation button {
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: transform 0.2s;
+        }
+        .month-navigation button:hover {
+            transform: translateY(-2px);
+        }
+        .current-month {
+            font-size: 1.2rem;
+            font-weight: 600;
+            min-width: 200px;
+            text-align: center;
+        }
+        .agenda-view {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        .calendar-grid {
+            min-width: 1000px;
+        }
+        .calendar-header {
+            display: grid;
+            grid-template-columns: 100px repeat(7, 1fr);
+            border-bottom: 3px solid #e0e0e0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px 12px 0 0;
+        }
+        .calendar-header:first-of-type {
+            border-radius: 12px 12px 0 0;
+        }
+        .calendar-header:last-of-type {
+            border-radius: 0;
+            border-top: 2px solid #e0e0e0;
+        }
+        .time-column {
+            padding: 1rem;
+            font-weight: 700;
+            border-right: 2px solid #ddd;
+            color: #667eea;
+        }
+        .day-header {
+            padding: 1rem 0.75rem;
+            text-align: center;
+            border-right: 1px solid #e0e0e0;
+            border-bottom: 3px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .day-header:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+        .day-header.today {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+            color: #856404;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+        }
+        .day-header.today .day-number {
+            background: #ffc107;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+        .day-name {
+            font-size: 0.8rem;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .day-number {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+        }
+        .time-row {
+            display: grid;
+            grid-template-columns: 100px repeat(7, 1fr);
+            border-bottom: 1px solid #e8e8e8;
+            transition: background 0.2s;
+        }
+        .time-row:hover {
+            background: #fafbfc;
+        }
+        .time-label {
+            padding: 0.75rem 1rem;
+            text-align: right;
+            font-size: 0.9rem;
+            color: #667eea;
+            border-right: 2px solid #e0e0e0;
+            font-weight: 700;
+            background: #fafbfc;
+        }
+        .day-cell {
+            position: relative;
+            min-height: 45px;
+            border-right: 1px solid #e8e8e8;
+            padding: 0.3rem;
+        }
+        .day-cell.today {
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+        }
+        .appointment-block {
+            position: absolute;
+            left: 3px;
+            right: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+            z-index: 5;
+            overflow: visible;
+            border-left: 3px solid rgba(255,255,255,0.5);
+            word-wrap: break-word;
+        }
+        .appointment-block:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+        }
+        .appointment-time {
+            font-weight: 700;
+            font-size: 0.7rem;
+            margin-bottom: 0.2rem;
+            opacity: 0.95;
+        }
+        .appointment-client {
+            font-size: 0.7rem;
+            opacity: 0.95;
+            white-space: normal;
+            overflow: visible;
+            font-weight: 600;
+            margin-bottom: 0.15rem;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+        .appointment-duration {
+            font-size: 0.65rem;
+            opacity: 0.85;
+            margin-top: 0.2rem;
+            background: rgba(255,255,255,0.2);
+            padding: 0.1rem 0.4rem;
+            border-radius: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>Agenda</h1>
+            <nav class="header-nav">
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/appointments">Agendamentos</a>
+                <a href="/admin/users">Usuários</a>
+                <a href="/admin/services">Serviços</a>
+                <a href="/admin/agenda">Agenda</a>
+                <a href="/admin/whatsapp">WhatsApp</a>
+                <a href="/logout">Sair</a>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="agenda-controls">
+            <div class="month-navigation">
+                <button onclick="changeMonth(-1)">← Mês Anterior</button>
+                <div class="current-month" id="currentMonth">
+                    <%= new Date(currentYear, currentMonth - 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }) %>
+                </div>
+                <button onclick="changeMonth(1)">Próximo Mês →</button>
+            </div>
+            <div>
+                <button onclick="goToToday()" style="padding: 0.5rem 1rem; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    Hoje
+                </button>
+            </div>
+        </div>
+        
+        <div class="agenda-view">
+            <div class="calendar-grid">
+                <!-- Cabeçalho dos dias da semana -->
+                <div class="calendar-header">
+                    <div class="time-column"></div>
+                    <% 
+                    const daysOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+                    const today = new Date();
+                    const firstDay = new Date(currentYear, currentMonth - 1, 1);
+                    const lastDay = new Date(currentYear, currentMonth, 0);
+                    const daysInMonth = lastDay.getDate();
+                    const startDay = firstDay.getDay();
+                    
+                    // Criar array de dias do mês
+                    const monthDays = [];
+                    for (let i = 0; i < startDay; i++) {
+                        monthDays.push(null);
+                    }
+                    for (let i = 1; i <= daysInMonth; i++) {
+                        monthDays.push(i);
+                    }
+                    
+                    // Preencher até completar semanas
+                    while (monthDays.length % 7 !== 0) {
+                        monthDays.push(null);
+                    }
+                    
+                    // Mostrar cabeçalho dos dias - sempre 7 colunas (Domingo a Sábado)
+                    // Mostrar os nomes dos dias da semana fixos
+                    for (let i = 0; i < 7; i++) {
+                        %>
+                        <div class="day-header" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+                            <div class="day-name"><%= daysOfWeek[i] %></div>
+                            <div class="day-number" style="font-size: 0.9rem; color: #999;">-</div>
+                        </div>
+                        <%
+                    }
+                    %>
+                </div>
+                
+                <!-- Cabeçalho com números dos dias -->
+                <div class="calendar-header" style="border-top: 2px solid #e0e0e0;">
+                    <div class="time-column"></div>
+                    <% for (let week = 0; week < Math.ceil(monthDays.length / 7); week++) { %>
+                        <% for (let day = 0; day < 7; day++) { %>
+                            <% const dayIndex = week * 7 + day; %>
+                            <% if (dayIndex < monthDays.length && monthDays[dayIndex] !== null) { %>
+                                <% 
+                                const dayNum = monthDays[dayIndex];
+                                const currentDate = new Date(currentYear, currentMonth - 1, dayNum);
+                                const isToday = currentDate.toDateString() === today.toDateString();
+                                %>
+                                <div class="day-header <%= isToday ? 'today' : '' %>" 
+                                     onclick="viewDay(<%= dayNum %>, <%= currentMonth %>, <%= currentYear %>)"
+                                     style="cursor: pointer; border-top: none;"
+                                     title="Clique para ver agenda do dia <%= dayNum %>">
+                                    <div class="day-number"><%= dayNum %></div>
+                                </div>
+                            <% } else { %>
+                                <div class="day-header" style="opacity: 0.3; border-top: none;">
+                                    <div class="day-number">-</div>
+                                </div>
+                            <% } %>
+                        <% } %>
+                    <% } %>
+                </div>
+                
+                <!-- Grade de horários (8h às 20h) -->
+                <% for (let hour = 8; hour < 20; hour++) { %>
+                    <div class="time-row">
+                        <div class="time-label"><%= String(hour).padStart(2, '0') %>:00</div>
+                        <% for (let week = 0; week < Math.ceil(monthDays.length / 7); week++) { %>
+                            <% for (let day = 0; day < 7; day++) { %>
+                                <% const dayIndex = week * 7 + day; %>
+                                <% if (dayIndex < monthDays.length && monthDays[dayIndex] !== null) { %>
+                                    <% 
+                                    const dayNum = monthDays[dayIndex];
+                                    const dateKey = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+                                    const dayAppointments = appointments[dateKey] || [];
+                                    const currentDate = new Date(currentYear, currentMonth - 1, dayNum);
+                                    const isToday = currentDate.toDateString() === today.toDateString();
+                                    %>
+                                    <div class="day-cell <%= isToday ? 'today' : '' %>"
+                                         onclick="viewDay(<%= dayNum %>, <%= currentMonth %>, <%= currentYear %>)"
+                                         style="cursor: pointer;">
+                                        <% 
+                                        dayAppointments.forEach(function(apt) {
+                                            const aptTime = new Date('2000-01-01T' + apt.appointment_time);
+                                            const aptHour = aptTime.getHours();
+                                            const aptMinute = aptTime.getMinutes();
+                                            const duration = apt.service_duration || 30;
+                                            
+                                            // Se o agendamento começa nesta hora
+                                            if (aptHour === hour) {
+                                                const topOffset = (aptMinute / 60) * 45; // offset em pixels (proporcional à altura reduzida)
+                                                const height = Math.max((duration / 60) * 45, 35); // altura em pixels
+                                                %>
+                                                <div class="appointment-block" 
+                                                     style="top: <%= topOffset %>px; 
+                                                            height: <%= height %>px;"
+                                                     onclick="event.stopPropagation();"
+                                                     title="<%= apt.user_name || 'Cliente' %> - <%= apt.service_name %> - <%= duration %> min - <%= apt.appointment_time %>">
+                                                    <div class="appointment-time">
+                                                        <%= String(aptHour).padStart(2, '0') %>:<%= String(aptMinute).padStart(2, '0') %>
+                                                    </div>
+                                                    <div class="appointment-client">
+                                                        <%= apt.user_name || 'N/A' %>
+                                                    </div>
+                                                    <div class="appointment-duration">
+                                                        <%= duration %> min
+                                                    </div>
+                                                </div>
+                                                <%
+                                            }
+                                        });
+                                        %>
+                                    </div>
+                                <% } else { %>
+                                    <div class="day-cell" style="opacity: 0.3;"></div>
+                                <% } %>
+                            <% } %>
+                        <% } %>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function changeMonth(delta) {
+            const currentMonth = <%= currentMonth %>;
+            const currentYear = <%= currentYear %>;
+            let newMonth = currentMonth + delta;
+            let newYear = currentYear;
+            
+            if (newMonth < 1) {
+                newMonth = 12;
+                newYear--;
+            } else if (newMonth > 12) {
+                newMonth = 1;
+                newYear++;
+            }
+            
+            window.location.href = `/admin/agenda?month=${newMonth}&year=${newYear}`;
+        }
+        
+        function goToToday() {
+            const today = new Date();
+            window.location.href = `/admin/agenda?month=${today.getMonth() + 1}&year=${today.getFullYear()}`;
+        }
+        
+        function viewDay(day, month, year) {
+            window.location.href = `/admin/agenda?day=${day}&month=${month}&year=${year}`;
+        }
+    </script>
+</body>
+</html>
+

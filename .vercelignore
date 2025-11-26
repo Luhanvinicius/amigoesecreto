@@ -1,0 +1,40 @@
+# Arquivos e pastas que NÃO devem ser enviados para o Vercel
+
+# WhatsApp Session (não funciona no Vercel mesmo)
+whatsapp-session/
+
+# Node modules (será instalado no Vercel)
+node_modules/
+
+# Arquivos de desenvolvimento
+*.log
+*.md
+!.vercelignore
+!VERCEL_DEPLOY.md
+
+# Arquivos de ambiente local
+.env
+.env.local
+.env.development
+
+# Arquivos temporários
+*.tmp
+*.temp
+.DS_Store
+
+# Scripts locais
+scripts/
+
+# Documentação
+INSTRUCOES_*.md
+CONFIGURACAO_*.md
+README*.md
+SOLUCAO_*.md
+TESTE_*.md
+
+# Uploads locais (se houver)
+uploads/
+
+# Arquivos de configuração local do IDE
+.vscode/
+.idea/

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Agenda do Dia' %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 { font-size: 1.5rem; font-weight: 700; }
+        .header-nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .header-nav a:hover { 
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .day-header-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .day-header-card h2 {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        .day-header-card .date-info {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+        .agenda-day-view {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .time-slot {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+        .time-slot:hover {
+            background: #f8f9fa;
+        }
+        .time-label {
+            padding: 1.5rem;
+            text-align: right;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #667eea;
+            border-right: 2px solid #f0f0f0;
+            background: #fafbfc;
+        }
+        .appointments-container {
+            padding: 1.5rem;
+            min-height: 80px;
+        }
+        .appointment-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .appointment-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+        .appointment-item:last-child {
+            margin-bottom: 0;
+        }
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        .appointment-time {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .appointment-duration {
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .appointment-client {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .appointment-service {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0.25rem;
+        }
+        .appointment-contact {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+        .empty-day {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+        }
+        .empty-day-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        .empty-day-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>Agenda do Dia</h1>
+            <nav class="header-nav">
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/appointments">Agendamentos</a>
+                <a href="/admin/users">Usuários</a>
+                <a href="/admin/services">Serviços</a>
+                <a href="/admin/agenda">Agenda</a>
+                <a href="/logout">Sair</a>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="day-header-card">
+            <h2><%= new Date(selectedDate).toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) %></h2>
+            <div class="date-info">
+                <%= String(selectedDay).padStart(2, '0') %>/<%= String(selectedMonth).padStart(2, '0') %>/<%= selectedYear %>
+            </div>
+            <a href="/admin/agenda?month=<%= selectedMonth %>&year=<%= selectedYear %>" class="back-button">
+                ← Voltar para Agenda Mensal
+            </a>
+        </div>
+        
+        <div class="agenda-day-view">
+            <% if (appointments.length === 0) { %>
+                <div class="empty-day">
+                    <div class="empty-day-icon">📅</div>
+                    <div class="empty-day-text">Nenhum agendamento para este dia</div>
+                </div>
+            <% } else { %>
+                <% for (let hour = 8; hour < 20; hour++) { %>
+                    <% 
+                    const hourAppointments = appointments.filter(apt => {
+                        const aptTime = new Date('2000-01-01T' + apt.appointment_time);
+                        return aptTime.getHours() === hour;
+                    });
+                    %>
+                    <% if (hourAppointments.length > 0) { %>
+                        <div class="time-slot">
+                            <div class="time-label">
+                                <%= String(hour).padStart(2, '0') %>:00
+                            </div>
+                            <div class="appointments-container">
+                                <% hourAppointments.forEach(function(apt) { %>
+                                    <div class="appointment-item">
+                                        <div class="appointment-header">
+                                            <div class="appointment-time">
+                                                <%= apt.appointment_time.substring(0, 5) %>
+                                            </div>
+                                            <div class="appointment-duration">
+                                                <%= apt.service_duration || 30 %> min
+                                            </div>
+                                        </div>
+                                        <div class="appointment-client">
+                                            👤 <%= apt.user_name || 'N/A' %>
+                                        </div>
+                                        <div class="appointment-service">
+                                            📋 <%= apt.service_name || 'N/A' %>
+                                        </div>
+                                        <% if (apt.user_contact) { %>
+                                            <div class="appointment-contact">
+                                                📞 <%= apt.user_contact %>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                <% }); %>
+                            </div>
+                        </div>
+                    <% } %>
+                <% } %>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>
+
+

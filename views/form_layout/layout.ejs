@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="author" content="form-one">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <meta name="csrf-token" content="<%= csrfToken || 'csrf-token' %>">
+    <title><%= business.name %></title>
+    <meta name="description" content="form-one">
+    <meta name="keywords" content="form-one">
+    <link rel="icon" href="<%= asset('form_layouts/' + business.layouts + '/images/favicon.png') %>">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<%= asset('form_layouts/' + business.layouts + '/css/main-style.css') %>">
+    <link rel="stylesheet" href="<%= asset('form_layouts/' + business.layouts + '/css/responsive.css') %>">
+    <link rel="stylesheet" href="<%= asset('module_assets/loader.css') %>">
+    <link rel="stylesheet" href="<%= asset('assets/css/bootstrap-datepicker.min.css') %>">
+
+    <!-- PWA -->
+    <meta name="mobile-wep-app-capable" content="yes">
+    <meta name="apple-mobile-wep-app-capable" content="yes">
+    <meta name="msapplication-starturl" content="/">
+    <% if (business.enable_pwa === 'on') { %>
+        <link rel="manifest" href="<%= asset('uploads/theme_app/business_' + business.id + '/manifest.json') %>" />
+    <% } %>
+
+    <style>
+        #paiementpro-info .radio-group label::before,
+        #paiementpro-info .radio-group label::after {
+            display: none;
+        }
+        
+        /* Garantir que tabs inativos estejam escondidos e seus campos não sejam validados */
+        .tabs-container .tab-content {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
+        }
+        
+        .tabs-container .tab-content.active {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            height: auto !important;
+            overflow: visible !important;
+        }
+        
+        /* Desabilitar validação HTML5 em campos escondidos */
+        .tabs-container .tab-content:not(.active) input[required],
+        .tabs-container .tab-content:not(.active) select[required],
+        .tabs-container .tab-content:not(.active) textarea[required] {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body class="form-one Formlayout1-<%= business.theme_color %>">
+    <%- include('../web_layouts/appointment-tracking') %>
+
+    <% if (typeof content !== 'undefined') { %>
+        <%- content %>
+    <% } else if (typeof body !== 'undefined') { %>
+        <%- body %>
+    <% } else { %>
+        <%- include('../form_layout/Formlayout1/form-content') %>
+    <% } %>
+
+    <div class="top-0 p-3 position-fixed end-0" style="z-index: 99999">
+        <div id="liveToast" class="text-white toast fade" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body"></div>
+                <button type="button" class="m-auto btn-close btn-close-white me-2" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loader" class="loader-wrappers" style="display: none;">
+        <span class="site-loaders"></span>
+        <h4 class="loader-content"><%= __('Loading . . .') %></h4>
+    </div>
+
+    <script src="<%= asset('form_layouts/' + business.layouts + '/js/jquery.min.js') %>"></script>
+    <script src="<%= asset('form_layouts/' + business.layouts + '/js/custom.js') %>"></script>
+    <script src="<%= asset('assets/js/custom-bootstrap.js') %>"></script>
+    <script src="<%= asset('assets/js/bootstrap-datepicker.js') %>"></script>
+    <script src="<%= asset('assets/js/plugins/bootstrap.min.js') %>"></script>
+    <script src="<%= asset('module_assets/loader.js') %>"></script>
+    <script src="<%= asset('js/custom.js') %>"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Função para remover required de campos escondidos
+            function removeRequiredFromHiddenFields() {
+                $('#appointment-form .tab-content').each(function() {
+                    var $tab = $(this);
+                    var isActive = $tab.hasClass('active') && $tab.css('display') !== 'none';
+                    
+                    if (!isActive) {
+                        // Remover required de todos os campos deste tab não ativo
+                        $tab.find('input[required], select[required], textarea[required]').each(function() {
+                            var $field = $(this);
+                            if (!$field.attr('data-was-required')) {
+                                $field.attr('data-was-required', 'true');
+                            }
+                            $field.prop('required', false);
+                            // NÃO desabilitar aqui - apenas remover required
+                        });
+                    } else {
+                        // Restaurar required nos campos do tab ativo e garantir que estão habilitados
+                        $tab.find('[data-was-required="true"]').each(function() {
+                            var $field = $(this);
+                            $field.prop('required', true);
+                            $field.removeAttr('data-was-required');
+                        });
+                        // CRÍTICO: Garantir que TODOS os campos do tab ativo estão habilitados e editáveis
+                        $tab.find('input, select, textarea').prop('disabled', false).prop('readonly', false);
+                    }
+                });
+            }
+            
+            // Executar ao carregar
+            removeRequiredFromHiddenFields();
+            
+            // Inicializar niceSelect
+            if (typeof $.fn.niceSelect === 'function') {
+                $('select').niceSelect();
+            }
+            
+            // Pré-selecionar serviço se vier na URL
+            <% if (typeof selectedService !== 'undefined' && selectedService) { %>
+            setTimeout(function() {
+                var selectedServiceId = '<%= selectedService %>';
+                $('#serviceSelect').val(selectedServiceId);
+                if (typeof $('#serviceSelect').niceSelect === 'function') {
+                    $('#serviceSelect').niceSelect('update');
+                }
+                $('#serviceSelect').trigger('change');
+            }, 300);
+            <% } %>
+            
+            //service & location wise staff dropdown start
+            $('#serviceSelect, #locationSelect').change(function() {
+                var serviceValue = $('#serviceSelect').val();
+                var locationValue = $('#locationSelect').val();
+
+                if (serviceValue && locationValue) {
+                    fetchStaffData(serviceValue, locationValue);
+                } else {
+                    $('#staffSelect').empty();
+                }
+            });
+
+            function fetchStaffData(serviceId, locationId) {
+                $('#loader').fadeIn();
+                $.ajax({
+                    url: '/api/appointments/staff/data',
+                    method: 'GET',
+                    data: {
+                        service: serviceId,
+                        location: locationId
+                    },
+                    success: function(response) {
+                        $('#loader').fadeOut();
+                        updateStaffDropdown(response);
+                    },
+                    error: function() {
+                        $('#loader').fadeOut();
+                    }
+                });
+            }
+
+            function updateStaffDropdown(staffData) {
+                var staffSelect = $('#staffSelect');
+                staffSelect.empty();
+                staffSelect.append($('<option>', {
+                    value: '',
+                    text: '<%= __('Select staff') %>'
+                }));
+                $.each(staffData, function(index, staff) {
+                    staffSelect.append($('<option>', {
+                        value: staff.user.id,
+                        text: staff.name
+                    }));
+                });
+                // Atualizar niceSelect se estiver disponível
+                if (typeof staffSelect.niceSelect === 'function') {
+                    staffSelect.niceSelect('update');
+                }
+            }
+            
+            // Inicializar niceSelect nos selects
+            if (typeof $.fn.niceSelect === 'function') {
+                $('select').niceSelect();
+            }
+
+            // Datepicker
+            var daysOfWeek = [];
+            var unavailableDates = [];
+
+            $('#datepicker').datepicker({
+                startDate: '+0d',
+                format: 'dd-mm-yyyy',
+                autoclose: true,
+                daysOfWeekDisabled: daysOfWeek,
+                datesDisabled: unavailableDates
+            });
+
+            // TimeSlot duration
+            $('#serviceSelect').change(function() {
+                var selectedService = $(this).val();
+                var selectedDate = $('#datepicker').val();
+                appointmentTimeSlot(selectedService, selectedDate);
+            });
+
+            $('#datepicker').on('changeDate', function() {
+                var selectedService = $('#serviceSelect').val();
+                var selectedDate = $(this).val();
+                appointmentTimeSlot(selectedService, selectedDate);
+            });
+
+            function appointmentTimeSlot(serviceId, date) {
+                if (!serviceId || !date) return;
+
+                $('#loader').fadeIn();
+                $.ajax({
+                    url: '/api/appointments/duration',
+                    method: 'POST',
+                    data: {
+                        service_id: serviceId,
+                        date: date
+                    },
+                    success: function(response) {
+                        $('#loader').fadeOut();
+                        if (response.success && response.timeSlots) {
+                            renderTimeSlots(response.timeSlots);
+                        }
+                    },
+                    error: function() {
+                        $('#loader').fadeOut();
+                    }
+                });
+            }
+
+            // Variável global para armazenar os timeSlots atuais
+            var currentTimeSlots = [];
+            
+            function renderTimeSlots(timeSlots) {
+                var container = $('#timeSlotsContainer');
+                container.empty();
+                
+                // Armazenar os timeSlots para validação posterior
+                currentTimeSlots = timeSlots || [];
+                
+                if (timeSlots.length === 0) {
+                    container.append('<li style="color: #666; padding: 1rem;">Nenhum horário disponível para esta data.</li>');
+                    return;
+                }
+                
+                timeSlots.forEach(function(slot) {
+                    var li = $('<li>').addClass('checkbox-custom');
+                    
+                    if (slot.available) {
+                        // Horário disponível
+                        var input = $('<input>').attr({
+                            type: 'radio',
+                            name: 'appointment_time',
+                            id: 'time_' + slot.time.replace(':', '_'),
+                            value: slot.time
+                        });
+                        var label = $('<label>').attr('for', 'time_' + slot.time.replace(':', '_'))
+                            .html('<svg>...</svg><span>' + slot.time + '</span>');
+                        
+                        li.append(input).append(label);
+                    } else {
+                        // Horário indisponível (já agendado)
+                        li.addClass('unavailable-slot');
+                        var label = $('<label>').css({
+                            'opacity': '0.6',
+                            'cursor': 'not-allowed',
+                            'background-color': '#ffebee',
+                            'border-color': '#f44336',
+                            'color': '#c62828',
+                            'pointer-events': 'none'
+                        }).html('<svg>...</svg><span>' + slot.time + ' (Indisponível)</span>');
+                        
+                        li.append(label);
+                    }
+                    
+                    container.append(li);
+                });
+            }
+
+            // Service selection
+            var services = <%- JSON.stringify(services || []) %>;
+            
+            $('#serviceSelect').on('change', function() {
+                var selectedId = $(this).val();
+                var selectedService = services.find(service => service.id == selectedId);
+                var freeService = selectedService ? selectedService.is_free : false;
+                
+                if (freeService == '1') {
+                    $('.payment-method-form').addClass('d-none');
+                    $('.free-appointment').removeClass('d-none');
+                    var text = '<%= __('This service is completely free of charge! Simply click the Finish button to complete the process and book your service.') %>';
+                    $('.free-appointment').html(text);
+                } else {
+                    $('.free-appointment').addClass('d-none');
+                    $('.payment-method-form').removeClass('d-none');
+                    if (selectedService) {
+                        // currencySetting já vem como string JSON do servidor (JSON.stringify no controller)
+                        // O EJS vai inserir a string JSON diretamente no código JavaScript como string literal
+                        // Precisamos garantir que seja tratado como string, não como objeto
+                        var currencySettingStr = <%- JSON.stringify(currencySetting) %>;
+                        // formatCurrency espera uma string JSON que será parseada internamente
+                        try {
+                            $('#serviceAmount').html('<%= __('Total Amount: ') %>' + formatCurrency(selectedService.price, currencySettingStr));
+                        } catch(e) {
+                            console.error('Erro ao formatar moeda:', e, 'currencySetting type:', typeof currencySettingStr, 'value:', currencySettingStr);
+                            // Fallback simples
+                            var price = parseFloat(selectedService.price || 0);
+                            $('#serviceAmount').html('<%= __('Total Amount: ') %>R$ ' + price.toFixed(2).replace('.', ','));
+                        }
+                    }
+                }
+            });
+
+            $('.payment_method').change(function() {
+                var paymentMethod = $('input[name="payment_method"]:checked').data('payment');
+                $('input[name="payment"]').val(paymentMethod);
+            });
+
+            $('#appointment-form').on('change', function(e) {
+                var paymentAction = $('[data-payment-action]:checked').data("payment-action");
+                var action = '/appointments/book';
+                if (paymentAction) {
+                    action = paymentAction;
+                    $("#appointment-form").attr("action", paymentAction);
+                }
+            });
+
+            // Form submission
+            $(document).on('submit', '#appointment-form', function(e) {
+                e.preventDefault();
+                
+                var $form = $(this);
+                
+                // CRÍTICO: Remover required de TODOS os campos escondidos ANTES de qualquer validação
+                // Isso deve ser feito ANTES de qualquer outra validação para evitar erro do HTML5
+                // Isso evita o erro "invalid form control is not focusable"
+                // Primeiro, encontrar qual tab está ativo
+                var activeTabId = $('#selected_tab').val() || 'new-user';
+                var $activeTab = $form.find('.tab-content.active, .tab-content[id="' + activeTabId + '"]').first();
+                
+                console.log('🔍 Tab ativo identificado:', activeTabId);
+                console.log('   Tab element encontrado:', $activeTab.length > 0);
+                
+                // Remover required de TODOS os campos de TODOS os tabs primeiro
+                $form.find('.tab-content').each(function() {
+                    var $tab = $(this);
+                    var isActiveTab = $tab.hasClass('active') || $tab.attr('id') === activeTabId;
+                    
+                    // Se NÃO é o tab ativo, remover required de todos os campos
+                    if (!isActiveTab) {
+                        $tab.find('input[required], select[required], textarea[required]').each(function() {
+                            var $field = $(this);
+                            $field.prop('required', false);
+                            $field.attr('data-was-required', 'true');
+                            console.log('   ❌ Removido required de campo escondido:', $field.attr('name') || $field.attr('id'));
+                        });
+                    } else {
+                        // Se é o tab ativo, garantir que os campos têm required se necessário
+                        console.log('   ✅ Mantendo required nos campos do tab ativo:', $tab.attr('id'));
+                    }
+                });
+                
+                // Também remover required de campos fora de tabs que estão escondidos
+                $form.find('input[required], select[required], textarea[required]').not('.tab-content input, .tab-content select, .tab-content textarea').each(function() {
+                    var $field = $(this);
+                    if ($field.css('display') === 'none' || $field.css('visibility') === 'hidden' || !$field.is(':visible')) {
+                        $field.prop('required', false);
+                        $field.attr('data-was-required', 'true');
+                    }
+                });
+                
+                // IMPORTANTE: Desabilitar TODOS os campos de tabs não ativos para que não sejam enviados
+                $form.find('.tab-content').each(function() {
+                    var $tab = $(this);
+                    var isActiveTab = $tab.hasClass('active');
+                    
+                    if (!isActiveTab) {
+                        // Desabilitar todos os campos deste tab não ativo
+                        $tab.find('input, select, textarea').each(function() {
+                            var $field = $(this);
+                            if (!$field.prop('disabled')) {
+                                $field.prop('disabled', true);
+                                $field.attr('data-was-disabled', 'false'); // Marcar que foi desabilitado por nós
+                            }
+                        });
+                    }
+                });
+                
+                console.log('✅ Campos de tabs não ativos desabilitados');
+                
+                // Validar apenas campos visíveis e com required
+                var isValid = true;
+                var firstInvalid = null;
+                
+                $form.find('input[required]:visible, select[required]:visible, textarea[required]:visible').each(function() {
+                    var $field = $(this);
+                    // Verificar se realmente está visível
+                    if ($field.css('display') !== 'none' && $field.is(':visible')) {
+                        var value = $field.val();
+                        if (!value || (typeof value === 'string' && value.trim() === '')) {
+                            isValid = false;
+                            $field.addClass('error');
+                            if (!firstInvalid) {
+                                firstInvalid = $field;
+                            }
+                        }
+                    }
+                });
+                
+                if (!isValid) {
+                    alert('Por favor, preencha todos os campos obrigatórios');
+                    if (firstInvalid) {
+                        firstInvalid.focus();
+                    }
+                    // Restaurar required nos campos
+                    $form.find('[data-was-required="true"]').prop('required', true).removeAttr('data-was-required');
+                    return false;
+                }
+                
+                // Prevenir múltiplos envios
+                if ($form.data('submitting')) {
+                    console.log('⚠️ Formulário já está sendo enviado. Ignorando...');
+                    return false;
+                }
+                
+                // ÚLTIMA VERIFICAÇÃO: Remover required de TODOS os campos escondidos
+                var selectedTabId = $('#selected_tab').val() || 'new-user';
+                console.log('🔍 Última verificação - Tab ativo:', selectedTabId);
+                
+                // Remover required de TODOS os campos que não estão visíveis
+                $form.find('input[required], select[required], textarea[required]').each(function() {
+                    var $field = $(this);
+                    var isVisible = $field.is(':visible') && 
+                                   $field.css('display') !== 'none' && 
+                                   $field.css('visibility') !== 'hidden' &&
+                                   !$field.prop('disabled');
+                    
+                    // Verificar se está dentro de um tab não ativo
+                    var $parentTab = $field.closest('.tab-content');
+                    var isInActiveTab = false;
+                    
+                    if ($parentTab.length > 0) {
+                        var tabId = $parentTab.attr('id');
+                        isInActiveTab = $parentTab.hasClass('active') || tabId === selectedTabId;
+                    } else {
+                        // Campo não está em tab, considerar visível se estiver visível
+                        isInActiveTab = isVisible;
+                    }
+                    
+                    if (!isInActiveTab || !isVisible) {
+                        // Campo escondido - apenas remover required (não desabilitar para não bloquear interação)
+                        console.log('   ❌ Removendo required de campo escondido:', $field.attr('name') || $field.attr('id'));
+                        $field.prop('required', false);
+                        // NÃO desabilitar - apenas remover required para evitar validação HTML5
+                        $field.attr('data-was-required-removed', 'true');
+                    } else {
+                        // Campo visível e ativo - garantir que está habilitado
+                        $field.prop('disabled', false);
+                    }
+                });
+                
+                console.log('✅ Verificação completa - todos os campos escondidos tiveram required removido');
+                
+                // Marcar formulário como sendo enviado
+                $form.data('submitting', true);
+                
+                // Desabilitar botão de submit para evitar múltiplos cliques
+                var $submitBtn = $form.find('button[type="submit"], button.appointment_payment, #generate-payment-btn');
+                $submitBtn.prop('disabled', true);
+                
+                // IMPORTANTE: Buscar qual tab está realmente ativo no step de detalhes
+                var $detailsStep = $form.find('.step-container').has('.tabs-container');
+                var $activeTabContent = $detailsStep.find('.tab-content.active');
+                var actualActiveTabId = $activeTabContent.attr('id') || selectedTabId;
+                
+                console.log('🔍 Verificando tab ativo antes de enviar:');
+                console.log('   selectedTabId (do hidden):', selectedTabId);
+                console.log('   actualActiveTabId (do DOM):', actualActiveTabId);
+                
+                // Usar o tab que está realmente visível no DOM
+                var finalTabType = actualActiveTabId || selectedTabId || 'new-user';
+                
+                // Se não encontrou pelo DOM, tentar buscar pelo elemento ativo
+                if (!actualActiveTabId) {
+                    var $activeTabInStep = $form.find('.step-container .tab-content.active').first();
+                    if ($activeTabInStep.length > 0) {
+                        finalTabType = $activeTabInStep.attr('id') || finalTabType;
+                        console.log('   Tab ativo encontrado pelo step:', finalTabType);
+                    }
+                }
+                
+                // Garantir que o campo hidden type está atualizado
+                $form.find('input[type="hidden"][name="type"]').val(finalTabType);
+                $('#selected_tab').val(finalTabType); // Atualizar também o ID do campo
+                console.log('📝 Tipo final que será enviado:', finalTabType);
+                
+                // Verificar se o tipo está correto antes de enviar
+                if (finalTabType === 'existing-user' && (!$form.find('#email_existing').val() || !$form.find('#password_existing').val())) {
+                    alert('Por favor, preencha o e-mail e a senha para continuar.');
+                    $form.data('submitting', false);
+                    $submitBtn.prop('disabled', false);
+                    return false;
+                }
+                
+                var formData = $form.serialize();
+                
+                console.log('📤 Enviando formulário...');
+                console.log('   URL:', $form.attr('action') || '/appointments/book');
+                console.log('   Dados:', formData.substring(0, 200) + '...');
+                
+                $('#loader').fadeIn();
+                
+                $.ajax({
+                    url: $form.attr('action') || '/appointments/book',
+                    method: 'POST',
+                    data: formData,
+                    timeout: 30000, // 30 segundos de timeout
+                    success: function(response) {
+                        console.log('✅ Resposta recebida:', response);
+                        $('#loader').fadeOut();
+                        $form.data('submitting', false);
+                        $submitBtn.prop('disabled', false);
+                        
+                        if (response.success) {
+                            console.log('✅ Agendamento criado com sucesso!');
+                            console.log('   Appointment ID:', response.appointmentId);
+                            console.log('   Tem PIX QR Code:', !!response.pixQrCode);
+                            console.log('   Tem PIX Código:', !!response.pixCopiaECola);
+                            console.log('   Tem Asaas Payment ID:', !!response.asaasPaymentId);
+                            
+                            // Sempre redirecionar para página de pagamento PIX quando houver pagamento
+                            if (response.pixQrCode || response.pixCopiaECola || response.asaasPaymentId) {
+                                // Salvar dados do pagamento no sessionStorage para exibir na página
+                                sessionStorage.setItem('pixPayment', JSON.stringify({
+                                    qrCode: response.pixQrCode,
+                                    copiaECola: response.pixCopiaECola,
+                                    appointmentId: response.appointmentId,
+                                    value: response.value || null,
+                                    asaasPaymentId: response.asaasPaymentId
+                                }));
+                                
+                                // Redirecionar para página de pagamento PIX imediatamente
+                                var paymentUrl = '/appointments/<%= slug %>/payment/' + response.appointmentId;
+                                console.log('✅ Redirecionando para:', paymentUrl);
+                                
+                                // Usar window.location.replace para garantir redirecionamento
+                                window.location.replace(paymentUrl);
+                            } else if (response.paymentUrl) {
+                                // Redirecionar para URL de pagamento externa
+                                console.log('✅ Redirecionando para URL externa:', response.paymentUrl);
+                                window.location.replace(response.paymentUrl);
+                            } else {
+                                // Se não há pagamento (serviço gratuito), ir direto para página de conclusão
+                                var doneUrl = '/appointments/<%= slug %>/done/' + response.appointmentId;
+                                console.log('✅ Redirecionando para página de conclusão:', doneUrl);
+                                window.location.replace(doneUrl);
+                            }
+                        } else {
+                            console.error('❌ Erro na resposta:', response.message);
+                            alert(response.message || 'Erro ao processar agendamento');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#loader').fadeOut();
+                        $form.data('submitting', false);
+                        $submitBtn.prop('disabled', false);
+                        
+                        var errorMsg = 'Erro ao processar agendamento';
+                        var errorDetails = '';
+                        
+                        // Tentar extrair mensagem de erro detalhada
+                        if (xhr.responseJSON) {
+                            errorMsg = xhr.responseJSON.message || errorMsg;
+                            if (xhr.responseJSON.error) {
+                                errorDetails = '\n\nDetalhes: ' + (typeof xhr.responseJSON.error === 'string' ? xhr.responseJSON.error : JSON.stringify(xhr.responseJSON.error));
+                            }
+                        } else if (xhr.responseText) {
+                            try {
+                                var errorData = JSON.parse(xhr.responseText);
+                                errorMsg = errorData.message || errorMsg;
+                                if (errorData.error) {
+                                    errorDetails = '\n\nDetalhes: ' + (typeof errorData.error === 'string' ? errorData.error : JSON.stringify(errorData.error));
+                                }
+                            } catch(e) {
+                                errorMsg = xhr.responseText.substring(0, 200);
+                            }
+                        }
+                        
+                        // Verificar se foi timeout
+                        if (status === 'timeout') {
+                            errorMsg = 'Tempo de espera esgotado. Por favor, tente novamente.';
+                        }
+                        
+                        // Mostrar erro completo
+                        console.error('Erro completo:', xhr);
+                        console.error('Status:', status);
+                        console.error('Error:', error);
+                        alert(errorMsg + errorDetails + '\n\nVerifique o console do servidor para mais detalhes.');
+                    }
+                });
+                
+                // Retornar false para prevenir submit padrão
+                return false;
+            });
+            
+            // Navegação entre steps
+            var totalSteps = $(".steps li").length;
+            $(".steps li:nth-of-type(1)").addClass("active");
+            $(".myContainer .step-container:nth-of-type(1)").addClass("active");
+            
+            // Botão Next
+            $(".step-container").on("click", ".next", function() {
+                var currentStep = $(this).closest(".step-container");
+                var currentIndex = currentStep.index();
+                
+                // Validar campos obrigatórios antes de avançar
+                // IMPORTANTE: Validar apenas campos VISÍVEIS (do tab ativo ou campos sem tab)
+                var isValid = true;
+                var firstInvalidField = null;
+                
+                // Remover classes de erro anteriores
+                currentStep.find('input, select').removeClass('error');
+                
+                // Verificar se há tabs no step atual
+                var hasTabs = currentStep.find('.tab-content').length > 0;
+                
+                if (hasTabs) {
+                    // Se há tabs, validar apenas campos do tab ATIVO e VISÍVEL
+                    var activeTab = currentStep.find('.tab-content.active');
+                    
+                    if (activeTab.length === 0) {
+                        // Se não há tab ativo, tentar encontrar o primeiro visível
+                        activeTab = currentStep.find('.tab-content').filter(function() {
+                            return $(this).css('display') !== 'none';
+                        }).first();
+                    }
+                    
+                    if (activeTab.length > 0) {
+                        // Verificar se o tab está visível
+                        var tabDisplay = activeTab.css('display');
+                        var tabVisibility = activeTab.css('visibility');
+                        var tabOpacity = activeTab.css('opacity');
+                        
+                        // Validar apenas se o tab estiver realmente visível
+                        if (tabDisplay !== 'none' && tabVisibility !== 'hidden' && parseFloat(tabOpacity) > 0) {
+                            // Buscar apenas campos dentro do tab ativo
+                            activeTab.find('input[required], select[required]').each(function() {
+                                var $field = $(this);
+                                
+                                // Verificar se o campo está dentro de um tab visível
+                                var $parentTab = $field.closest('.tab-content');
+                                var parentDisplay = $parentTab.css('display');
+                                var parentVisibility = $parentTab.css('visibility');
+                                
+                                // Só validar se o campo está dentro do tab ativo e visível
+                                if ($parentTab.hasClass('active') && 
+                                    parentDisplay !== 'none' && 
+                                    parentVisibility !== 'hidden') {
+                                    var value = $field.val();
+                                    if (!value || (typeof value === 'string' && value.trim() === '')) {
+                                        isValid = false;
+                                        $field.addClass('error');
+                                        if (!firstInvalidField) {
+                                            firstInvalidField = $field;
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                } else {
+                    // Se não há tabs, validar todos os campos obrigatórios visíveis
+                    currentStep.find('input[required]:visible, select[required]:visible').each(function() {
+                        var $field = $(this);
+                        // Verificar se realmente está visível
+                        if ($field.css('display') !== 'none') {
+                            var value = $field.val();
+                            if (!value || value.trim() === '') {
+                                isValid = false;
+                                $field.addClass('error');
+                                if (!firstInvalidField) {
+                                    firstInvalidField = $field;
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                // Validar horário selecionado se estivermos no step de agendamento
+                if (currentStep.find('#timeSlotsContainer').length > 0) {
+                    var selectedTime = currentStep.find('input[name="appointment_time"]:checked').val();
+                    if (!selectedTime) {
+                        alert('Por favor, selecione um horário para o agendamento');
+                        return false;
+                    }
+                    
+                    // Verificar se o horário selecionado está disponível
+                    var timeSlotLi = currentStep.find('input[name="appointment_time"]:checked').closest('li');
+                    if (timeSlotLi.hasClass('unavailable-slot')) {
+                        alert('Este horário não está mais disponível. Por favor, selecione outro horário.');
+                        return false;
+                    }
+                }
+                
+                // NOTA: A validação de credenciais de usuário existente será feita no backend
+                // Não precisamos validar aqui para não bloquear o submit
+                
+                if (!isValid) {
+                    alert('Por favor, preencha todos os campos obrigatórios');
+                    if (firstInvalidField) {
+                        firstInvalidField.focus();
+                    }
+                    return;
+                }
+                
+                // Avançar step
+                if (currentIndex < $(".step-container").length - 1) {
+                    currentStep.removeClass("active").next().addClass("active");
+                    $(".steps li").eq(currentIndex).removeClass("active");
+                    $(".steps li").eq(currentIndex + 1).addClass("active");
+                }
+            });
+            
+            // Botão Back
+            $(".step-container").on("click", ".back", function() {
+                var currentStep = $(this).closest(".step-container");
+                var currentIndex = currentStep.index();
+                
+                if (currentIndex > 0) {
+                    currentStep.removeClass("active").prev().addClass("active");
+                    $(".steps li").eq(currentIndex).removeClass("active");
+                    $(".steps li").eq(currentIndex - 1).addClass("active");
+                }
+            });
+            
+            // Sistema de Tabs - Garantir que apenas um tab seja exibido
+            function initTabs() {
+                // Esconder todos os tabs que não estão ativos
+                $('.tab-content').each(function() {
+                    var $tab = $(this);
+                    if (!$tab.hasClass('active')) {
+                        $tab.css({
+                            'display': 'none',
+                            'visibility': 'hidden',
+                            'opacity': '0'
+                        });
+                        // IMPORTANTE: Remover required de campos em tabs inativos
+                        $tab.find('input[required], select[required], textarea[required]').each(function() {
+                            $(this).prop('required', false).attr('data-was-required', 'true');
+                        });
+                    } else {
+                        // Garantir que o tab ativo está visível
+                        $tab.css({
+                            'display': 'block',
+                            'visibility': 'visible',
+                            'opacity': '1'
+                        });
+                        // Restaurar required nos campos do tab ativo
+                        $tab.find('[data-was-required="true"]').prop('required', true).removeAttr('data-was-required');
+                    }
+                });
+            }
+            
+            // Inicializar tabs ao carregar (com delay para garantir que o DOM está pronto)
+            setTimeout(function() {
+                initTabs();
+            }, 200);
+            
+            // Controlar clique nos tabs
+            $(document).on("click", "ul.tabs li.tab-link", function(e) {
+                e.preventDefault();
+                var $this = $(this);
+                var $theTab = $this.attr("data-tab");
+                
+                if ($this.hasClass("active")) {
+                    return; // Já está ativo
+                }
+                
+                // Remover active de todos os tabs e conteúdos
+                $this.closest(".tabs-wrapper")
+                    .find("ul.tabs li.tab-link")
+                    .removeClass("active");
+                
+                // Esconder todos os tabs e remover required de seus campos
+                $this.closest(".tabs-wrapper")
+                    .find('.tabs-container .tab-content')
+                    .each(function() {
+                        var $tab = $(this);
+                        $tab.removeClass("active").css({
+                            'display': 'none',
+                            'visibility': 'hidden',
+                            'opacity': '0'
+                        });
+                        // Remover required de campos escondidos (mas NÃO desabilitar)
+                        $tab.find('input[required], select[required], textarea[required]').each(function() {
+                            $(this).prop('required', false).attr('data-was-required', 'true');
+                            // NÃO desabilitar - apenas remover required
+                        });
+                    });
+                
+                // Adicionar active no tab clicado e seu conteúdo
+                $this.addClass("active");
+                var $targetContent = $this.closest(".tabs-wrapper")
+                    .find('.tabs-container .tab-content[id="' + $theTab + '"]');
+                
+                $targetContent.addClass("active").css({
+                    'display': 'block',
+                    'visibility': 'visible',
+                    'opacity': '1'
+                });
+                
+                // Restaurar required nos campos do tab ativo
+                // Remover required de TODOS os campos de TODOS os tabs primeiro
+                $('#appointment-form .tab-content').each(function() {
+                    var $tab = $(this);
+                    if ($tab.attr('id') !== $theTab) {
+                        // Tab não ativo - remover required (mas NÃO desabilitar ainda)
+                        $tab.find('input[required], select[required], textarea[required]').each(function() {
+                            var $field = $(this);
+                            if (!$field.attr('data-was-required')) {
+                                $field.attr('data-was-required', 'true');
+                            }
+                            $field.prop('required', false);
+                            // NÃO desabilitar aqui - apenas remover required
+                        });
+                    }
+                });
+                
+                // Restaurar required e garantir que está habilitado no tab ativo
+                $targetContent.find('[data-was-required="true"]').each(function() {
+                    var $field = $(this);
+                    $field.prop('required', true);
+                    $field.removeAttr('data-was-required');
+                });
+                // CRÍTICO: Garantir que TODOS os campos do tab ativo estão habilitados e editáveis
+                $targetContent.find('input, select, textarea').prop('disabled', false).prop('readonly', false);
+                
+                // Atualizar campo hidden
+                $('#selected_tab').val($theTab);
+                
+                console.log('✅ Tab ativado:', $theTab, '- Campos habilitados');
+                
+                // Chamar função de limpeza para garantir
+                removeRequiredFromHiddenFields();
+                
+                // Limpar validações anteriores
+                $this.closest(".step-container").find('input, select').removeClass('error');
+            });
+            
+            // Validação de email - Verificar se já existe quando usuário digita no "Novo Cadastro"
+            var emailCheckTimeout;
+            $('#email_new').on('blur', function() {
+                var email = $(this).val().trim();
+                
+                if (!email || !email.includes('@')) {
+                    return; // Email inválido, não verificar
+                }
+                
+                // Limpar timeout anterior
+                clearTimeout(emailCheckTimeout);
+                
+                // Aguardar 500ms após parar de digitar
+                emailCheckTimeout = setTimeout(function() {
+                    $.ajax({
+                        url: '/api/appointments/check-user',
+                        method: 'POST',
+                        data: {
+                            email: email,
+                            password: '' // Não precisamos da senha para verificar se existe
+                        },
+                        success: function(response) {
+                            if (response.success && response.exists) {
+                                // Email já existe - mudar para tab "Já Tenho Conta"
+                                alert('Este e-mail já está cadastrado. Por favor, use a opção "Já Tenho Conta" para fazer login.');
+                                
+                                // Mudar para tab "Já Tenho Conta"
+                                $('ul.tabs li.tab-link[data-tab="existing-user"]').click();
+                                
+                                // Preencher o email no tab "Já Tenho Conta"
+                                $('#email_existing').val(email);
+                                
+                                // Limpar campos do "Novo Cadastro"
+                                $('#name_new').val('');
+                                $('#email_new').val('');
+                                $('#password').val('');
+                                $('#contact').val('');
+                            }
+                        },
+                        error: function() {
+                            // Erro na verificação, mas não bloquear
+                            console.log('Erro ao verificar email');
+                        }
+                    });
+                }, 500);
+            });
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Gerenciar Serviços' %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 { font-size: 1.5rem; }
+        .header-nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+        .header-nav a:hover { background: rgba(255,255,255,0.2); }
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+        table th, table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #666;
+        }
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>Gerenciar Serviços</h1>
+            <nav class="header-nav">
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/appointments">Agendamentos</a>
+                <a href="/admin/users">Usuários</a>
+                <a href="/admin/services">Serviços</a>
+                <a href="/admin/agenda">Agenda</a>
+                <a href="/admin/whatsapp">WhatsApp</a>
+                <a href="/logout">Sair</a>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="container">
+        <% if (typeof req !== 'undefined' && req.query && req.query.success) { %>
+        <div class="alert alert-success"><%= req.query.success %></div>
+        <% } %>
+        <% if (typeof req !== 'undefined' && req.query && req.query.error) { %>
+        <div class="alert alert-error"><%= req.query.error %></div>
+        <% } %>
+        
+        <div class="section">
+            <h2 style="margin-bottom: 1.5rem;">Adicionar/Editar Serviço</h2>
+            <form method="POST" action="/admin/services">
+                <input type="hidden" name="id" id="serviceId" value="">
+                <div class="form-group">
+                    <label for="name">Nome do Serviço</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price">Preço (R$)</label>
+                        <input type="number" id="price" name="price" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="duration">Duração (minutos)</label>
+                        <input type="number" id="duration" name="duration" min="0" value="30">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="description">Descrição</label>
+                    <textarea id="description" name="description" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar Serviço</button>
+                <button type="button" class="btn" onclick="clearForm()" style="background: #6c757d; color: white; margin-left: 1rem;">Limpar</button>
+            </form>
+        </div>
+        
+        <div class="section">
+            <h2>Serviços Cadastrados</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Preço</th>
+                        <th>Duração</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% services.forEach(function(service) { %>
+                    <tr>
+                        <td>#<%= service.id %></td>
+                        <td><%= service.name %></td>
+                        <td>R$ <%= parseFloat(service.price || 0).toFixed(2).replace('.', ',') %></td>
+                        <td><%= service.duration || 0 %> min</td>
+                        <td>
+                            <button onclick="editService(<%= JSON.stringify(service).replace(/"/g, '&quot;') %>)" 
+                                    style="padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; margin-right: 0.5rem;">
+                                Editar
+                            </button>
+                            <button onclick="deleteService(<%= service.id %>)" 
+                                    style="padding: 0.5rem 1rem; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                Deletar
+                            </button>
+                        </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        function editService(service) {
+            document.getElementById('serviceId').value = service.id;
+            document.getElementById('name').value = service.name;
+            document.getElementById('price').value = service.price;
+            document.getElementById('duration').value = service.duration || 30;
+            document.getElementById('description').value = service.description || '';
+            document.querySelector('h2').textContent = 'Editar Serviço';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function clearForm() {
+            document.getElementById('serviceId').value = '';
+            document.querySelector('form').reset();
+            document.querySelector('h2').textContent = 'Adicionar/Editar Serviço';
+        }
+        
+        async function deleteService(id) {
+            if (!confirm('Deseja realmente deletar este serviço?')) return;
+            
+            try {
+                const response = await fetch(`/admin/services/${id}/delete`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Serviço deletado com sucesso!');
+                    location.reload();
+                } else {
+                    alert('Erro ao deletar serviço: ' + (data.message || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                alert('Erro ao deletar serviço');
+            }
+        }
+    </script>
+</body>
+</html>
+

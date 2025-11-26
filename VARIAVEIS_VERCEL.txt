@@ -1,0 +1,91 @@
+=== VARIÁVEIS DE AMBIENTE PARA VERCEL ===
+
+Copie e cole estas variáveis no painel do Vercel:
+Settings → Environment Variables → Add New
+
+==========================================
+BANCO DE DADOS MYSQL (HOSTINGER)
+==========================================
+
+DB_HOST=srv848.hstgr.io
+DB_PORT=3306
+DB_USER=u342978456_appamigo
+DB_PASSWORD=+eO8dj=f@T
+DB_NAME=u342978456_appamigo
+
+==========================================
+SESSÃO E SEGURANÇA
+==========================================
+
+SESSION_SECRET=amigo-secreto-vercel-production-2024-key-ultra-segura-xyz123abc456def789ghi012jkl345mno678pqr901stu234vwx567yz
+
+⚠️ IMPORTANTE: Gere uma chave aleatória segura!
+Use: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+
+==========================================
+AMBIENTE E PORTA
+==========================================
+
+NODE_ENV=production
+PORT=3000
+
+==========================================
+ASAAS (PAGAMENTOS PIX)
+==========================================
+
+ASAAS_API_KEY=$aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmZjMDljMWE5LWFiZTQtNDQ2OC1iMzMxLTZhZjAxNzdjYmZiNjo6JGFhY2hfNzA5MmRmY2UtOTVjYS00OGY0LWFjN2MtMjcyM2I5YmQzZmJj
+
+⚠️ IMPORTANTE: Este é o token de SANDBOX/TESTE
+Para produção, substitua pelo token REAL do Asaas
+
+==========================================
+WHATSAPP (DESABILITADO NO VERCEL)
+==========================================
+
+ENABLE_WHATSAPP=false
+
+⚠️ IMPORTANTE: WhatsApp NÃO funciona no Vercel
+(Puppeteer não suportado em serverless)
+
+==========================================
+VERCEL (AUTOMÁTICO)
+==========================================
+
+VERCEL=true
+
+💡 Nota: Esta variável é definida automaticamente pelo Vercel
+
+==========================================
+INSTRUÇÕES
+==========================================
+
+1. Acesse: https://vercel.com/dashboard
+2. Selecione seu projeto
+3. Vá em: Settings → Environment Variables
+4. Clique em: Add New
+5. Adicione cada variável acima
+6. Selecione: Production, Preview e Development
+7. Salve e faça um novo deploy
+
+==========================================
+VERIFICAÇÕES
+==========================================
+
+✅ Todas as variáveis configuradas
+✅ SESSION_SECRET gerado (chave aleatória)
+✅ Firewall MySQL liberado para IPs do Vercel
+✅ ASAAS_API_KEY configurado (sandbox ou produção)
+✅ ENABLE_WHATSAPP=false
+
+==========================================
+GERAR SESSION_SECRET SEGURO
+==========================================
+
+Execute no terminal:
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+
+Ou use gerador online:
+https://www.random.org/strings/
+
+==========================================
+
