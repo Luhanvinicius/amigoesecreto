@@ -1,0 +1,149 @@
+=== TODAS AS VARIÁVEIS DE AMBIENTE PARA RENDER ===
+
+Copie e cole estas variáveis uma por uma no painel do Render:
+Settings → Environment → Add Environment Variable
+
+==========================================
+1. BANCO DE DADOS MYSQL (HOSTINGER)
+==========================================
+
+Key: DB_HOST
+Value: srv848.hstgr.io
+
+---
+
+Key: DB_PORT
+Value: 3306
+
+---
+
+Key: DB_USER
+Value: u342978456_appamigo
+
+---
+
+Key: DB_PASSWORD
+Value: +eO8dj=f@T
+
+---
+
+Key: DB_NAME
+Value: u342978456_appamigo
+
+==========================================
+2. SESSÃO E SEGURANÇA
+==========================================
+
+Key: SESSION_SECRET
+Value: amigo-secreto-render-production-2024-key-ultra-segura-xyz123abc456def789ghi012jkl345mno678pqr901stu234vwx567yz
+
+⚠️ IMPORTANTE: Use o botão "Generate" no Render para gerar uma chave aleatória segura!
+Ou gere localmente: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+
+==========================================
+3. AMBIENTE E PORTA
+==========================================
+
+Key: NODE_ENV
+Value: production
+
+---
+
+Key: PORT
+Value: 3000
+
+==========================================
+4. ASAAS (PAGAMENTOS PIX)
+==========================================
+
+Key: ASAAS_API_KEY
+Value: $aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmZjMDljMWE5LWFiZTQtNDQ2OC1iMzMxLTZhZjAxNrdjYmZiNjo6JGFhY2hfNzA5MmRmY2UtOTVjYS00OGY0LWFjN2MtMjcyM2I5YmQzZmJj
+
+⚠️ IMPORTANTE: Este é o token de SANDBOX/TESTE
+Para produção, substitua pelo token REAL do Asaas (começa com $aact_YTU5YTE0...)
+
+==========================================
+5. WHATSAPP (HABILITADO NO RENDER)
+==========================================
+
+Key: ENABLE_WHATSAPP
+Value: true
+
+✅ IMPORTANTE: WhatsApp FUNCIONA no Render!
+(Mantém processos persistentes)
+
+==========================================
+RESUMO RÁPIDO - TODAS AS VARIÁVEIS
+==========================================
+
+DB_HOST = srv848.hstgr.io
+DB_PORT = 3306
+DB_USER = u342978456_appamigo
+DB_PASSWORD = +eO8dj=f@T
+DB_NAME = u342978456_appamigo
+SESSION_SECRET = [GERE_UMA_CHAVE_ALEATORIA]
+NODE_ENV = production
+PORT = 3000
+ASAAS_API_KEY = $aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmZjMDljMWE5LWFiZTQtNDQ2OC1iMzMxLTZhZjAxNrdjYmZiNjo6JGFhY2hfNzA5MmRmY2UtOTVjYS00OGY0LWFjN2MtMjcyM2I5YmQzZmJj
+ENABLE_WHATSAPP = true
+
+==========================================
+CONFIGURAÇÃO ADICIONAL NO RENDER
+==========================================
+
+Além das variáveis, configure também:
+
+1. Root Directory: appointment-nodejs
+2. Build Command: npm install
+3. Start Command: node server.js
+4. Plan: Free (ou Starter se preferir)
+
+==========================================
+INSTRUÇÕES PASSO A PASSO
+==========================================
+
+1. No painel do Render, vá até a seção "Environment Variables"
+2. Para cada variável acima:
+   a) Clique em "+ Add Environment Variable"
+   b) Cole o "Key" no campo Key
+   c) Cole o "Value" no campo Value
+   d) Clique em "Save" ou "Add"
+3. Repita para todas as 9 variáveis
+4. Para SESSION_SECRET: Use o botão "Generate" no Render ou gere manualmente
+
+==========================================
+VERIFICAÇÕES FINAIS
+==========================================
+
+✅ DB_HOST configurado
+✅ DB_PORT configurado
+✅ DB_USER configurado
+✅ DB_PASSWORD configurado
+✅ DB_NAME configurado
+✅ SESSION_SECRET gerado (chave aleatória forte)
+✅ NODE_ENV = production
+✅ PORT = 3000
+✅ ASAAS_API_KEY configurado
+✅ ENABLE_WHATSAPP = true
+✅ Root Directory: appointment-nodejs
+✅ Build Command: npm install
+✅ Start Command: node server.js
+
+==========================================
+NOTAS IMPORTANTES
+==========================================
+
+⚠️ PLANO GRATUITO:
+- App "spins down" após 15 minutos de inatividade
+- Primeira requisição após spin down pode levar 30-60 segundos
+- Para evitar: use serviço de ping (uptimerobot.com)
+- Ou faça upgrade para Starter ($7/mês) para app sempre online
+
+✅ VANTAGENS DO RENDER:
+- WhatsApp funciona perfeitamente
+- Processos persistentes
+- WebSockets suportados
+- Ambiente similar a servidor tradicional
+
+==========================================
+

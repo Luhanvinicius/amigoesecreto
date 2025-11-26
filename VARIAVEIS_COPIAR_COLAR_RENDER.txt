@@ -1,0 +1,141 @@
+═══════════════════════════════════════════════════════════════
+  TODAS AS VARIÁVEIS DE AMBIENTE PARA RENDER
+  Copie e cole uma por uma no painel do Render
+═══════════════════════════════════════════════════════════════
+
+No painel do Render, vá em: "Environment Variables"
+Clique em: "+ Add Environment Variable" para cada uma
+
+═══════════════════════════════════════════════════════════════
+VARIÁVEL 1 - DB_HOST
+═══════════════════════════════════════════════════════════════
+Key: DB_HOST
+Value: srv848.hstgr.io
+
+═══════════════════════════════════════════════════════════════
+VARIÁVEL 2 - DB_PORT
+═══════════════════════════════════════════════════════════════
+Key: DB_PORT
+Value: 3306
+
+═══════════════════════════════════════════════════════════════
+VARIÁVEL 3 - DB_USER
+═══════════════════════════════════════════════════════════════
+Key: DB_USER
+Value: u342978456_appamigo
+
+═══════════════════════════════════════════════════════════════
+VARIÁVEL 4 - DB_PASSWORD
+═══════════════════════════════════════════════════════════════
+Key: DB_PASSWORD
+Value: +eO8dj=f@T
+
+═══════════════════════════════════════════════════════════════
+VARIÁVEL 5 - DB_NAME
+═══════════════════════════════════════════════════════════════
+Key: DB_NAME
+Value: u342978456_appamigo
+
+═══════════════════════════════════════════════════════════════
+VARIÁVEL 6 - SESSION_SECRET
+═══════════════════════════════════════════════════════════════
+Key: SESSION_SECRET
+Value: amigo-secreto-render-production-2024-key-ultra-segura-xyz123abc456def789ghi012jkl345mno678pqr901stu234vwx567yz
+
+⚠️ IMPORTANTE: 
+Use o botão "Generate" no Render para gerar uma chave segura aleatória
+OU gere manualmente com: 
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+
+═══════════════════════════════════════════════════════════════
+VARIÁVEL 7 - NODE_ENV
+═══════════════════════════════════════════════════════════════
+Key: NODE_ENV
+Value: production
+
+═══════════════════════════════════════════════════════════════
+VARIÁVEL 8 - PORT
+═══════════════════════════════════════════════════════════════
+Key: PORT
+Value: 3000
+
+═══════════════════════════════════════════════════════════════
+VARIÁVEL 9 - ASAAS_API_KEY
+═══════════════════════════════════════════════════════════════
+Key: ASAAS_API_KEY
+Value: $aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmZjMDljMWE5LWFiZTQtNDQ2OC1iMzMxLTZhZjAxNrdjYmZiNjo6JGFhY2hfNzA5MmRmY2UtOTVjYS00OGY0LWFjN2MtMjcyM2I5YmQzZmJj
+
+⚠️ IMPORTANTE: Este é o token de SANDBOX/TESTE
+Para produção real, substitua pelo token REAL do Asaas
+(Obtenha em: https://www.asaas.com/configuracoes/api-keys)
+
+═══════════════════════════════════════════════════════════════
+VARIÁVEL 10 - ENABLE_WHATSAPP
+═══════════════════════════════════════════════════════════════
+Key: ENABLE_WHATSAPP
+Value: true
+
+✅ WhatsApp FUNCIONA no Render (diferente do Vercel)
+
+═══════════════════════════════════════════════════════════════
+RESUMO - TODAS AS 10 VARIÁVEIS
+═══════════════════════════════════════════════════════════════
+
+1. DB_HOST = srv848.hstgr.io
+2. DB_PORT = 3306
+3. DB_USER = u342978456_appamigo
+4. DB_PASSWORD = +eO8dj=f@T
+5. DB_NAME = u342978456_appamigo
+6. SESSION_SECRET = [GERAR CHAVE ALEATÓRIA]
+7. NODE_ENV = production
+8. PORT = 3000
+9. ASAAS_API_KEY = $aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmZjMDljMWE5LWFiZTQtNDQ2OC1iMzMxLTZhZjAxNrdjYmZiNjo6JGFhY2hfNzA5MmRmY2UtOTVjYS00OGY0LWFjN2MtMjcyM2I5YmQzZmJj
+10. ENABLE_WHATSAPP = true
+
+═══════════════════════════════════════════════════════════════
+CONFIGURAÇÕES ADICIONAIS IMPORTANTES
+═══════════════════════════════════════════════════════════════
+
+Além das variáveis, configure também:
+
+✅ Root Directory: appointment-nodejs
+✅ Build Command: npm install
+✅ Start Command: node server.js
+✅ Plan: Free (ou Starter $7/mês para sempre online)
+
+═══════════════════════════════════════════════════════════════
+CHECKLIST FINAL
+═══════════════════════════════════════════════════════════════
+
+[ ] DB_HOST configurado
+[ ] DB_PORT configurado
+[ ] DB_USER configurado
+[ ] DB_PASSWORD configurado
+[ ] DB_NAME configurado
+[ ] SESSION_SECRET gerado (usar botão Generate)
+[ ] NODE_ENV = production
+[ ] PORT = 3000
+[ ] ASAAS_API_KEY configurado
+[ ] ENABLE_WHATSAPP = true
+[ ] Root Directory: appointment-nodejs
+[ ] Build Command: npm install
+[ ] Start Command: node server.js
+
+═══════════════════════════════════════════════════════════════
+OBSERVAÇÕES IMPORTANTES
+═══════════════════════════════════════════════════════════════
+
+⚠️ PLANO GRATUITO:
+- App "spins down" após 15 minutos de inatividade
+- Primeira requisição após spin down pode levar 30-60 segundos
+- Para evitar: use serviço de ping (ex: uptimerobot.com)
+- Ou faça upgrade para Starter ($7/mês) para app sempre online
+
+✅ VANTAGENS DO RENDER:
+- WhatsApp funciona perfeitamente
+- Processos persistentes
+- WebSockets suportados
+- Ambiente similar a servidor tradicional
+
+═══════════════════════════════════════════════════════════════
+

@@ -18,19 +18,37 @@ const asaasClient = axios.create({
     }
 });
 
-// Interceptor para adicionar o token de acesso (Asaas aceita como query parameter)
+// Interceptor para adicionar o token de acesso
+// IMPORTANTE: O Asaas aceita o token como HEADER "access_token"
 asaasClient.interceptors.request.use((config) => {
-    // O Asaas aceita o token como query parameter
-    // IMPORTANTE: O token DEVE começar com $ (obrigatório)
-    if (!config.params) {
-        config.params = {};
+    // Garantir que o token comece com $ e esteja completo
+    let token = (ASAAS_TOKEN || '').toString().trim();
+    
+    // Remover espaços extras e quebras de linha
+    token = token.replace(/\s+/g, '');
+    
+    // Garantir que comece com $
+    if (!token.startsWith('$')) {
+        token = '$' + token;
     }
-    // Garantir que o token comece com $
-    const token = ASAAS_TOKEN.startsWith('$') ? ASAAS_TOKEN : '$' + ASAAS_TOKEN;
-    config.params.access_token = token;
+    
+    // Verificar se o token está completo (deve ter pelo menos 50 caracteres)
+    if (token.length < 50) {
+        console.error('❌ Token Asaas parece estar incompleto!');
+        console.error('📏 Tamanho do token:', token.length, 'caracteres');
+        console.error('⚠️ Primeiros 30 caracteres:', token.substring(0, 30));
+        console.error('⚠️ Verifique a variável de ambiente ASAAS_API_KEY no Render');
+    }
+    
+    // Adicionar token como header (Formato correto do Asaas)
+    config.headers['access_token'] = token;
     
     // Log para debug (apenas primeira parte do token por segurança)
-    console.log('🔑 Token Asaas sendo usado:', token.substring(0, 20) + '...');
+    const tokenPreview = token.length > 30 
+        ? token.substring(0, 25) + '...' + token.substring(token.length - 8)
+        : token.substring(0, 25) + '...';
+    console.log('🔑 Token Asaas (header):', tokenPreview);
+    console.log('📏 Tamanho:', token.length, 'caracteres');
     
     return config;
 }, (error) => {
