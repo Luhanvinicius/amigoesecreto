@@ -63,9 +63,9 @@ Value: 3000
 VARIÁVEL 9 - ASAAS_API_KEY
 ═══════════════════════════════════════════════════════════════
 Key: ASAAS_API_KEY
-Value: $aact_prod_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmE0OTNhYTQ3LTg5NmItNDQ4NS1hNWY5LTJlMzMzNmQ0NTFhNTo6JGFhY2hfZjQ3OTcyZDItNDM3NC00NDgwLTliZjEtOGUzYmQ4ZjUwZjAy
+Value: $aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjcxMDA1NDNkLTc5YTUtNGVlMi05ZDkxLTc1NjU2YzQxZTNjOTo6JGFhY2hfNTUzMWNiNmQtYjdhNy00NWMxLTgxNTYtMzVkNDc5M2JmYmFh
 
-✅ IMPORTANTE: Este é o token de PRODUÇÃO
+✅ IMPORTANTE: Este é o token de SANDBOX/TESTE
 O sistema detecta automaticamente se é sandbox ou produção baseado na chave
 (Chaves com "hmlg" = sandbox, chaves com "prod" = produção)
 
@@ -89,7 +89,7 @@ RESUMO - TODAS AS 10 VARIÁVEIS
 6. SESSION_SECRET = [GERAR CHAVE ALEATÓRIA]
 7. NODE_ENV = production
 8. PORT = 3000
-9. ASAAS_API_KEY = $aact_prod_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmE0OTNhYTQ3LTg5NmItNDQ4NS1hNWY5LTJlMzMzNmQ0NTFhNTo6JGFhY2hfZjQ3OTcyZDItNDM3NC00NDgwLTliZjEtOGUzYmQ4ZjUwZjAy
+9. ASAAS_API_KEY = $aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjcxMDA1NDNkLTc5YTUtNGVlMi05ZDkxLTc1NjU2YzQxZTNjOTo6JGFhY2hfNTUzMWNiNmQtYjdhNy00NWMxLTgxNTYtMzVkNDc5M2JmYmFh
 10. ENABLE_WHATSAPP = true
 
 ═══════════════════════════════════════════════════════════════
