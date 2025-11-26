@@ -259,3 +259,4 @@ Se encontrar problemas:
 2. Teste localmente primeiro
 3. Verifique documentação do Vercel: [vercel.com/docs](https://vercel.com/docs)
 
+

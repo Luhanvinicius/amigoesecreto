@@ -120,3 +120,4 @@ Após corrigir o token, faça um novo deploy e teste novamente o pagamento.
 3. Verifique se está usando o ambiente correto (sandbox vs produção)
 4. Entre em contato com suporte do Asaas se necessário
 
+

@@ -258,3 +258,4 @@ ENABLE_WHATSAPP=false
 
 **⚠️ Lembre-se:** Substitua `[GERE_UMA_CHAVE_ALEATORIA_AQUI]` por uma chave real!
 
+

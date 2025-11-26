@@ -125,3 +125,4 @@ database: process.env.DB_NAME || 'u342978456_appamigo',
 - [ ] Verificar logs do Vercel
 - [ ] Testar funcionalidades principais
 
+

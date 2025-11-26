@@ -107,3 +107,4 @@ O arquivo `config/database.js` está configurado para usar:
 4. Se funcionar, você verá: `✅ Conexão com MySQL estabelecida com sucesso!`
 
 
+

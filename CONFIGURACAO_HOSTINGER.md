@@ -122,3 +122,4 @@ Para adicionar na lista de IPs permitidos:
 - Se seu IP mudar (ISP dinâmico), precisará atualizar no painel
 
 
+

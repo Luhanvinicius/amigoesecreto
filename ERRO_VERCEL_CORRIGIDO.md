@@ -69,3 +69,4 @@ Removi a seção `functions` do `vercel.json`, mantendo apenas `builds` que é o
 
 Basta clicar em **"Deploy"** no painel do Vercel!
 
+
