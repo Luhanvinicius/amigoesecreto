@@ -5,12 +5,14 @@ const ASAAS_TOKEN = process.env.ASAAS_API_KEY || '$aact_hmlg_000MzkwODA2MWY2OGM3
 
 // Detectar automaticamente se é sandbox ou produção baseado na chave
 // Chaves de sandbox contêm "hmlg" (homologação)
-const isSandbox = ASAAS_TOKEN.includes('hmlg') || ASAAS_TOKEN.includes('_hmlg_');
+// Chaves de produção contêm "prod" (produção)
+const isSandbox = (ASAAS_TOKEN.includes('hmlg') || ASAAS_TOKEN.includes('_hmlg_')) && !ASAAS_TOKEN.includes('_prod_');
+const isProduction = ASAAS_TOKEN.includes('_prod_') || (!ASAAS_TOKEN.includes('hmlg') && !ASAAS_TOKEN.includes('_hmlg_'));
 const ASAAS_API_URL = isSandbox 
     ? 'https://sandbox.asaas.com/api/v3'
     : 'https://api.asaas.com/v3';
 
-console.log('🔑 Ambiente Asaas detectado:', isSandbox ? 'SANDBOX (Teste)' : 'PRODUÇÃO');
+console.log('🔑 Ambiente Asaas detectado:', isSandbox ? 'SANDBOX (Teste)' : (isProduction ? 'PRODUÇÃO' : 'AUTO-DETECTADO'));
 console.log('🌐 URL da API:', ASAAS_API_URL);
 
 // Garantir que o token comece com $
