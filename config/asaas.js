@@ -30,49 +30,22 @@ const asaasClient = axios.create({
 // Interceptor para adicionar o token de acesso
 // IMPORTANTE: O Asaas aceita o token como HEADER "access_token"
 asaasClient.interceptors.request.use((config) => {
-    // Garantir que o token comece com $ e esteja completo
-    let token = (ASAAS_TOKEN || '').toString().trim();
+    // Obter token fresco do process.env (não usar cache)
+    let token = getAsaasToken();
     
-    // Remover TODOS os espaços, quebras de linha e caracteres invisíveis
-    token = token.replace(/\s+/g, '').replace(/\r/g, '').replace(/\n/g, '');
-    
-    // Garantir que comece com $
-    if (!token.startsWith('$')) {
-        token = '$' + token;
-    }
-    
-    // Validar tamanho mínimo (tokens Asaas têm pelo menos 100 caracteres)
-    if (token.length < 100) {
-        console.error('❌ Token Asaas parece estar incompleto ou truncado!');
-        console.error('📏 Tamanho do token:', token.length, 'caracteres');
-        console.error('⚠️ Primeiros 30 caracteres:', token.substring(0, 30));
-        console.error('⚠️ Últimos 20 caracteres:', token.substring(token.length - 20));
-        console.error('⚠️ VERIFIQUE a variável de ambiente ASAAS_API_KEY no Render');
-        console.error('⚠️ O token pode ter sido truncado ao copiar/colar');
-    }
-    
-    // Log completo do token para debug (apenas em desenvolvimento)
-    if (process.env.NODE_ENV !== 'production') {
-        console.log('🔑 Token completo (primeiros 50 + últimos 20):', 
-            token.substring(0, 50) + '...' + token.substring(token.length - 20));
-    }
+    // Log detalhado para debug
+    console.log('🔑 === TOKEN ASAAS PARA REQUISIÇÃO ===');
+    console.log('📏 Tamanho:', token.length, 'caracteres');
+    console.log('🔍 Primeiros 60:', token.substring(0, 60));
+    console.log('🔍 Últimos 30:', token.substring(token.length - 30));
+    console.log('🔍 Começa com $:', token.startsWith('$'));
+    console.log('🔍 Contém "hmlg":', token.includes('hmlg'));
+    console.log('🔍 URL da requisição:', config.url);
+    console.log('=====================================');
     
     // Adicionar token como header (Formato correto do Asaas)
     // IMPORTANTE: O Asaas espera o token EXATAMENTE como está, sem modificações
     config.headers['access_token'] = token;
-    
-    // Log para debug (apenas primeira parte do token por segurança)
-    const tokenPreview = token.length > 30 
-        ? token.substring(0, 25) + '...' + token.substring(token.length - 8)
-        : token.substring(0, 25) + '...';
-    console.log('🔑 Token Asaas (header):', tokenPreview);
-    console.log('📏 Tamanho:', token.length, 'caracteres');
-    
-    // Log completo em produção para debug (temporário)
-    console.log('🔍 DEBUG: Token completo (primeiros 60 + últimos 30):', 
-        token.substring(0, 60) + '...' + token.substring(token.length - 30));
-    console.log('🔍 DEBUG: Token contém "hmlg":', token.includes('hmlg'));
-    console.log('🔍 DEBUG: Token começa com $:', token.startsWith('$'));
     
     return config;
 }, (error) => {
