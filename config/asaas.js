@@ -14,6 +14,10 @@ const ASAAS_API_URL = isSandbox
 
 console.log('🔑 Ambiente Asaas detectado:', isSandbox ? 'SANDBOX (Teste)' : (isProduction ? 'PRODUÇÃO' : 'AUTO-DETECTADO'));
 console.log('🌐 URL da API:', ASAAS_API_URL);
+console.log('📏 Tamanho do token:', ASAAS_TOKEN.length, 'caracteres');
+console.log('🔍 Token começa com $:', ASAAS_TOKEN.startsWith('$'));
+console.log('🔍 Token contém "_prod_":', ASAAS_TOKEN.includes('_prod_'));
+console.log('🔍 Token contém "hmlg":', ASAAS_TOKEN.includes('hmlg'));
 
 // Garantir que o token comece com $
 if (!ASAAS_TOKEN.startsWith('$')) {
