@@ -1,5 +1,38 @@
 const axios = require('axios');
 
+// Função para obter e validar o token do Asaas
+function getAsaasToken() {
+    // Ler diretamente do process.env toda vez (não cachear)
+    let token = process.env.ASAAS_API_KEY || '';
+    
+    // Se não tiver no env, usar fallback de sandbox
+    if (!token || token.trim() === '') {
+        console.warn('⚠️ ASAAS_API_KEY não encontrada no process.env, usando fallback de SANDBOX');
+        token = '$aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjcxMDA1NDNkLTc5YTUtNGVlMi05ZDkxLTc1NjU2YzQxZTNjOTo6JGFhY2hfNTUzMWNiNmQtYjdhNy00NWMxLTgxNTYtMzVkNDc5M2JmYmFh';
+    }
+    
+    // Limpar o token: remover espaços, quebras de linha, etc.
+    token = token.toString().trim();
+    token = token.replace(/\s+/g, '').replace(/\r/g, '').replace(/\n/g, '');
+    
+    // Garantir que comece com $
+    if (!token.startsWith('$')) {
+        console.warn('⚠️ Token não começa com $, adicionando...');
+        token = '$' + token;
+    }
+    
+    // Validar tamanho mínimo (tokens Asaas têm pelo menos 150 caracteres)
+    if (token.length < 150) {
+        console.error('❌ ERRO CRÍTICO: Token parece estar truncado!');
+        console.error('📏 Tamanho:', token.length, 'caracteres (esperado: 150+)');
+        console.error('⚠️ Primeiros 50:', token.substring(0, 50));
+        console.error('⚠️ Últimos 30:', token.substring(token.length - 30));
+        throw new Error('Token Asaas inválido ou truncado. Verifique ASAAS_API_KEY no Render.');
+    }
+    
+    return token;
+}
+
 // O token do Asaas deve começar com $ (obrigatório)
 const ASAAS_TOKEN = process.env.ASAAS_API_KEY || '$aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmZjMDljMWE5LWFiZTQtNDQ2OC1iMzMxLTZhZjAxNzdjYmZiNjo6JGFhY2hfNzA5MmRmY2UtOTVjYS00OGY0LWFjN2MtMjcyM2I5YmQzZmJj';
 
