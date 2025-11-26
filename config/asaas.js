@@ -33,8 +33,8 @@ function getAsaasToken() {
     return token;
 }
 
-// O token do Asaas deve começar com $ (obrigatório)
-const ASAAS_TOKEN = process.env.ASAAS_API_KEY || '$aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmZjMDljMWE5LWFiZTQtNDQ2OC1iMzMxLTZhZjAxNzdjYmZiNjo6JGFhY2hfNzA5MmRmY2UtOTVjYS00OGY0LWFjN2MtMjcyM2I5YmQzZmJj';
+// Obter token inicial para configurar URL
+const ASAAS_TOKEN = getAsaasToken();
 
 // Detectar automaticamente se é sandbox ou produção baseado na chave
 // Chaves de sandbox contêm "hmlg" (homologação)
@@ -51,13 +51,6 @@ console.log('📏 Tamanho do token:', ASAAS_TOKEN.length, 'caracteres');
 console.log('🔍 Token começa com $:', ASAAS_TOKEN.startsWith('$'));
 console.log('🔍 Token contém "_prod_":', ASAAS_TOKEN.includes('_prod_'));
 console.log('🔍 Token contém "hmlg":', ASAAS_TOKEN.includes('hmlg'));
-
-// Garantir que o token comece com $
-if (!ASAAS_TOKEN.startsWith('$')) {
-    console.warn('⚠️ AVISO: O token do Asaas deve começar com $. Corrigindo automaticamente...');
-    const correctedToken = '$' + ASAAS_TOKEN;
-    module.exports.ASAAS_TOKEN = correctedToken;
-}
 
 const asaasClient = axios.create({
     baseURL: ASAAS_API_URL,
@@ -498,4 +491,3 @@ module.exports = {
     getPixQrCode,
     getPaymentStatus
 };
-
