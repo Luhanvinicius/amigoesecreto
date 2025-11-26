@@ -497,11 +497,34 @@ const appointmentController = {
         console.error('Erro completo:', asaasError);
         if (asaasError.response) {
           console.error('Status:', asaasError.response.status);
+          console.error('Status Text:', asaasError.response.statusText);
           console.error('Dados:', JSON.stringify(asaasError.response.data, null, 2));
+          
+          // Se for erro 401, mostrar mensagem mais clara
+          if (asaasError.response.status === 401) {
+            const errorData = asaasError.response.data;
+            if (errorData.errors && errorData.errors.length > 0) {
+              const errorCode = errorData.errors[0].code;
+              const errorDesc = errorData.errors[0].description;
+              console.error('❌ CÓDIGO DO ERRO:', errorCode);
+              console.error('❌ DESCRIÇÃO:', errorDesc);
+              
+              if (errorCode === 'invalid_access_token_format') {
+                console.error('⚠️ SOLUÇÃO: Verifique se o token ASAAS_API_KEY no Render está completo e correto');
+                console.error('⚠️ O token deve começar com $ e ter ~200 caracteres');
+                console.error('⚠️ Não deve ter espaços ou quebras de linha');
+              }
+            }
+          }
+        } else {
+          console.error('Erro sem resposta do servidor:', asaasError.message);
         }
         console.error('==========================================');
         // Re-throw para que o erro seja tratado no catch principal
-        throw new Error('Erro ao criar pagamento no Asaas: ' + (asaasError.response?.data?.message || asaasError.message));
+        const errorMessage = asaasError.response?.data?.errors?.[0]?.description 
+          || asaasError.response?.data?.message 
+          || asaasError.message;
+        throw new Error('Erro ao criar pagamento no Asaas: ' + errorMessage);
       }
       
       await connection.commit();

@@ -68,10 +68,42 @@ asaasClient.interceptors.request.use((config) => {
     console.log('🔑 Token Asaas (header):', tokenPreview);
     console.log('📏 Tamanho:', token.length, 'caracteres');
     
+    // Log completo em produção para debug (temporário)
+    console.log('🔍 DEBUG: Token completo (primeiros 60 + últimos 30):', 
+        token.substring(0, 60) + '...' + token.substring(token.length - 30));
+    console.log('🔍 DEBUG: Token contém "hmlg":', token.includes('hmlg'));
+    console.log('🔍 DEBUG: Token começa com $:', token.startsWith('$'));
+    
     return config;
 }, (error) => {
     return Promise.reject(error);
 });
+
+// Interceptor de resposta para capturar erros 401 com mais detalhes
+asaasClient.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            console.error('❌ ERRO 401 - AUTENTICAÇÃO FALHOU');
+            console.error('📋 URL:', error.config?.url);
+            console.error('📋 Método:', error.config?.method);
+            console.error('📋 Headers enviados:', JSON.stringify(error.config?.headers, null, 2));
+            console.error('📋 Token usado (primeiros 50):', error.config?.headers?.access_token?.substring(0, 50));
+            console.error('📋 Resposta do Asaas:', JSON.stringify(error.response.data, null, 2));
+            
+            // Verificar se o token está presente
+            if (!error.config?.headers?.access_token) {
+                console.error('❌ PROBLEMA: Token não está sendo enviado no header!');
+            } else {
+                const token = error.config.headers.access_token;
+                console.error('📏 Tamanho do token enviado:', token.length);
+                console.error('🔍 Token começa com $:', token.startsWith('$'));
+                console.error('🔍 Token contém "hmlg":', token.includes('hmlg'));
+            }
+        }
+        return Promise.reject(error);
+    }
+);
 
 /**
  * Buscar cliente existente no Asaas por email
