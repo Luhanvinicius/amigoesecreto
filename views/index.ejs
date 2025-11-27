@@ -888,12 +888,11 @@
             <ul class="nav-links">
                 <li><a href="#inicio">Início</a></li>
                 <li><a href="#contato">Contato</a></li>
-                <li><a href="/appointments/amigo-secreto">Rastreie seu agendamento</a></li>
                 <% if (user) { %>
-                <li><a href="<%= user.role === 'admin' ? '/admin/dashboard' : '/dashboard' %>" style="background: var(--gradient-1); color: white; padding: 0.5rem 1.25rem; border-radius: 8px; font-weight: 600;">Painel</a></li>
+                <li><a href="<%= user.role === 'admin' ? '/admin/dashboard' : '/dashboard' %>" style="background: var(--gradient-1); color: white; padding: 0.5rem 1.25rem; border-radius: 8px; font-weight: 600;">Minha Área</a></li>
                 <li><a href="/logout" style="color: var(--text-gray);">Sair</a></li>
                 <% } else { %>
-                <li><a href="/login" style="background: var(--gradient-1); color: white; padding: 0.5rem 1.25rem; border-radius: 8px; font-weight: 600;">Login</a></li>
+                <li><a href="/login" style="background: var(--gradient-1); color: white; padding: 0.5rem 1.25rem; border-radius: 8px; font-weight: 600;">Área do Cliente</a></li>
                 <% } %>
             </ul>
         </nav>
@@ -1108,17 +1107,18 @@
                 </div>
                 
                 <div class="footer-section">
-                    <h3>Sobre</h3>
+                    <h3>Navegação</h3>
                     <a href="#inicio">Início</a>
                     <a href="#contato">Contato</a>
-                    <a href="/appointments/amigo-secreto">Rastreie seu agendamento</a>
+                    <a href="/appointments/amigo-secreto">Agende sua Conversa</a>
+                    <a href="/login">Área do Cliente</a>
                 </div>
                 
                 <div class="footer-section">
                     <h3>Legal</h3>
-                    <a href="#">Politica de Privacidade</a>
-                    <a href="#">Termos de Serviço</a>
-                    <a href="#">Política de Cookies</a>
+                    <a href="/politica-privacidade">Política de Privacidade</a>
+                    <a href="/termos-servico">Termos de Serviço</a>
+                    <a href="/politica-cookies">Política de Cookies</a>
                 </div>
             </div>
             

@@ -5,23 +5,21 @@
                 <div class="col-lg-3 col-md-4 col-12">
                     <div class="form-steps-left">
                         <div class="section-title">
-                            <h2>Agendamento de Consulta</h2>
+                            <h2>Agende sua Conversa</h2>
                         </div>
                         <div class="steps">
                             <ul>
                                 <li class="stapes_status">
                                     Serviço
                                 </li>
-                                <li class="stapes_status">
+                                <li class="stapes_status step-schedule" id="step-schedule-indicator">
                                     Escolha um Horário
                                 </li>
-                                <% if ((files && files.value === 'on') || (customField === 'on')) { %>
                                 <li class="stapes_status">
-                                    Detalhes Adicionais
+                                    Conte-me mais sobre você
                                 </li>
-                                <% } %>
                                 <li class="stapes_status">
-                                    Compartilhe seus Detalhes
+                                    Seus Dados
                                 </li>
                                 <li class="stapes_status">
                                     Pagamento
@@ -36,10 +34,12 @@
                 <div class="col-lg-9 col-md-8 col-12">
                     <form method="POST" action="/appointments/book" id="appointment-form" class="appointment-forms" enctype="multipart/form-data" novalidate>
                         <input type="hidden" name="_token" value="<%= csrfToken %>">
+                        <input type="hidden" name="requires_schedule" id="requires_schedule" value="1">
                         <div class="myContainer">
+                            <!-- STEP 1: Seleção de Serviço -->
                             <div class="step-container active" id="step-first">
                                 <div class="appointment-wrp Shoppint-Cart-btn">
-                                    <h2 class="mb-4">Agendamento de Consulta</h2>
+                                    <h2 class="mb-4">Agende sua Conversa</h2>
                                     <div class="appointment-form">
                                         <h3>Por favor, selecione os serviços:</h3>
                                         <div class="row">
@@ -51,7 +51,11 @@
                                                             Selecione Serviços
                                                         </option>
                                                         <% services.forEach(function(service) { %>
-                                                        <option value="<%= service.id %>" class="service" data-price="<%= service.price || 0 %>"<% if (selectedService && selectedService == service.id) { %> selected<% } %>>
+                                                        <option value="<%= service.id %>" 
+                                                                class="service" 
+                                                                data-price="<%= service.price || 0 %>"
+                                                                data-requires-schedule="<%= service.requires_schedule !== undefined ? service.requires_schedule : 1 %>"
+                                                                <% if (selectedService && selectedService == service.id) { %> selected<% } %>>
                                                             <%= service.name %>
                                                         </option>
                                                         <% }); %>
@@ -60,10 +64,10 @@
                                             </div>
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label>Escolha um Local</label>
+                                                    <label>Escolha um Local de Contato</label>
                                                     <select id="locationSelect" name="location" required>
                                                         <option value="" disabled selected>
-                                                            Selecione Localização
+                                                            Selecione onde quer conversar
                                                         </option>
                                                         <% locations.forEach(function(location) { %>
                                                         <option value="<%= location.id %>"><%= location.name %></option>
@@ -83,7 +87,8 @@
                                 </div>
                             </div>
 
-                            <div class="step-container">
+                            <!-- STEP 2: Escolha de Horário (pula para pacotes de mensagem) -->
+                            <div class="step-container" id="step-schedule">
                                 <div class="appointment-wrp Shoppint-Cart-btn">
                                     <div class="appointment-form">
                                         <h3>Agendamento:</h3>
@@ -92,7 +97,7 @@
                                                 <div class="form-group">
                                                     <label>Data do Agendamento</label>
                                                     <input class="datepicker" type="text" id="datepicker"
-                                                        name="appointment_date" autocomplete="off" required="required"
+                                                        name="appointment_date" autocomplete="off"
                                                         value="<%= new Date().toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit', year: 'numeric'}).replace(/\//g, '-') %>">
                                                 </div>
                                             </div>
@@ -112,11 +117,44 @@
                                 </div>
                             </div>
 
-                            <% if ((files && files.value === 'on') || (customField === 'on')) { %>
-                            <div class="step-container">
+                            <!-- STEP 3: Campos Personalizados -->
+                            <div class="step-container" id="step-custom-fields">
                                 <div class="appointment-wrp">
                                     <div class="appointment-form">
-                                        <h3>Detalhes Adicionais:</h3>
+                                        <h3>Conte-me mais sobre você:</h3>
+                                        <p style="color: #666; margin-bottom: 1.5rem;">Essas informações nos ajudam a personalizar sua experiência.</p>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label>O que você espera da Lia?</label>
+                                                    <small class="text-muted d-block mb-2">Ex: Escuta, Apoio, Aprovação, Desabafo, Conselhos...</small>
+                                                    <textarea name="client_expectation" id="client_expectation" 
+                                                        class="form-control" rows="3" 
+                                                        placeholder="Conte-me o que você espera dessa conversa..."></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label>Qual o tema da conversa?</label>
+                                                    <small class="text-muted d-block mb-2">Pode ser algo específico ou geral, você decide.</small>
+                                                    <textarea name="conversation_topic" id="conversation_topic" 
+                                                        class="form-control" rows="3" 
+                                                        placeholder="Sobre o que você gostaria de conversar?"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-12">
+                                                <div class="form-group">
+                                                    <label>Seu @ do Instagram</label>
+                                                    <small class="text-muted d-block mb-2">Se preferir contato por lá, informe seu @</small>
+                                                    <input type="text" name="client_instagram" id="client_instagram" 
+                                                        class="form-control" placeholder="@seuinsta">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <% if ((files && files.value === 'on') || (customField === 'on')) { %>
+                                        <hr style="margin: 2rem 0;">
+                                        <h4>Detalhes Adicionais:</h4>
                                         <% if (customField === 'on' && customFields && customFields.length > 0) { %>
                                         <div class="row">
                                             <% customFields.forEach(function(customField) { %>
@@ -163,6 +201,7 @@
                                             </div>
                                         </div>
                                         <% } %>
+                                        <% } %>
                                     </div>
                                     <div class="step-btns">
                                         <button type="button" name="back" class="back btn btn-transparent">
@@ -174,13 +213,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <% } %>
 
+                            <!-- STEP 4: Dados do Usuário -->
                             <div class="step-container final_stepss">
                                 <div class="appointment-wrp tab-wrp">
                                     <div class="tabs-wrapper">
                                         <div class="alert alert-danger flex align-center d-none" role="alert">
-                                            <svg height="26" viewBox="0 0 128 128" width="26" xmlns="http://www.w3.org/2000/svg" id="fi_4201973">
+                                            <svg height="26" viewBox="0 0 128 128" width="26" xmlns="http://www.w3.org/2000/svg">
                                                 <g>
                                                     <path d="m57.362 26.54-37.262 64.535a7.666 7.666 0 0 0 6.639 11.5h74.518a7.666 7.666 0 0 0 6.639-11.5l-37.258-64.535a7.665 7.665 0 0 0 -13.276 0z" fill="#ee404c"></path>
                                                     <g fill="#fff7ed">
@@ -215,14 +254,15 @@
                                                 <div class="row">
                                                     <div class="col-md-6 col-12">
                                                         <div class="form-group">
-                                                            <label>Nome</label>
+                                                            <label>Como quer ser chamado(a)?</label>
+                                                            <small class="text-muted d-block mb-1">Pode ser um apelido, nome fictício ou real</small>
                                                             <input type="text" class="form-control" name="name"
-                                                                id="name_new" placeholder="Seu Nome" required>
+                                                                id="name_new" placeholder="Seu nome ou apelido">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6 col-12">
                                                         <div class="form-group">
-                                                            <label>E-mail</label>
+                                                            <label>E-mail <span style="color: #e74c3c;">*</span></label>
                                                             <input type="email" class="form-control" name="email"
                                                                 id="email_new" placeholder="Seu E-mail" required>
                                                         </div>
@@ -230,16 +270,17 @@
                                                     <div class="col-md-6 col-12">
                                                         <div class="form-group">
                                                             <label>Senha</label>
+                                                            <small class="text-muted d-block mb-1">Para acessar sua área depois</small>
                                                             <input type="password" class="form-control" name="password"
-                                                                id="password" placeholder="Sua Senha" required>
+                                                                id="password" placeholder="Crie uma senha">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6 col-12">
                                                         <div class="form-group">
-                                                            <label>Contato</label>
-                                                            <small class="text-muted">(+5511999999999)</small>
+                                                            <label>WhatsApp/Telefone</label>
+                                                            <small class="text-muted d-block mb-1">(+5511999999999)</small>
                                                             <input type="text" class="form-control" name="contact"
-                                                                id="contact" placeholder="Número de Telefone" required>
+                                                                id="contact" placeholder="Número de Telefone">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -250,17 +291,22 @@
                                                 <div class="row">
                                                     <div class="col-md-6 col-12">
                                                         <div class="form-group">
-                                                            <label>E-mail</label>
+                                                            <label>E-mail <span style="color: #e74c3c;">*</span></label>
                                                             <input type="email" class="form-control" name="email"
                                                                 id="email_existing" placeholder="Seu E-mail" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6 col-12">
                                                         <div class="form-group">
-                                                            <label>Senha</label>
+                                                            <label>Senha <span style="color: #e74c3c;">*</span></label>
                                                             <input type="password" class="form-control" name="password"
                                                                 id="password_existing" placeholder="Sua Senha" required>
                                                         </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <a href="/forgot-password" style="color: #667eea; text-decoration: none; font-size: 0.9rem;">
+                                                            Esqueceu sua senha?
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -269,24 +315,25 @@
                                                 <div class="row">
                                                     <div class="col-md-6 col-12">
                                                         <div class="form-group">
-                                                            <label>Nome</label>
+                                                            <label>Como quer ser chamado(a)?</label>
+                                                            <small class="text-muted d-block mb-1">Pode ser um apelido</small>
                                                             <input type="text" class="form-control" name="name"
-                                                                id="name_guest" placeholder="Seu Nome" required>
+                                                                id="name_guest" placeholder="Seu nome ou apelido">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6 col-12">
                                                         <div class="form-group">
-                                                            <label>E-mail</label>
+                                                            <label>E-mail <span style="color: #e74c3c;">*</span></label>
                                                             <input type="email" class="form-control" name="email"
                                                                 id="email_guest" placeholder="Seu E-mail" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6 col-12">
                                                         <div class="form-group">
-                                                            <label>Contato</label>
-                                                            <small class="text-muted">(+5511999999999)</small>
+                                                            <label>WhatsApp/Telefone</label>
+                                                            <small class="text-muted d-block mb-1">(+5511999999999)</small>
                                                             <input type="text" class="form-control" name="contact"
-                                                                id="contact_guest" placeholder="Número de Telefone" required>
+                                                                id="contact_guest" placeholder="Número de Telefone">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -304,6 +351,7 @@
                                 </div>
                             </div>
 
+                            <!-- STEP 5: Pagamento -->
                             <div class="step-container">
                                 <div class="appointment-wrp">
                                     <div class="free-appointment"></div>
@@ -331,22 +379,39 @@
                                                     </label>
                                                 </div>
                                             </div>
+                                            <div class="col-sm-6 col-lg-4 col-12" id="paypal-option" style="display: none;">
+                                                <div class="radio-group">
+                                                    <input class="form-check-input payment_method" name="payment_method"
+                                                        type="radio" id="paypal" data-payment="paypal"
+                                                        data-payment-action="/appointments/book">
+                                                    <label for="paypal">
+                                                        <div class="radio-img">
+                                                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                <rect width="24" height="24" rx="4" fill="#003087"/>
+                                                                <path d="M7.5 19.5h2l.5-3h2c2.5 0 4-1.5 4.5-4 .5-2.5-1-4-3.5-4h-4l-2 11zm3-7l.5-3h1.5c1 0 1.5.5 1.5 1.5s-.5 1.5-1.5 1.5h-2z" fill="white"/>
+                                                            </svg>
+                                                        </div>
+                                                        <p>PayPal</p>
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div id="payment-info" style="margin-top: 20px; padding: 15px; background: #f0f9ff; border-radius: 8px; display: none;">
                                             <p style="margin: 0; color: #0369a1; font-weight: 600;">Você será redirecionado para o pagamento após confirmar o agendamento.</p>
                                         </div>
                                     </div>
-                                           <div class="step-btns finle-step-btn flex align-center">
-                                               <div class="action-btn">
-                                                   <div class="step-btn-wrapper">
-                                                       <button type="button" name="back" class="back btn btn-transparent">Voltar</button>
-                                                       <button type="submit" name="submit" class="btn appointment_payment" id="generate-payment-btn">Gerar Pagamento</button>
-                                                   </div>
-                                               </div>
-                                           </div>
+                                    <div class="step-btns finle-step-btn flex align-center">
+                                        <div class="action-btn">
+                                            <div class="step-btn-wrapper">
+                                                <button type="button" name="back" class="back btn btn-transparent">Voltar</button>
+                                                <button type="submit" name="submit" class="btn appointment_payment" id="generate-payment-btn">Gerar Pagamento</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
+                            <!-- STEP 6: Concluído (não usado mais - redirecionamos para página done) -->
                             <div class="step-container" id="final_step">
                                 <div class="appointment-wrp">
                                     <div class="row">
@@ -362,7 +427,7 @@
                                         </div>
                                     </div>
                                     <div class="step-btns">
-                                        <a href="/appointments/<%= slug %>" class="btn btn-transparent">Agendar uma Consulta</a>
+                                        <a href="/appointments/<%= slug %>" class="btn btn-transparent">Fazer Novo Agendamento</a>
                                     </div>
                                 </div>
                             </div>
@@ -376,3 +441,147 @@
     </section>
 </main>
 
+<style>
+/* Estilo para step que não precisa de horário */
+.step-schedule.hidden-step {
+    display: none !important;
+}
+
+/* Melhor estilo para campos não obrigatórios */
+.form-group small.text-muted {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+/* PayPal option styling */
+#paypal-option.active {
+    display: block !important;
+}
+</style>
+
+<script>
+// Controle de serviços que não precisam de horário
+document.addEventListener('DOMContentLoaded', function() {
+    var serviceSelect = document.getElementById('serviceSelect');
+    var stepScheduleIndicator = document.getElementById('step-schedule-indicator');
+    var stepSchedule = document.getElementById('step-schedule');
+    var requiresScheduleInput = document.getElementById('requires_schedule');
+    
+    // Lista de IDs de serviços que NÃO precisam de horário
+    var noScheduleServices = [4, 5]; // Mensagem de texto e Áudio, Assinatura Mensal texto e áudio
+    
+    function updateScheduleRequirement() {
+        var selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+        var requiresSchedule = selectedOption.getAttribute('data-requires-schedule');
+        
+        // Se não tem atributo, verificar pelo ID do serviço
+        if (requiresSchedule === null || requiresSchedule === undefined) {
+            var serviceId = parseInt(serviceSelect.value);
+            requiresSchedule = noScheduleServices.includes(serviceId) ? '0' : '1';
+        }
+        
+        var needsSchedule = requiresSchedule !== '0';
+        
+        // Atualizar hidden input
+        requiresScheduleInput.value = needsSchedule ? '1' : '0';
+        
+        // Mostrar/esconder step de horário
+        if (needsSchedule) {
+            stepScheduleIndicator.classList.remove('hidden-step');
+            stepSchedule.classList.remove('skip-step');
+        } else {
+            stepScheduleIndicator.classList.add('hidden-step');
+            stepSchedule.classList.add('skip-step');
+        }
+        
+        console.log('Serviço selecionado:', serviceSelect.value, 'Precisa de horário:', needsSchedule);
+    }
+    
+    serviceSelect.addEventListener('change', updateScheduleRequirement);
+    
+    // Verificar PayPal está ativo
+    // TODO: Carregar do servidor se PayPal está configurado
+    var paypalActive = false; // Mudar para true quando PayPal estiver configurado
+    if (paypalActive) {
+        document.getElementById('paypal-option').style.display = 'block';
+    }
+});
+
+// Sobrescrever função de navegação para pular step de horário quando não necessário
+(function() {
+    var originalNextHandler = null;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Interceptar cliques no botão próximo
+        document.querySelectorAll('.step-container .next').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                var currentStep = this.closest('.step-container');
+                var nextStep = currentStep.nextElementSibling;
+                
+                // Se o próximo step é o de horário e não precisa, pular
+                if (nextStep && nextStep.id === 'step-schedule' && nextStep.classList.contains('skip-step')) {
+                    e.stopPropagation();
+                    
+                    // Pular para o próximo step válido
+                    var targetStep = nextStep.nextElementSibling;
+                    if (targetStep) {
+                        currentStep.classList.remove('active');
+                        targetStep.classList.add('active');
+                        
+                        // Atualizar indicadores
+                        var currentIndex = Array.from(document.querySelectorAll('.step-container')).indexOf(currentStep);
+                        var targetIndex = Array.from(document.querySelectorAll('.step-container')).indexOf(targetStep);
+                        
+                        document.querySelectorAll('.steps li').forEach(function(li, idx) {
+                            if (idx <= targetIndex - 1) { // -1 porque o step de schedule foi pulado
+                                li.classList.add('completed');
+                            }
+                            li.classList.remove('active');
+                        });
+                        
+                        // Ativar o indicador correto (pular o hidden)
+                        var visibleSteps = document.querySelectorAll('.steps li:not(.hidden-step)');
+                        var targetVisibleIndex = 0;
+                        document.querySelectorAll('.steps li').forEach(function(li, idx) {
+                            if (idx < targetIndex && !li.classList.contains('hidden-step')) {
+                                targetVisibleIndex++;
+                            }
+                        });
+                        
+                        if (visibleSteps[targetVisibleIndex]) {
+                            visibleSteps[targetVisibleIndex].classList.add('active');
+                        }
+                    }
+                }
+            }, true); // Captura na fase de captura
+        });
+        
+        // Interceptar cliques no botão voltar
+        document.querySelectorAll('.step-container .back').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                var currentStep = this.closest('.step-container');
+                var prevStep = currentStep.previousElementSibling;
+                
+                // Se o step anterior é o de horário e não precisa, pular
+                if (prevStep && prevStep.id === 'step-schedule' && prevStep.classList.contains('skip-step')) {
+                    e.stopPropagation();
+                    
+                    // Voltar para o step anterior válido
+                    var targetStep = prevStep.previousElementSibling;
+                    if (targetStep) {
+                        currentStep.classList.remove('active');
+                        targetStep.classList.add('active');
+                        
+                        // Atualizar indicadores
+                        var targetIndex = Array.from(document.querySelectorAll('.step-container')).indexOf(targetStep);
+                        document.querySelectorAll('.steps li').forEach(function(li, idx) {
+                            li.classList.remove('active', 'completed');
+                        });
+                        document.querySelectorAll('.steps li')[targetIndex].classList.add('active');
+                    }
+                }
+            }, true);
+        });
+    });
+})();
+</script>

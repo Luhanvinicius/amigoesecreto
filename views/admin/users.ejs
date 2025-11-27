@@ -15,7 +15,7 @@
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 1.5rem 2rem;
+            padding: 1rem 2rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .header-content {
@@ -25,14 +25,26 @@
             justify-content: space-between;
             align-items: center;
         }
-        .header h1 { font-size: 1.5rem; }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .admin-logo {
+            height: 45px;
+            width: auto;
+            border-radius: 8px;
+            background: white;
+            padding: 4px;
+        }
+        .header h1 { font-size: 1.3rem; }
         .header-nav a {
             color: white;
             text-decoration: none;
-            margin-left: 1.5rem;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.75rem;
             border-radius: 6px;
             transition: background 0.3s;
+            font-size: 0.9rem;
         }
         .header-nav a:hover { background: rgba(255,255,255,0.2); }
         .container {
@@ -40,19 +52,25 @@
             margin: 2rem auto;
             padding: 0 2rem;
         }
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
         .filters {
             background: white;
-            padding: 1.5rem;
+            padding: 1rem;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
-        .filters form {
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
+            align-items: center;
         }
-        .filters select, .filters button {
+        .filters select, .filters button, .filters input {
             padding: 0.5rem 1rem;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
@@ -64,6 +82,25 @@
             border: none;
             cursor: pointer;
         }
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-success { background: #28a745; color: white; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
         .section {
             background: white;
             padding: 2rem;
@@ -92,6 +129,7 @@
         }
         .badge-admin { background: #d1ecf1; color: #0c5460; }
         .badge-client { background: #d4edda; color: #155724; }
+        .badge-attendant { background: #e2d4f0; color: #5e2ca5; }
         .btn-whatsapp {
             padding: 0.4rem 0.8rem;
             background: #25D366;
@@ -107,13 +145,8 @@
             gap: 0.3rem;
             transition: background 0.3s;
         }
-        .btn-whatsapp:hover {
-            background: #20BA5A;
-        }
-        .btn-whatsapp:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
+        .btn-whatsapp:hover { background: #20BA5A; }
+        .btn-whatsapp:disabled { background: #ccc; cursor: not-allowed; }
         .pagination {
             margin-top: 1.5rem;
             display: flex;
@@ -132,18 +165,95 @@
             color: white;
             border-color: #667eea;
         }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .modal-header h2 { font-size: 1.3rem; }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="header-content">
-            <h1>Gerenciar Usuários</h1>
+            <div class="header-left">
+                <a href="/admin/dashboard">
+                    <img src="/images/logo-amigo-secreto.png" alt="Amigo e Secreto" class="admin-logo">
+                </a>
+                <h1>Gerenciar Usuários</h1>
+            </div>
             <nav class="header-nav">
                 <a href="/admin/dashboard">Dashboard</a>
                 <a href="/admin/appointments">Agendamentos</a>
                 <a href="/admin/users">Usuários</a>
                 <a href="/admin/services">Serviços</a>
                 <a href="/admin/agenda">Agenda</a>
+                <a href="/admin/chat">Chat</a>
                 <a href="/admin/whatsapp">WhatsApp</a>
                 <a href="/logout">Sair</a>
             </nav>
@@ -151,16 +261,29 @@
     </div>
     
     <div class="container">
-        <div class="filters">
-            <form method="GET">
-                <select name="role">
-                    <option value="">Todos os Roles</option>
-                    <option value="client" <%= filters.role === 'client' ? 'selected' : '' %>>Cliente</option>
-                    <option value="admin" <%= filters.role === 'admin' ? 'selected' : '' %>>Admin</option>
-                </select>
-                <button type="submit">Filtrar</button>
-                <a href="/admin/users" style="padding: 0.5rem 1rem; background: #6c757d; color: white; text-decoration: none; border-radius: 8px;">Limpar</a>
-            </form>
+        <div class="toolbar">
+            <div class="filters">
+                <form method="GET" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+                    <select name="role">
+                        <option value="">Todos os Roles</option>
+                        <option value="client" <%= filters.role === 'client' ? 'selected' : '' %>>Cliente</option>
+                        <option value="admin" <%= filters.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                        <option value="attendant" <%= filters.role === 'attendant' ? 'selected' : '' %>>Atendente</option>
+                    </select>
+                    <input type="text" name="search" placeholder="Buscar por nome/email..." value="<%= filters.search || '' %>">
+                    <button type="submit">Filtrar</button>
+                    <a href="/admin/users" style="padding: 0.5rem 1rem; background: #6c757d; color: white; text-decoration: none; border-radius: 8px;">Limpar</a>
+                </form>
+            </div>
+            
+            <div style="display: flex; gap: 0.75rem;">
+                <button onclick="openModal('create-user')" class="btn btn-primary">
+                    👤 Criar Usuário
+                </button>
+                <button onclick="openModal('create-admin')" class="btn btn-success">
+                    👑 Criar Admin/Atendente
+                </button>
+            </div>
         </div>
         
         <div class="section">
@@ -171,12 +294,14 @@
                         <th>Nome</th>
                         <th>E-mail</th>
                         <th>Contato</th>
+                        <th>Sexo</th>
                         <th>WhatsApp</th>
                         <th>Tipo</th>
                         <th>Role</th>
                         <th>Agendamentos</th>
                         <th>Pagamentos</th>
                         <th>Data Cadastro</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -187,48 +312,48 @@
                         <td><%= usr.email %></td>
                         <td><%= usr.contact || 'N/A' %></td>
                         <td>
+                            <% if (usr.gender === 'male') { %>Masculino
+                            <% } else if (usr.gender === 'female') { %>Feminino
+                            <% } else if (usr.gender === 'other') { %>Outro
+                            <% } else { %>-<% } %>
+                        </td>
+                        <td>
                             <% 
-                            // Formatar número para WhatsApp
                             var whatsappNumber = null;
                             if (usr.contact) {
-                                // Remove todos os caracteres não numéricos
                                 var cleaned = String(usr.contact).replace(/\D/g, '');
-                                
-                                // Se vazio após limpeza, mantém null
                                 if (cleaned.length > 0) {
-                                    // Remove zeros à esquerda
                                     cleaned = cleaned.replace(/^0+/, '');
-                                    
-                                    // Se começar com 55 (Brasil), mantém
                                     if (cleaned.indexOf('55') === 0) {
                                         whatsappNumber = cleaned;
                                     } else if (cleaned.length >= 10 && cleaned.length <= 11) {
-                                        // Se tiver 10 ou 11 dígitos (DDD + número), adiciona 55
                                         whatsappNumber = '55' + cleaned;
                                     } else if (cleaned.length >= 12) {
-                                        // Se já tiver 12+ dígitos, pode estar completo
                                         whatsappNumber = cleaned;
                                     }
                                 }
                             }
                             %>
                             <% if (whatsappNumber && whatsappNumber.length >= 12) { %>
-                                <a href="https://wa.me/<%= whatsappNumber %>" target="_blank" class="btn-whatsapp" title="Abrir WhatsApp com <%= usr.name %>">
-                                    💬 WhatsApp
-                                </a>
+                                <a href="https://wa.me/<%= whatsappNumber %>" target="_blank" class="btn-whatsapp">💬</a>
                             <% } else { %>
-                                <button class="btn-whatsapp" disabled title="Telefone não disponível ou inválido">💬 WhatsApp</button>
+                                <button class="btn-whatsapp" disabled>💬</button>
                             <% } %>
                         </td>
                         <td><%= usr.type %></td>
                         <td>
-                            <span class="badge <%= usr.role === 'admin' ? 'badge-admin' : 'badge-client' %>">
-                                <%= usr.role === 'admin' ? 'Admin' : 'Cliente' %>
+                            <span class="badge <%= usr.role === 'admin' ? 'badge-admin' : (usr.role === 'attendant' ? 'badge-attendant' : 'badge-client') %>">
+                                <%= usr.role === 'admin' ? 'Admin' : (usr.role === 'attendant' ? 'Atendente' : 'Cliente') %>
                             </span>
                         </td>
                         <td><%= usr.total_appointments || 0 %></td>
                         <td><%= usr.paid_appointments || 0 %></td>
                         <td><%= new Date(usr.created_at).toLocaleDateString('pt-BR') %></td>
+                        <td>
+                            <a href="/admin/users/<%= usr.id %>" class="btn btn-primary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">
+                                Ver
+                            </a>
+                        </td>
                     </tr>
                     <% }); %>
                 </tbody>
@@ -237,13 +362,166 @@
             <% if (totalPages > 1) { %>
             <div class="pagination">
                 <% for (let i = 1; i <= totalPages; i++) { %>
-                <a href="?page=<%= i %><%= filters.role ? '&role=' + filters.role : '' %>" 
+                <a href="?page=<%= i %><%= filters.role ? '&role=' + filters.role : '' %><%= filters.search ? '&search=' + filters.search : '' %>" 
                    class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
                 <% } %>
             </div>
             <% } %>
         </div>
     </div>
+    
+    <!-- Modal: Criar Usuário -->
+    <div class="modal" id="create-user-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>👤 Criar Novo Usuário</h2>
+                <button class="modal-close" onclick="closeModal('create-user')">&times;</button>
+            </div>
+            <form method="POST" action="/admin/users/create">
+                <input type="hidden" name="user_type" value="client">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nome/Apelido *</label>
+                        <input type="text" name="name" required placeholder="Como quer ser chamado?">
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail *</label>
+                        <input type="email" name="email" required placeholder="email@exemplo.com">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Senha</label>
+                        <input type="password" name="password" placeholder="Senha de acesso">
+                    </div>
+                    <div class="form-group">
+                        <label>Telefone/WhatsApp</label>
+                        <input type="text" name="contact" placeholder="+5511999999999">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Sexo</label>
+                        <select name="gender">
+                            <option value="">-- Não informado --</option>
+                            <option value="male">Masculino</option>
+                            <option value="female">Feminino</option>
+                            <option value="other">Outro</option>
+                            <option value="prefer_not_say">Prefere não dizer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Instagram</label>
+                        <input type="text" name="instagram" placeholder="@usuario">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Observação Inicial</label>
+                    <textarea name="notes" rows="3" placeholder="Alguma observação sobre este cliente..."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Criar Usuário</button>
+                    <button type="button" class="btn" style="background: #6c757d; color: white;" onclick="closeModal('create-user')">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal: Criar Admin/Atendente -->
+    <div class="modal" id="create-admin-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>👑 Criar Admin/Atendente</h2>
+                <button class="modal-close" onclick="closeModal('create-admin')">&times;</button>
+            </div>
+            <form method="POST" action="/admin/users/create">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nome Real *</label>
+                        <input type="text" name="name" required placeholder="Nome completo">
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail *</label>
+                        <input type="email" name="email" required placeholder="email@exemplo.com">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Senha *</label>
+                        <input type="password" name="password" required placeholder="Senha de acesso">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Acesso *</label>
+                        <select name="role" required>
+                            <option value="attendant">Atendente (Lia)</option>
+                            <option value="admin">Administrador</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Telefone</label>
+                        <input type="text" name="contact" placeholder="+5511999999999">
+                    </div>
+                    <div class="form-group">
+                        <label>Nome de Exibição (para atendentes)</label>
+                        <input type="text" name="display_name" value="Lia" placeholder="Nome que aparece para clientes">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" name="handles_calls" value="1" checked>
+                            Atende ligações/chamadas
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" name="handles_messages" value="1" checked>
+                            Atende mensagens de texto
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">Criar</button>
+                    <button type="button" class="btn" style="background: #6c757d; color: white;" onclick="closeModal('create-admin')">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function openModal(type) {
+            document.getElementById(type + '-modal').classList.add('active');
+        }
+        
+        function closeModal(type) {
+            document.getElementById(type + '-modal').classList.remove('active');
+        }
+        
+        // Fechar modal ao clicar fora
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+        
+        // Abrir modal se vier da URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('action') === 'create') {
+            openModal('create-user');
+        }
+    </script>
 </body>
 </html>
-

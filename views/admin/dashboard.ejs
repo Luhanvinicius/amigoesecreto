@@ -15,7 +15,7 @@
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 1.5rem 2rem;
+            padding: 1rem 2rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .header-content {
@@ -24,15 +24,37 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 1rem;
         }
-        .header h1 { font-size: 1.5rem; }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .logo-link {
+            display: flex;
+            align-items: center;
+        }
+        .admin-logo {
+            height: 45px;
+            width: auto;
+            border-radius: 8px;
+            background: white;
+            padding: 4px;
+        }
+        .header h1 { font-size: 1.3rem; font-weight: 600; }
+        .header-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
         .header-nav a {
             color: white;
             text-decoration: none;
-            margin-left: 1.5rem;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.75rem;
             border-radius: 6px;
             transition: background 0.3s;
+            font-size: 0.9rem;
         }
         .header-nav a:hover { background: rgba(255,255,255,0.2); }
         .container {
@@ -115,18 +137,53 @@
             padding: 0.25rem 0.75rem;
             font-size: 0.85rem;
         }
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .quick-action-btn {
+            padding: 1rem 1.5rem;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .quick-action-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        @media (max-width: 1200px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="header-content">
-            <h1>Painel Administrativo</h1>
+            <div class="header-left">
+                <a href="/admin/dashboard" class="logo-link">
+                    <img src="/images/logo-amigo-secreto.png" alt="Amigo e Secreto" class="admin-logo">
+                </a>
+                <h1>Painel Administrativo</h1>
+            </div>
             <nav class="header-nav">
                 <a href="/admin/dashboard">Dashboard</a>
                 <a href="/admin/appointments">Agendamentos</a>
                 <a href="/admin/users">Usuários</a>
                 <a href="/admin/services">Serviços</a>
                 <a href="/admin/agenda">Agenda</a>
+                <a href="/admin/chat">Chat</a>
                 <a href="/admin/whatsapp">WhatsApp</a>
                 <a href="/logout">Sair</a>
             </nav>
@@ -134,6 +191,22 @@
     </div>
     
     <div class="container">
+        <!-- Ações Rápidas -->
+        <div class="quick-actions">
+            <a href="/admin/users?action=create" class="quick-action-btn">
+                👤 Criar Usuário
+            </a>
+            <a href="/admin/services" class="quick-action-btn">
+                📦 Gerenciar Serviços
+            </a>
+            <a href="/admin/appointments?status=pending" class="quick-action-btn">
+                ⏳ Pendentes
+            </a>
+            <a href="/admin/chat" class="quick-action-btn">
+                💬 Abrir Chat
+            </a>
+        </div>
+        
         <div class="stats-grid">
             <div class="stat-card">
                 <h3>Total de Usuários</h3>
@@ -173,13 +246,18 @@
                         <th>Valor</th>
                         <th>Status Pagamento</th>
                         <th>Status</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     <% recentAppointments.forEach(function(apt) { %>
                     <tr>
                         <td>#<%= apt.id %></td>
-                        <td><%= apt.user_name || 'N/A' %></td>
+                        <td>
+                            <a href="/admin/users/<%= apt.user_id %>" style="color: #667eea; text-decoration: none;">
+                                <%= apt.user_name || 'N/A' %>
+                            </a>
+                        </td>
                         <td><%= apt.service_name || 'N/A' %></td>
                         <td><%= new Date(apt.appointment_date).toLocaleDateString('pt-BR') %> <%= apt.appointment_time %></td>
                         <td>R$ <%= parseFloat(apt.total_amount || 0).toFixed(2).replace('.', ',') %></td>
@@ -192,6 +270,9 @@
                             <span class="status-badge <%= apt.status === 'confirmed' ? 'status-confirmed' : 'status-pending' %>">
                                 <%= apt.status === 'confirmed' ? 'Confirmado' : apt.status === 'pending' ? 'Pendente' : apt.status %>
                             </span>
+                        </td>
+                        <td>
+                            <a href="/admin/appointments/<%= apt.id %>" class="btn btn-sm btn-primary">Ver</a>
                         </td>
                     </tr>
                     <% }); %>
@@ -210,6 +291,7 @@
                         <th>Tipo</th>
                         <th>Role</th>
                         <th>Data Cadastro</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -221,6 +303,9 @@
                         <td><%= usr.type %></td>
                         <td><%= usr.role || 'client' %></td>
                         <td><%= new Date(usr.created_at).toLocaleDateString('pt-BR') %></td>
+                        <td>
+                            <a href="/admin/users/<%= usr.id %>" class="btn btn-sm btn-primary">Ver</a>
+                        </td>
                     </tr>
                     <% }); %>
                 </tbody>
@@ -229,4 +314,3 @@
     </div>
 </body>
 </html>
-

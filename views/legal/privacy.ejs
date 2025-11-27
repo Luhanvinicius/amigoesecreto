@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidade - Amigo e Secreto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f7fafc;
+            color: #333;
+            line-height: 1.8;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 { color: #667eea; margin: 2rem 0 1rem; font-size: 1.4rem; }
+        h3 { color: #333; margin: 1.5rem 0 0.5rem; font-size: 1.1rem; }
+        p { margin-bottom: 1rem; color: #555; }
+        ul { margin: 1rem 0 1rem 2rem; color: #555; }
+        li { margin-bottom: 0.5rem; }
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .back-link:hover { opacity: 0.9; }
+        .last-update { color: #888; font-size: 0.9rem; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Política de Privacidade</h1>
+        <p>Amigo e Secreto</p>
+    </div>
+    
+    <div class="container">
+        <p>Esta Política de Privacidade descreve como o <strong>Amigo e Secreto</strong> coleta, usa e protege suas informações pessoais.</p>
+        
+        <h2>1. Informações que Coletamos</h2>
+        <p>Coletamos as seguintes informações quando você usa nosso serviço:</p>
+        <ul>
+            <li><strong>Dados de cadastro:</strong> nome (ou apelido), e-mail, telefone</li>
+            <li><strong>Dados de agendamento:</strong> data, horário, serviço escolhido</li>
+            <li><strong>Dados de conversa:</strong> expectativas, tema da conversa (opcionais)</li>
+            <li><strong>Dados de pagamento:</strong> informações processadas pelo gateway de pagamento (Asaas)</li>
+        </ul>
+        
+        <h2>2. Como Usamos suas Informações</h2>
+        <p>Utilizamos suas informações para:</p>
+        <ul>
+            <li>Processar seus agendamentos e pagamentos</li>
+            <li>Entrar em contato para confirmar ou agendar conversas</li>
+            <li>Personalizar sua experiência de atendimento</li>
+            <li>Enviar comunicações importantes sobre o serviço</li>
+        </ul>
+        
+        <h2>3. Confidencialidade das Conversas</h2>
+        <p><strong>Seu sigilo é nossa prioridade.</strong> O conteúdo das suas conversas é mantido em total confidencialidade. Não compartilhamos, vendemos ou divulgamos o conteúdo das conversas com terceiros.</p>
+        
+        <h2>4. Proteção de Dados</h2>
+        <p>Implementamos medidas de segurança para proteger suas informações, incluindo:</p>
+        <ul>
+            <li>Criptografia de dados sensíveis</li>
+            <li>Acesso restrito aos dados pessoais</li>
+            <li>Monitoramento de segurança contínuo</li>
+        </ul>
+        
+        <h2>5. Compartilhamento de Dados</h2>
+        <p>Não vendemos ou alugamos seus dados pessoais. Compartilhamos dados apenas com:</p>
+        <ul>
+            <li><strong>Processadores de pagamento:</strong> para processar transações</li>
+            <li><strong>Autoridades legais:</strong> quando exigido por lei</li>
+        </ul>
+        
+        <h2>6. Seus Direitos</h2>
+        <p>Você tem direito a:</p>
+        <ul>
+            <li>Acessar seus dados pessoais</li>
+            <li>Solicitar correção de dados incorretos</li>
+            <li>Solicitar exclusão de seus dados</li>
+            <li>Retirar consentimento a qualquer momento</li>
+        </ul>
+        
+        <h2>7. Contato</h2>
+        <p>Para questões sobre privacidade, entre em contato:</p>
+        <p>E-mail: <a href="mailto:contato@amigoesecreto.com">contato@amigoesecreto.com</a></p>
+        
+        <p class="last-update">Última atualização: <%= new Date().toLocaleDateString('pt-BR') %></p>
+        
+        <a href="/" class="back-link">← Voltar ao Início</a>
+    </div>
+</body>
+</html>
+

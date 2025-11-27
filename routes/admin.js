@@ -158,7 +158,7 @@ router.post('/appointments/:id/update-contact-status', async (req, res) => {
 // Gerenciar usuários
 router.get('/users', async (req, res) => {
   try {
-    const { role, page = 1 } = req.query;
+    const { role, search, page = 1 } = req.query;
     const limit = 20;
     const offset = (page - 1) * limit;
     
@@ -168,6 +168,11 @@ router.get('/users', async (req, res) => {
     if (role) {
       whereClause += ' AND role = ?';
       params.push(role);
+    }
+    
+    if (search) {
+      whereClause += ' AND (name LIKE ? OR email LIKE ?)';
+      params.push('%' + search + '%', '%' + search + '%');
     }
     
     const [users] = await pool.query(`
@@ -186,12 +191,153 @@ router.get('/users', async (req, res) => {
       users: users,
       currentPage: parseInt(page),
       totalPages: Math.ceil(count[0].total / limit),
-      filters: { role },
+      filters: { role, search },
       title: 'Gerenciar Usuários - Admin'
     });
   } catch (error) {
     console.error('Erro ao carregar usuários:', error);
     res.status(500).send('Erro ao carregar usuários');
+  }
+});
+
+// Criar novo usuário
+router.post('/users/create', async (req, res) => {
+  try {
+    const { name, email, password, contact, gender, instagram, role, display_name, handles_calls, handles_messages, notes, user_type } = req.body;
+    
+    // Verificar se email já existe
+    const [existing] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
+    if (existing.length > 0) {
+      return res.redirect('/admin/users?error=Email já cadastrado');
+    }
+    
+    // Determinar o role
+    let userRole = role || 'client';
+    if (user_type === 'client') userRole = 'client';
+    
+    // Criar usuário
+    const [result] = await pool.query(
+      `INSERT INTO users (name, email, password, contact, gender, instagram, type, role) 
+       VALUES (?, ?, ?, ?, ?, ?, 'new', ?)`,
+      [name, email, password || null, contact || null, gender || null, instagram || null, userRole]
+    );
+    
+    const userId = result.insertId;
+    
+    // Se for atendente, criar registro na tabela attendants
+    if (userRole === 'attendant') {
+      await pool.query(
+        `INSERT INTO attendants (user_id, display_name, real_name, handles_calls, handles_messages) 
+         VALUES (?, ?, ?, ?, ?)`,
+        [userId, display_name || 'Lia', name, handles_calls ? 1 : 0, handles_messages ? 1 : 0]
+      );
+    }
+    
+    // Se tiver observação inicial, salvar
+    if (notes && notes.trim()) {
+      await pool.query(
+        `INSERT INTO client_history (user_id, note_type, notes, created_by) VALUES (?, 'observation', ?, ?)`,
+        [userId, notes, req.session.userId]
+      );
+    }
+    
+    res.redirect('/admin/users?success=Usuário criado com sucesso');
+  } catch (error) {
+    console.error('Erro ao criar usuário:', error);
+    res.redirect('/admin/users?error=Erro ao criar usuário');
+  }
+});
+
+// Ver detalhes do usuário (CRM)
+router.get('/users/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Buscar usuário
+    const [users] = await pool.query('SELECT * FROM users WHERE id = ?', [id]);
+    if (users.length === 0) {
+      return res.redirect('/admin/users?error=Usuário não encontrado');
+    }
+    
+    const user = users[0];
+    
+    // Buscar agendamentos do usuário
+    const [appointments] = await pool.query(`
+      SELECT a.*, s.name as service_name, l.name as location_name
+      FROM appointments a
+      LEFT JOIN services s ON a.service_id = s.id
+      LEFT JOIN locations l ON a.location_id = l.id
+      WHERE a.user_id = ?
+      ORDER BY a.created_at DESC
+    `, [id]);
+    
+    // Buscar histórico/observações
+    const [clientHistory] = await pool.query(`
+      SELECT ch.*, u.name as created_by_name
+      FROM client_history ch
+      LEFT JOIN users u ON ch.created_by = u.id
+      WHERE ch.user_id = ?
+      ORDER BY ch.created_at DESC
+    `, [id]);
+    
+    // Buscar atendentes
+    const [attendants] = await pool.query(`
+      SELECT a.*, u.name as user_name
+      FROM attendants a
+      LEFT JOIN users u ON a.user_id = u.id
+      WHERE a.is_active = 1
+    `);
+    
+    res.render('admin/user-detail', {
+      user,
+      appointments,
+      clientHistory,
+      attendants,
+      title: `Cliente #${id} - ${user.name}`
+    });
+  } catch (error) {
+    console.error('Erro ao carregar detalhes do usuário:', error);
+    res.redirect('/admin/users?error=Erro ao carregar usuário');
+  }
+});
+
+// Atualizar atendente do usuário
+router.post('/users/:id/attendant', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { attendant_id } = req.body;
+    
+    await pool.query(
+      'UPDATE users SET assigned_attendant_id = ? WHERE id = ?',
+      [attendant_id || null, id]
+    );
+    
+    res.json({ success: true, message: 'Atendente atualizado' });
+  } catch (error) {
+    console.error('Erro ao atualizar atendente:', error);
+    res.status(500).json({ success: false, message: 'Erro ao atualizar' });
+  }
+});
+
+// Adicionar observação ao usuário
+router.post('/users/:id/notes', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { notes } = req.body;
+    
+    if (!notes || !notes.trim()) {
+      return res.status(400).json({ success: false, message: 'Observação vazia' });
+    }
+    
+    await pool.query(
+      `INSERT INTO client_history (user_id, note_type, notes, created_by) VALUES (?, 'observation', ?, ?)`,
+      [id, notes.trim(), req.session.userId]
+    );
+    
+    res.json({ success: true, message: 'Observação salva' });
+  } catch (error) {
+    console.error('Erro ao salvar observação:', error);
+    res.status(500).json({ success: false, message: 'Erro ao salvar' });
   }
 });
 
@@ -213,19 +359,23 @@ router.get('/services', async (req, res) => {
 // Criar/Editar serviço
 router.post('/services', async (req, res) => {
   try {
-    const { id, name, price, duration, description } = req.body;
+    const { id, name, price, duration, description, requires_schedule, is_subscription } = req.body;
+    
+    // Converter checkbox para booleano/int
+    const requiresSchedule = requires_schedule ? 1 : 0;
+    const isSubscription = is_subscription ? 1 : 0;
     
     if (id) {
       // Atualizar
       await pool.query(
-        'UPDATE services SET name = ?, price = ?, duration = ?, description = ? WHERE id = ?',
-        [name, price, duration, description, id]
+        'UPDATE services SET name = ?, price = ?, duration = ?, description = ?, requires_schedule = ?, is_subscription = ? WHERE id = ?',
+        [name, price, duration || 0, description, requiresSchedule, isSubscription, id]
       );
     } else {
       // Criar
       await pool.query(
-        'INSERT INTO services (name, price, duration, description) VALUES (?, ?, ?, ?)',
-        [name, price, duration, description]
+        'INSERT INTO services (name, price, duration, description, requires_schedule, is_subscription) VALUES (?, ?, ?, ?, ?, ?)',
+        [name, price, duration || 0, description, requiresSchedule, isSubscription]
       );
     }
     
@@ -668,6 +818,57 @@ router.post('/whatsapp/pending/:id/start', async (req, res) => {
   } catch (error) {
     console.error('Erro ao iniciar atendimento:', error);
     res.status(500).json({ error: error.message || 'Erro ao iniciar atendimento' });
+  }
+});
+
+// Chat interno
+router.get('/chat', async (req, res) => {
+  try {
+    // Buscar todas as conversas (usuários que já trocaram mensagens)
+    const [conversations] = await pool.query(`
+      SELECT DISTINCT
+        u.id as user_id,
+        u.name as user_name,
+        u.email,
+        (SELECT message FROM chat_messages cm2 
+         WHERE (cm2.sender_id = u.id OR cm2.receiver_id = u.id) 
+         ORDER BY cm2.created_at DESC LIMIT 1) as last_message,
+        (SELECT DATE_FORMAT(created_at, '%H:%i') FROM chat_messages cm3 
+         WHERE (cm3.sender_id = u.id OR cm3.receiver_id = u.id) 
+         ORDER BY cm3.created_at DESC LIMIT 1) as last_time,
+        (SELECT COUNT(*) FROM chat_messages cm4 
+         WHERE cm4.sender_id = u.id AND cm4.is_read = 0) as unread
+      FROM users u
+      WHERE u.role = 'client' OR u.role IS NULL
+      AND EXISTS (
+        SELECT 1 FROM chat_messages cm 
+        WHERE cm.sender_id = u.id OR cm.receiver_id = u.id
+      )
+      ORDER BY (SELECT MAX(created_at) FROM chat_messages cm5 
+                WHERE cm5.sender_id = u.id OR cm5.receiver_id = u.id) DESC
+    `);
+    
+    // Se não houver conversas, buscar todos os clientes
+    let finalConversations = conversations;
+    if (conversations.length === 0) {
+      const [clients] = await pool.query(`
+        SELECT id as user_id, name as user_name, email, NULL as last_message, NULL as last_time, 0 as unread
+        FROM users 
+        WHERE role = 'client' OR role IS NULL
+        ORDER BY created_at DESC
+        LIMIT 20
+      `);
+      finalConversations = clients;
+    }
+    
+    res.render('admin/chat', {
+      conversations: finalConversations,
+      userId: req.session.userId,
+      title: 'Chat - Admin'
+    });
+  } catch (error) {
+    console.error('Erro ao carregar chat:', error);
+    res.status(500).send('Erro ao carregar chat');
   }
 });
 

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termos de Serviço - Amigo e Secreto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f7fafc;
+            color: #333;
+            line-height: 1.8;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 { color: #667eea; margin: 2rem 0 1rem; font-size: 1.4rem; }
+        h3 { color: #333; margin: 1.5rem 0 0.5rem; font-size: 1.1rem; }
+        p { margin-bottom: 1rem; color: #555; }
+        ul { margin: 1rem 0 1rem 2rem; color: #555; }
+        li { margin-bottom: 0.5rem; }
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .back-link:hover { opacity: 0.9; }
+        .last-update { color: #888; font-size: 0.9rem; margin-top: 2rem; }
+        .alert { background: #fff3cd; border-left: 4px solid #ffc107; padding: 1rem; margin: 1rem 0; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Termos de Serviço</h1>
+        <p>Amigo e Secreto</p>
+    </div>
+    
+    <div class="container">
+        <p>Ao utilizar os serviços do <strong>Amigo e Secreto</strong>, você concorda com os seguintes termos:</p>
+        
+        <h2>1. Descrição do Serviço</h2>
+        <p>O Amigo e Secreto é um serviço de <strong>escuta ativa e apoio emocional</strong>. Oferecemos um espaço seguro para você compartilhar, desabafar e ser ouvido sem julgamentos.</p>
+        
+        <div class="alert">
+            <strong>⚠️ Importante:</strong> Este NÃO é um serviço de terapia ou tratamento psicológico. Não substituímos profissionais de saúde mental. Se você está passando por uma crise ou emergência, procure ajuda profissional imediata.
+        </div>
+        
+        <h2>2. Uso do Serviço</h2>
+        <p>Ao usar nosso serviço, você concorda em:</p>
+        <ul>
+            <li>Fornecer informações verdadeiras no cadastro</li>
+            <li>Manter a confidencialidade das conversas</li>
+            <li>Tratar a atendente com respeito</li>
+            <li>Não usar o serviço para fins ilegais</li>
+        </ul>
+        
+        <h2>3. Agendamentos e Pagamentos</h2>
+        <ul>
+            <li>Os agendamentos devem ser realizados através do site</li>
+            <li>O pagamento é processado antes da confirmação do agendamento</li>
+            <li>Aceitamos pagamentos via PIX através da plataforma Asaas</li>
+        </ul>
+        
+        <h2>4. Cancelamentos e Reembolsos</h2>
+        <ul>
+            <li>Cancelamentos com mais de 24h de antecedência: reembolso integral</li>
+            <li>Cancelamentos com menos de 24h: sem reembolso, mas pode remarcar</li>
+            <li>Não comparecimento sem aviso: sem reembolso</li>
+        </ul>
+        
+        <h2>5. Confidencialidade</h2>
+        <p>Garantimos total sigilo sobre o conteúdo das conversas. Suas informações são protegidas e não serão compartilhadas com terceiros, exceto quando exigido por lei.</p>
+        
+        <h2>6. Limitação de Responsabilidade</h2>
+        <p>O Amigo e Secreto oferece um serviço de escuta ativa e apoio emocional. Não nos responsabilizamos por:</p>
+        <ul>
+            <li>Decisões tomadas pelo usuário baseadas nas conversas</li>
+            <li>Tratamento de condições médicas ou psicológicas</li>
+            <li>Situações de emergência ou crise</li>
+        </ul>
+        
+        <h2>7. Modificações dos Termos</h2>
+        <p>Reservamo-nos o direito de modificar estes termos a qualquer momento. As alterações entram em vigor após publicação no site.</p>
+        
+        <h2>8. Contato</h2>
+        <p>Para dúvidas sobre os termos:</p>
+        <p>E-mail: <a href="mailto:contato@amigoesecreto.com">contato@amigoesecreto.com</a></p>
+        
+        <p class="last-update">Última atualização: <%= new Date().toLocaleDateString('pt-BR') %></p>
+        
+        <a href="/" class="back-link">← Voltar ao Início</a>
+    </div>
+</body>
+</html>
+

@@ -15,7 +15,7 @@
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 1.5rem 2rem;
+            padding: 1rem 2rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .header-content {
@@ -25,14 +25,30 @@
             justify-content: space-between;
             align-items: center;
         }
-        .header h1 { font-size: 1.5rem; }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .header-logo {
+            height: 45px;
+            border-radius: 8px;
+            background: white;
+            padding: 4px;
+        }
+        .header h1 { font-size: 1.3rem; }
+        .header-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
         .header-nav a {
             color: white;
             text-decoration: none;
-            margin-left: 1.5rem;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.75rem;
             border-radius: 6px;
             transition: background 0.3s;
+            font-size: 0.9rem;
         }
         .header-nav a:hover { background: rgba(255,255,255,0.2); }
         .container {
@@ -40,9 +56,41 @@
             margin: 2rem auto;
             padding: 0 2rem;
         }
+        .welcome-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .welcome-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .welcome-card p {
+            opacity: 0.9;
+        }
+        .welcome-card .btn-light {
+            background: white;
+            color: #667eea;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .welcome-card .btn-light:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
@@ -72,6 +120,9 @@
         .section h2 {
             margin-bottom: 1.5rem;
             color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         .appointments-table {
             width: 100%;
@@ -103,25 +154,43 @@
             border-radius: 6px;
             cursor: pointer;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             transition: all 0.3s;
+            font-weight: 500;
         }
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+        .empty-state .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
         @media (max-width: 768px) {
             .appointments-table { font-size: 0.85rem; }
             .appointments-table th,
             .appointments-table td { padding: 0.5rem; }
+            .header-content { flex-direction: column; gap: 1rem; }
         }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="header-content">
-            <h1>Olá, <%= user.name %>! 👋</h1>
+            <div class="header-left">
+                <a href="/">
+                    <img src="/images/logo-amigo-secreto.png" alt="Amigo e Secreto" class="header-logo">
+                </a>
+                <h1>Olá, <%= user.name %>! 👋</h1>
+            </div>
             <nav class="header-nav">
                 <a href="/dashboard">Dashboard</a>
                 <a href="/dashboard/profile">Meu Perfil</a>
@@ -132,6 +201,17 @@
     </div>
     
     <div class="container">
+        <!-- Card de Boas-vindas -->
+        <div class="welcome-card">
+            <div>
+                <h2>Bem-vindo(a) à sua área!</h2>
+                <p>Aqui você pode acompanhar seus agendamentos e conversar com a Lia.</p>
+            </div>
+            <a href="/appointments/amigo-secreto" class="btn-light">
+                📅 Fazer Novo Agendamento
+            </a>
+        </div>
+        
         <div class="stats-grid">
             <div class="stat-card">
                 <h3>Total de Agendamentos</h3>
@@ -152,7 +232,7 @@
         </div>
         
         <div class="section">
-            <h2>Meus Agendamentos</h2>
+            <h2>📅 Meus Agendamentos</h2>
             <% if (appointments.length > 0) { %>
             <table class="appointments-table">
                 <thead>
@@ -170,7 +250,7 @@
                     <% appointments.forEach(function(apt) { %>
                     <tr>
                         <td><%= new Date(apt.appointment_date).toLocaleDateString('pt-BR') %></td>
-                        <td><%= apt.appointment_time %></td>
+                        <td><%= apt.appointment_time || '-' %></td>
                         <td><%= apt.service_name || 'N/A' %></td>
                         <td><%= apt.location_name || 'N/A' %></td>
                         <td>R$ <%= parseFloat(apt.total_amount || 0).toFixed(2).replace('.', ',') %></td>
@@ -189,14 +269,19 @@
                 </tbody>
             </table>
             <% } else { %>
-            <p style="text-align: center; color: #666; padding: 2rem;">
-                Você ainda não tem agendamentos. <a href="/appointments/amigo-secreto" class="btn btn-primary">Fazer Agendamento</a>
-            </p>
+            <div class="empty-state">
+                <div class="icon">📅</div>
+                <h3>Nenhum agendamento ainda</h3>
+                <p>Que tal agendar uma conversa com a Lia?</p>
+                <a href="/appointments/amigo-secreto" class="btn btn-primary" style="margin-top: 1rem;">
+                    Fazer Agendamento
+                </a>
+            </div>
             <% } %>
         </div>
     </div>
+    
+    <!-- Chat Widget Flutuante -->
+    <%- include('../partials/chat-widget') %>
 </body>
 </html>
-
-
-

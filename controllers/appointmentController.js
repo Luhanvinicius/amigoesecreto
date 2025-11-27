@@ -1,6 +1,7 @@
 const path = require('path');
 const pool = require('../config/database');
 const asaas = require('../config/asaas');
+const emailService = require('../services/emailService');
 
 // Dados mockados do business
 const mockBusiness = {
@@ -102,6 +103,12 @@ const appointmentController = {
       const appointment_time = normalizeField(rawData.appointment_time);
       const payment_method = normalizeField(rawData.payment_method);
       const business_id = normalizeField(rawData.business_id);
+      
+      // Novos campos personalizados
+      const client_expectation = normalizeField(rawData.client_expectation);
+      const conversation_topic = normalizeField(rawData.conversation_topic);
+      const client_instagram = normalizeField(rawData.client_instagram);
+      const requires_schedule = normalizeField(rawData.requires_schedule);
       
       // Log dos dados recebidos para debug
       console.log('=== DADOS RECEBIDOS NO SUBMIT ===');
@@ -334,12 +341,14 @@ const appointmentController = {
       console.log('   appointment_date:', formattedDate);
       console.log('   appointment_time:', appointment_time);
       console.log('   total_amount:', totalAmount);
+      console.log('   client_expectation:', client_expectation || 'N/A');
+      console.log('   conversation_topic:', conversation_topic || 'N/A');
       
       const [appointmentResult] = await connection.query(
         `INSERT INTO appointments 
-         (user_id, service_id, location_id, appointment_date, appointment_time, total_amount, status, payment_status) 
-         VALUES (?, ?, ?, ?, ?, ?, 'pending', 'pending')`,
-        [userId, service, location || null, formattedDate, appointment_time, totalAmount]
+         (user_id, service_id, location_id, appointment_date, appointment_time, total_amount, status, payment_status, client_expectation, conversation_topic, client_instagram) 
+         VALUES (?, ?, ?, ?, ?, ?, 'pending', 'pending', ?, ?, ?)`,
+        [userId, service, location || null, formattedDate, appointment_time, totalAmount, client_expectation || null, conversation_topic || null, client_instagram || null]
       );
       
       const appointmentId = appointmentResult.insertId;
@@ -549,6 +558,20 @@ const appointmentController = {
         console.warn('Payment ID:', asaasPaymentId);
         console.warn('Payment Response:', JSON.stringify(asaasPayment, null, 2));
       }
+      
+      // Enviar email de confirmação (assíncrono, não bloqueia)
+      const userData = { name: finalName, email: finalEmail, contact: finalContact, password: finalPassword };
+      const appointmentData = { id: appointmentId, total_amount: totalAmount, appointment_date: formattedDate, appointment_time, client_expectation, conversation_topic };
+      const serviceInfo = { name: serviceData[0]?.name || 'Serviço' };
+      
+      emailService.sendAppointmentConfirmation(userData, appointmentData, serviceInfo).catch(err => {
+        console.log('⚠️ Erro ao enviar email (não crítico):', err.message);
+      });
+      
+      // Notificar admin sobre novo agendamento
+      emailService.notifyAdminNewAppointment(userData, appointmentData, serviceInfo).catch(err => {
+        console.log('⚠️ Erro ao notificar admin (não crítico):', err.message);
+      });
       
       res.json({
         success: true,

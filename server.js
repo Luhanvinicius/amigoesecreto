@@ -111,6 +111,19 @@ app.get('/', (req, res) => {
   });
 });
 
+// Páginas legais
+app.get('/politica-privacidade', (req, res) => {
+  res.render('legal/privacy', { title: 'Política de Privacidade' });
+});
+
+app.get('/termos-servico', (req, res) => {
+  res.render('legal/terms', { title: 'Termos de Serviço' });
+});
+
+app.get('/politica-cookies', (req, res) => {
+  res.render('legal/cookies', { title: 'Política de Cookies' });
+});
+
 // Middleware de tratamento de erro para rotas não encontradas
 // IMPORTANTE: Este middleware deve vir DEPOIS de todas as rotas
 app.use((req, res, next) => {

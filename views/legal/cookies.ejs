@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Cookies - Amigo e Secreto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f7fafc;
+            color: #333;
+            line-height: 1.8;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 { color: #667eea; margin: 2rem 0 1rem; font-size: 1.4rem; }
+        h3 { color: #333; margin: 1.5rem 0 0.5rem; font-size: 1.1rem; }
+        p { margin-bottom: 1rem; color: #555; }
+        ul { margin: 1rem 0 1rem 2rem; color: #555; }
+        li { margin-bottom: 0.5rem; }
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        th, td { padding: 0.75rem; border: 1px solid #e0e0e0; text-align: left; }
+        th { background: #f8f9fa; }
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .back-link:hover { opacity: 0.9; }
+        .last-update { color: #888; font-size: 0.9rem; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Política de Cookies</h1>
+        <p>Amigo e Secreto</p>
+    </div>
+    
+    <div class="container">
+        <p>Esta política explica como o <strong>Amigo e Secreto</strong> utiliza cookies e tecnologias similares.</p>
+        
+        <h2>1. O que são Cookies?</h2>
+        <p>Cookies são pequenos arquivos de texto armazenados no seu dispositivo quando você visita nosso site. Eles ajudam a melhorar sua experiência e funcionamento do site.</p>
+        
+        <h2>2. Tipos de Cookies que Usamos</h2>
+        
+        <table>
+            <tr>
+                <th>Tipo</th>
+                <th>Finalidade</th>
+                <th>Duração</th>
+            </tr>
+            <tr>
+                <td><strong>Essenciais</strong></td>
+                <td>Necessários para o funcionamento básico do site (sessão, autenticação)</td>
+                <td>Sessão / 24 horas</td>
+            </tr>
+            <tr>
+                <td><strong>Funcionais</strong></td>
+                <td>Lembrar suas preferências e configurações</td>
+                <td>30 dias</td>
+            </tr>
+            <tr>
+                <td><strong>Analíticos</strong></td>
+                <td>Entender como você usa o site para melhorias</td>
+                <td>1 ano</td>
+            </tr>
+        </table>
+        
+        <h2>3. Cookies Essenciais</h2>
+        <p>São necessários para:</p>
+        <ul>
+            <li>Manter você logado durante a sessão</li>
+            <li>Processar pagamentos de forma segura</li>
+            <li>Lembrar itens no seu agendamento</li>
+        </ul>
+        
+        <h2>4. Como Gerenciar Cookies</h2>
+        <p>Você pode controlar e/ou deletar cookies conforme desejar através das configurações do seu navegador:</p>
+        <ul>
+            <li><strong>Chrome:</strong> Configurações → Privacidade e segurança → Cookies</li>
+            <li><strong>Firefox:</strong> Opções → Privacidade e Segurança → Cookies</li>
+            <li><strong>Safari:</strong> Preferências → Privacidade → Cookies</li>
+            <li><strong>Edge:</strong> Configurações → Privacidade → Cookies</li>
+        </ul>
+        
+        <h2>5. Desabilitar Cookies</h2>
+        <p>Você pode desabilitar cookies, mas algumas funcionalidades do site podem não funcionar corretamente, como:</p>
+        <ul>
+            <li>Manter sessão de login</li>
+            <li>Lembrar preferências</li>
+            <li>Processar agendamentos</li>
+        </ul>
+        
+        <h2>6. Atualizações</h2>
+        <p>Podemos atualizar esta política periodicamente. Recomendamos revisar esta página regularmente.</p>
+        
+        <h2>7. Contato</h2>
+        <p>Para dúvidas sobre cookies:</p>
+        <p>E-mail: <a href="mailto:contato@amigoesecreto.com">contato@amigoesecreto.com</a></p>
+        
+        <p class="last-update">Última atualização: <%= new Date().toLocaleDateString('pt-BR') %></p>
+        
+        <a href="/" class="back-link">← Voltar ao Início</a>
+    </div>
+</body>
+</html>
+

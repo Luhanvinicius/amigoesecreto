@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agendamento Concluído</title>
+    <title>Obrigado! - Amigo e Secreto</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -24,9 +24,9 @@
         
         .success-container {
             background: white;
-            border-radius: 20px;
+            border-radius: 24px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
+            max-width: 650px;
             width: 100%;
             padding: 50px 40px;
             text-align: center;
@@ -43,55 +43,94 @@
             justify-content: center;
             font-size: 50px;
             color: white;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
         
         .success-container h1 {
             color: #333;
-            font-size: 32px;
-            margin-bottom: 20px;
+            font-size: 2rem;
+            margin-bottom: 15px;
             font-weight: 700;
         }
         
-        .success-container .appointment-number {
-            background: #f8f9fa;
-            padding: 15px 30px;
-            border-radius: 10px;
-            display: inline-block;
-            margin: 20px 0;
-            font-size: 18px;
-            color: #667eea;
-            font-weight: 600;
+        .success-container .subtitle {
+            color: #666;
+            font-size: 1.15rem;
+            margin-bottom: 25px;
+            line-height: 1.6;
         }
         
-        .success-container .contact-message {
+        .success-container .appointment-number {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 18px 35px;
+            border-radius: 12px;
+            display: inline-block;
+            margin: 20px 0;
+            font-size: 1.1rem;
+            color: #667eea;
+            font-weight: 600;
+            border: 2px solid #667eea;
+        }
+        
+        .message-box {
             background: #e3f2fd;
-            border-left: 4px solid #2196f3;
-            padding: 20px;
-            border-radius: 10px;
+            border-left: 5px solid #2196f3;
+            padding: 25px;
+            border-radius: 12px;
             margin: 30px 0;
             text-align: left;
         }
         
-        .success-container .contact-message h3 {
+        .message-box.success-box {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        
+        .message-box h3 {
             color: #1976d2;
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-        
-        .success-container .contact-message p {
-            color: #555;
-            font-size: 16px;
-            line-height: 1.6;
-        }
-        
-        .success-container .contact-icons {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
             display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin: 20px 0;
+            align-items: center;
+            gap: 10px;
         }
         
-        .success-container .contact-icons a {
+        .message-box.success-box h3 {
+            color: #155724;
+        }
+        
+        .message-box p {
+            color: #555;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+        
+        .contact-info {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
+        }
+        
+        .contact-info h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .contact-icons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .contact-icons a {
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -101,80 +140,165 @@
             text-decoration: none;
             border-radius: 10px;
             font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s;
+            font-size: 0.95rem;
         }
         
-        .success-container .contact-icons a:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        .contact-icons a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
         }
         
-        .back-button {
+        .contact-icons a.whatsapp {
+            background: #25D366;
+        }
+        
+        .contact-icons a.whatsapp:hover {
+            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
             margin-top: 30px;
-            padding: 12px 30px;
-            background: transparent;
-            color: #667eea;
-            border: 2px solid #667eea;
+        }
+        
+        .btn {
+            padding: 14px 28px;
             border-radius: 10px;
-            font-size: 16px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
         }
         
-        .back-button:hover {
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-outline:hover {
             background: #667eea;
             color: white;
+        }
+        
+        .footer-note {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .footer-note a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        @media (max-width: 480px) {
+            .success-container {
+                padding: 30px 20px;
+            }
+            
+            .success-container h1 {
+                font-size: 1.5rem;
+            }
+            
+            .contact-icons {
+                flex-direction: column;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
     <div class="success-container">
         <div class="success-icon">✓</div>
-        <h1>Agendamento Realizado com Sucesso!</h1>
-        <p style="color: #666; font-size: 18px; margin-bottom: 20px;">
-            Seu pagamento foi confirmado e seu agendamento está ativo.
+        
+        <h1>Obrigado pelo seu agendamento!</h1>
+        
+        <p class="subtitle">
+            Recebemos seu pedido e estamos muito felizes em poder ajudar você. 
+            Sua conversa com a Lia está quase pronta!
         </p>
+        
         <div class="appointment-number">
-            Número do agendamento: <strong>#<%= appointmentId %></strong>
+            Agendamento <strong>#<%= appointmentId %></strong>
         </div>
         
         <% if (userRegistered) { %>
-        <div class="contact-message" style="background: #d4edda; border-left-color: #28a745; margin-bottom: 20px;">
-            <h3 style="color: #155724;">✅ Conta Criada com Sucesso!</h3>
-            <p style="color: #155724;">
-                Sua conta foi criada com sucesso! Você pode fazer login usando o e-mail <strong><%= userEmail %></strong> 
-                e a senha que você cadastrou para acessar seu painel e acompanhar seus agendamentos.
+        <div class="message-box success-box">
+            <h3>✅ Conta Criada com Sucesso!</h3>
+            <p>
+                Sua conta foi criada! Você pode fazer login usando o e-mail 
+                <strong><%= userEmail %></strong> e a senha que você cadastrou para acessar 
+                sua área e acompanhar seus agendamentos.
             </p>
         </div>
         <% } %>
         
-        <div class="contact-message">
-            <h3>📱 Em breve entraremos em contato!</h3>
+        <div class="message-box">
+            <h3>📱 Próximos Passos</h3>
             <p>
-                Nossa equipe entrará em contato com você em breve através do <strong>Instagram</strong> ou <strong>WhatsApp</strong> 
-                para confirmar os detalhes do seu agendamento e fornecer mais informações.
+                <strong>Entraremos em contato em alguns minutos</strong> através do Instagram ou WhatsApp 
+                para confirmar os detalhes do seu agendamento e começar nossa conversa.
+            </p>
+            <p style="margin-top: 10px;">
+                Fique tranquilo(a), estamos aqui para você! 💜
             </p>
         </div>
         
-        <div class="contact-icons">
-            <a href="https://instagram.com/amigoesecreto" target="_blank" rel="noopener">
-                📷 Instagram
+        <div class="contact-info">
+            <h4>Nossos canais de contato:</h4>
+            <div class="contact-icons">
+                <a href="https://instagram.com/amigoesecreto" target="_blank" rel="noopener">
+                    📷 Instagram
+                </a>
+                <a href="https://wa.me/5511999999999" target="_blank" rel="noopener" class="whatsapp">
+                    💬 WhatsApp
+                </a>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="/login" class="btn btn-primary">
+                🔐 Acessar Minha Conta
             </a>
-            <a href="https://wa.me/5511999999999" target="_blank" rel="noopener">
-                💬 WhatsApp
+            <a href="/appointments/<%= slug %>" class="btn btn-outline">
+                📅 Fazer Novo Agendamento
             </a>
         </div>
         
-        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
-            <a href="/login" class="back-button" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
-                🔐 Fazer Login
-            </a>
-            <a href="/appointments/<%= slug %>" class="back-button">Fazer Novo Agendamento</a>
+        <div class="footer-note">
+            <p>Dúvidas? Entre em contato pelo e-mail <a href="mailto:contato@amigoesecreto.com">contato@amigoesecreto.com</a></p>
         </div>
     </div>
 </body>
 </html>
-

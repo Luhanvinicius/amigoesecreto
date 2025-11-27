@@ -1,0 +1,84 @@
+<div class="header">
+    <div class="header-content">
+        <div class="header-left">
+            <a href="/admin/dashboard" class="logo-link">
+                <img src="/images/logo-amigo-secreto.png" alt="Amigo e Secreto" class="admin-logo">
+            </a>
+            <h1><%= typeof pageTitle !== 'undefined' ? pageTitle : 'Painel Administrativo' %></h1>
+        </div>
+        <nav class="header-nav">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/appointments">Agendamentos</a>
+            <a href="/admin/users">Usuários</a>
+            <a href="/admin/services">Serviços</a>
+            <a href="/admin/agenda">Agenda</a>
+            <a href="/admin/chat">Chat</a>
+            <a href="/admin/whatsapp">WhatsApp</a>
+            <a href="/logout">Sair</a>
+        </nav>
+    </div>
+</div>
+
+<style>
+.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.logo-link {
+    display: flex;
+    align-items: center;
+}
+.admin-logo {
+    height: 45px;
+    width: auto;
+    border-radius: 8px;
+    background: white;
+    padding: 4px;
+}
+.header h1 { 
+    font-size: 1.3rem; 
+    font-weight: 600;
+}
+.header-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.header-nav a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    transition: background 0.3s;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.header-nav a:hover { background: rgba(255,255,255,0.2); }
+.header-nav a.active { background: rgba(255,255,255,0.3); }
+
+@media (max-width: 1200px) {
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .header-nav {
+        margin-top: 0.5rem;
+    }
+}
+</style>
+

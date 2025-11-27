@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliente #<%= user.id %> - <%= user.name %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .admin-logo {
+            height: 45px;
+            width: auto;
+            border-radius: 8px;
+            background: white;
+            padding: 4px;
+        }
+        .header h1 { font-size: 1.3rem; }
+        .header-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            transition: background 0.3s;
+            font-size: 0.9rem;
+        }
+        .header-nav a:hover { background: rgba(255,255,255,0.2); }
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+        }
+        .section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        .section h2 {
+            margin-bottom: 1rem;
+            color: #333;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .client-info {
+            display: grid;
+            gap: 1rem;
+        }
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .info-item label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+        .info-item span {
+            font-size: 1rem;
+            color: #333;
+            font-weight: 500;
+        }
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .badge-admin { background: #d1ecf1; color: #0c5460; }
+        .badge-client { background: #d4edda; color: #155724; }
+        .badge-attendant { background: #e2d4f0; color: #5e2ca5; }
+        .status-paid { background: #d4edda; color: #155724; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-confirmed { background: #cfe2ff; color: #084298; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th, table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+        table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #666;
+        }
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-success { background: #28a745; color: white; }
+        .btn-warning { background: #ffc107; color: #333; }
+        .btn-whatsapp { background: #25D366; color: white; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .note-item {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+        .note-item .note-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        .note-item .note-content {
+            color: #333;
+        }
+        .attendant-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+        .back-link:hover { opacity: 1; }
+        @media (max-width: 992px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="/admin/dashboard">
+                    <img src="/images/logo-amigo-secreto.png" alt="Amigo e Secreto" class="admin-logo">
+                </a>
+                <div>
+                    <a href="/admin/users" class="back-link">← Voltar para Usuários</a>
+                    <h1>Perfil do Cliente</h1>
+                </div>
+            </div>
+            <nav class="header-nav">
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/appointments">Agendamentos</a>
+                <a href="/admin/users">Usuários</a>
+                <a href="/admin/services">Serviços</a>
+                <a href="/admin/chat">Chat</a>
+                <a href="/logout">Sair</a>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="grid">
+            <!-- Coluna Esquerda - Info do Cliente -->
+            <div>
+                <div class="section">
+                    <h2>👤 Informações do Cliente</h2>
+                    <div class="client-info">
+                        <div class="info-item">
+                            <label>ID</label>
+                            <span>#<%= user.id %></span>
+                        </div>
+                        <div class="info-item">
+                            <label>Nome/Apelido</label>
+                            <span><%= user.name %></span>
+                        </div>
+                        <div class="info-item">
+                            <label>E-mail</label>
+                            <span><%= user.email %></span>
+                        </div>
+                        <div class="info-item">
+                            <label>Telefone/WhatsApp</label>
+                            <span><%= user.contact || 'Não informado' %></span>
+                        </div>
+                        <div class="info-item">
+                            <label>Instagram</label>
+                            <span><%= user.instagram || 'Não informado' %></span>
+                        </div>
+                        <div class="info-item">
+                            <label>Sexo</label>
+                            <span>
+                                <% if (user.gender === 'male') { %>Masculino
+                                <% } else if (user.gender === 'female') { %>Feminino
+                                <% } else if (user.gender === 'other') { %>Outro
+                                <% } else { %>Não informado<% } %>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <label>Tipo de Usuário</label>
+                            <span class="badge <%= user.role === 'admin' ? 'badge-admin' : (user.role === 'attendant' ? 'badge-attendant' : 'badge-client') %>">
+                                <%= user.role === 'admin' ? 'Administrador' : (user.role === 'attendant' ? 'Atendente' : 'Cliente') %>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <label>Data de Cadastro</label>
+                            <span><%= new Date(user.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %></span>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <% 
+                        var whatsappNumber = null;
+                        if (user.contact) {
+                            var cleaned = String(user.contact).replace(/\D/g, '');
+                            if (cleaned.length >= 10) {
+                                if (cleaned.indexOf('55') !== 0) {
+                                    whatsappNumber = '55' + cleaned;
+                                } else {
+                                    whatsappNumber = cleaned;
+                                }
+                            }
+                        }
+                        %>
+                        <% if (whatsappNumber) { %>
+                        <a href="https://wa.me/<%= whatsappNumber %>" target="_blank" class="btn btn-whatsapp">
+                            💬 WhatsApp
+                        </a>
+                        <% } %>
+                        <a href="/admin/chat?user=<%= user.id %>" class="btn btn-primary">
+                            💬 Chat Interno
+                        </a>
+                        <a href="mailto:<%= user.email %>" class="btn btn-warning">
+                            ✉️ Email
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Atendente Responsável -->
+                <div class="section">
+                    <h2>👩‍💼 Atendente Responsável</h2>
+                    <form id="attendant-form">
+                        <select name="attendant_id" class="attendant-select" onchange="updateAttendant(this.value)">
+                            <option value="">-- Selecione uma atendente --</option>
+                            <% attendants.forEach(function(att) { %>
+                            <option value="<%= att.id %>" <%= user.assigned_attendant_id === att.id ? 'selected' : '' %>>
+                                <%= att.real_name %> (<%= att.display_name %>)
+                            </option>
+                            <% }); %>
+                        </select>
+                        <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;">
+                            A atendente selecionada será responsável por continuar as conversas com este cliente.
+                        </p>
+                    </form>
+                </div>
+                
+                <!-- Observações do Atendimento -->
+                <div class="section">
+                    <h2>📝 Observações sobre o Cliente</h2>
+                    <form id="notes-form">
+                        <textarea name="notes" placeholder="Adicione observações sobre o atendimento, preferências do cliente, pontos importantes..."></textarea>
+                        <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">
+                            Salvar Observação
+                        </button>
+                    </form>
+                    
+                    <div style="margin-top: 1.5rem;">
+                        <h3 style="font-size: 1rem; margin-bottom: 1rem;">Histórico de Observações</h3>
+                        <% if (clientHistory && clientHistory.length > 0) { %>
+                            <% clientHistory.filter(h => h.note_type === 'observation').forEach(function(note) { %>
+                            <div class="note-item">
+                                <div class="note-header">
+                                    <span><%= note.created_by_name || 'Sistema' %></span>
+                                    <span><%= new Date(note.created_at).toLocaleDateString('pt-BR') %></span>
+                                </div>
+                                <div class="note-content"><%= note.notes %></div>
+                            </div>
+                            <% }); %>
+                        <% } else { %>
+                            <p style="color: #666; font-size: 0.9rem;">Nenhuma observação registrada ainda.</p>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Coluna Direita - Histórico -->
+            <div>
+                <!-- Resumo -->
+                <div class="section">
+                    <h2>📊 Resumo</h2>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                            <div style="font-size: 1.75rem; font-weight: 700; color: #667eea;"><%= appointments.length %></div>
+                            <div style="font-size: 0.85rem; color: #666;">Agendamentos</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                            <div style="font-size: 1.75rem; font-weight: 700; color: #28a745;"><%= appointments.filter(a => a.payment_status === 'paid').length %></div>
+                            <div style="font-size: 0.85rem; color: #666;">Pagos</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                            <div style="font-size: 1.75rem; font-weight: 700; color: #667eea;">
+                                R$ <%= appointments.filter(a => a.payment_status === 'paid').reduce((sum, a) => sum + parseFloat(a.total_amount || 0), 0).toFixed(2).replace('.', ',') %>
+                            </div>
+                            <div style="font-size: 0.85rem; color: #666;">Total Gasto</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Histórico de Agendamentos -->
+                <div class="section">
+                    <h2>📅 Histórico de Agendamentos</h2>
+                    <% if (appointments.length > 0) { %>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Serviço</th>
+                                <th>Data</th>
+                                <th>Valor</th>
+                                <th>Pagamento</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% appointments.forEach(function(apt) { %>
+                            <tr>
+                                <td>#<%= apt.id %></td>
+                                <td><%= apt.service_name || 'N/A' %></td>
+                                <td>
+                                    <%= new Date(apt.appointment_date).toLocaleDateString('pt-BR') %>
+                                    <% if (apt.appointment_time) { %><br><small><%= apt.appointment_time %></small><% } %>
+                                </td>
+                                <td>R$ <%= parseFloat(apt.total_amount || 0).toFixed(2).replace('.', ',') %></td>
+                                <td>
+                                    <span class="badge <%= apt.payment_status === 'paid' ? 'status-paid' : 'status-pending' %>">
+                                        <%= apt.payment_status === 'paid' ? 'Pago' : 'Pendente' %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge <%= apt.status === 'confirmed' ? 'status-confirmed' : 'status-pending' %>">
+                                        <%= apt.status === 'confirmed' ? 'Confirmado' : apt.status %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="/admin/appointments/<%= apt.id %>" class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">
+                                        Ver
+                                    </a>
+                                </td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                    <% } else { %>
+                    <p style="color: #666; text-align: center; padding: 2rem;">Nenhum agendamento encontrado.</p>
+                    <% } %>
+                </div>
+                
+                <!-- Informações dos Agendamentos -->
+                <div class="section">
+                    <h2>📋 Informações Compartilhadas</h2>
+                    <% 
+                    var appointmentWithInfo = appointments.find(a => a.client_expectation || a.conversation_topic || a.client_instagram);
+                    %>
+                    <% if (appointmentWithInfo) { %>
+                    <div style="display: grid; gap: 1rem;">
+                        <% if (appointmentWithInfo.client_expectation) { %>
+                        <div>
+                            <label style="font-size: 0.85rem; color: #666;">O que espera da Lia:</label>
+                            <p style="margin-top: 0.25rem;"><%= appointmentWithInfo.client_expectation %></p>
+                        </div>
+                        <% } %>
+                        <% if (appointmentWithInfo.conversation_topic) { %>
+                        <div>
+                            <label style="font-size: 0.85rem; color: #666;">Tema da conversa:</label>
+                            <p style="margin-top: 0.25rem;"><%= appointmentWithInfo.conversation_topic %></p>
+                        </div>
+                        <% } %>
+                        <% if (appointmentWithInfo.client_instagram) { %>
+                        <div>
+                            <label style="font-size: 0.85rem; color: #666;">Instagram:</label>
+                            <p style="margin-top: 0.25rem;"><%= appointmentWithInfo.client_instagram %></p>
+                        </div>
+                        <% } %>
+                    </div>
+                    <% } else { %>
+                    <p style="color: #666;">Nenhuma informação adicional compartilhada ainda.</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Atualizar atendente
+        async function updateAttendant(attendantId) {
+            try {
+                const response = await fetch('/admin/users/<%= user.id %>/attendant', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ attendant_id: attendantId || null })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showNotification('Atendente atualizado com sucesso!', 'success');
+                } else {
+                    showNotification('Erro ao atualizar atendente', 'error');
+                }
+            } catch (error) {
+                showNotification('Erro ao atualizar atendente', 'error');
+            }
+        }
+        
+        // Salvar observação
+        document.getElementById('notes-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const notes = this.querySelector('textarea[name="notes"]').value;
+            
+            if (!notes.trim()) {
+                showNotification('Digite uma observação', 'warning');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/admin/users/<%= user.id %>/notes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ notes: notes })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showNotification('Observação salva com sucesso!', 'success');
+                    location.reload();
+                } else {
+                    showNotification('Erro ao salvar observação', 'error');
+                }
+            } catch (error) {
+                showNotification('Erro ao salvar observação', 'error');
+            }
+        });
+        
+        function showNotification(message, type) {
+            alert(message);
+        }
+    </script>
+</body>
+</html>
+

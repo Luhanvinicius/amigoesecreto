@@ -15,7 +15,7 @@
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 1.5rem 2rem;
+            padding: 1rem 2rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .header-content {
@@ -25,18 +25,30 @@
             justify-content: space-between;
             align-items: center;
         }
-        .header h1 { font-size: 1.5rem; }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .admin-logo {
+            height: 45px;
+            width: auto;
+            border-radius: 8px;
+            background: white;
+            padding: 4px;
+        }
+        .header h1 { font-size: 1.3rem; }
         .header-nav a {
             color: white;
             text-decoration: none;
-            margin-left: 1.5rem;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.75rem;
             border-radius: 6px;
             transition: background 0.3s;
+            font-size: 0.9rem;
         }
         .header-nav a:hover { background: rgba(255,255,255,0.2); }
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 2rem auto;
             padding: 0 2rem;
         }
@@ -47,8 +59,12 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
         }
-        .form-group {
+        .section h2 {
             margin-bottom: 1.5rem;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
         }
         .form-group label {
             display: block;
@@ -57,7 +73,8 @@
             color: #333;
         }
         .form-group input,
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select {
             width: 100%;
             padding: 0.75rem;
             border: 2px solid #e0e0e0;
@@ -66,23 +83,36 @@
             transition: border-color 0.3s;
         }
         .form-group input:focus,
-        .form-group textarea:focus {
+        .form-group textarea:focus,
+        .form-group select:focus {
             outline: none;
             border-color: #667eea;
         }
         .form-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
         }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
         .btn {
-            padding: 0.75rem 2rem;
+            padding: 0.75rem 1.5rem;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-size: 1rem;
             font-weight: 600;
             transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -92,9 +122,21 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(102,126,234,0.4);
         }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
         .btn-danger {
             background: #dc3545;
             color: white;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
         }
         table {
             width: 100%;
@@ -124,18 +166,51 @@
             background: #f8d7da;
             color: #721c24;
         }
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+        .badge-info { background: #d1ecf1; color: #0c5460; }
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .payment-link-container {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .copy-btn {
+            padding: 0.3rem 0.6rem;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .copy-btn:hover { background: #d0d0d0; }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="header-content">
-            <h1>Gerenciar Serviços</h1>
+            <div class="header-left">
+                <a href="/admin/dashboard">
+                    <img src="/images/logo-amigo-secreto.png" alt="Amigo e Secreto" class="admin-logo">
+                </a>
+                <h1>Gerenciar Serviços</h1>
+            </div>
             <nav class="header-nav">
                 <a href="/admin/dashboard">Dashboard</a>
                 <a href="/admin/appointments">Agendamentos</a>
                 <a href="/admin/users">Usuários</a>
                 <a href="/admin/services">Serviços</a>
                 <a href="/admin/agenda">Agenda</a>
+                <a href="/admin/chat">Chat</a>
                 <a href="/admin/whatsapp">WhatsApp</a>
                 <a href="/logout">Sair</a>
             </nav>
@@ -151,34 +226,54 @@
         <% } %>
         
         <div class="section">
-            <h2 style="margin-bottom: 1.5rem;">Adicionar/Editar Serviço</h2>
-            <form method="POST" action="/admin/services">
+            <h2 id="form-title">➕ Adicionar Novo Serviço</h2>
+            <form method="POST" action="/admin/services" id="service-form">
                 <input type="hidden" name="id" id="serviceId" value="">
-                <div class="form-group">
-                    <label for="name">Nome do Serviço</label>
-                    <input type="text" id="name" name="name" required>
-                </div>
+                
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="price">Preço (R$)</label>
-                        <input type="number" id="price" name="price" step="0.01" min="0" required>
+                        <label for="name">Nome do Serviço *</label>
+                        <input type="text" id="name" name="name" required placeholder="Ex: Conversa Rápida">
                     </div>
                     <div class="form-group">
-                        <label for="duration">Duração (minutos)</label>
-                        <input type="number" id="duration" name="duration" min="0" value="30">
+                        <label for="price">Preço (R$) *</label>
+                        <input type="number" id="price" name="price" step="0.01" min="0" required placeholder="0.00">
                     </div>
                 </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="duration">Duração (minutos)</label>
+                        <input type="number" id="duration" name="duration" min="0" value="30" placeholder="30">
+                        <small style="color: #666;">Deixe 0 para serviços sem duração específica</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Opções do Serviço</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="requires_schedule" name="requires_schedule" value="1" checked>
+                            <label for="requires_schedule" style="margin: 0; font-weight: normal;">Requer agendamento de horário</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="is_subscription" name="is_subscription" value="1">
+                            <label for="is_subscription" style="margin: 0; font-weight: normal;">É uma assinatura/pacote</label>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="form-group">
                     <label for="description">Descrição</label>
-                    <textarea id="description" name="description" rows="3"></textarea>
+                    <textarea id="description" name="description" rows="3" placeholder="Descreva o serviço..."></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">Salvar Serviço</button>
-                <button type="button" class="btn" onclick="clearForm()" style="background: #6c757d; color: white; margin-left: 1rem;">Limpar</button>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary">💾 Salvar Serviço</button>
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()">🔄 Limpar</button>
+                </div>
             </form>
         </div>
         
         <div class="section">
-            <h2>Serviços Cadastrados</h2>
+            <h2>📦 Serviços Cadastrados</h2>
             <table>
                 <thead>
                     <tr>
@@ -186,6 +281,8 @@
                         <th>Nome</th>
                         <th>Preço</th>
                         <th>Duração</th>
+                        <th>Tipo</th>
+                        <th>Link de Pagamento</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -195,16 +292,43 @@
                         <td>#<%= service.id %></td>
                         <td><%= service.name %></td>
                         <td>R$ <%= parseFloat(service.price || 0).toFixed(2).replace('.', ',') %></td>
-                        <td><%= service.duration || 0 %> min</td>
                         <td>
-                            <button onclick="editService(<%= JSON.stringify(service).replace(/"/g, '&quot;') %>)" 
-                                    style="padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; margin-right: 0.5rem;">
-                                Editar
-                            </button>
-                            <button onclick="deleteService(<%= service.id %>)" 
-                                    style="padding: 0.5rem 1rem; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer;">
-                                Deletar
-                            </button>
+                            <% if (service.duration && service.duration > 0) { %>
+                                <%= service.duration %> min
+                            <% } else { %>
+                                <span class="badge badge-info">Sem duração</span>
+                            <% } %>
+                        </td>
+                        <td>
+                            <% if (service.requires_schedule === 0 || service.requires_schedule === false) { %>
+                                <span class="badge badge-warning">Sem horário</span>
+                            <% } else { %>
+                                <span class="badge badge-success">Com horário</span>
+                            <% } %>
+                            <% if (service.is_subscription) { %>
+                                <span class="badge badge-info">Assinatura</span>
+                            <% } %>
+                        </td>
+                        <td>
+                            <div class="payment-link-container">
+                                <code style="font-size: 0.75rem; background: #f0f0f0; padding: 0.25rem 0.5rem; border-radius: 4px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    /appointments/amigo-secreto?service=<%= service.id %>
+                                </code>
+                                <button class="copy-btn" onclick="copyLink(<%= service.id %>)" title="Copiar link">📋</button>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <button onclick='editService(<%= JSON.stringify(service) %>)' class="btn btn-primary btn-sm">
+                                    ✏️ Editar
+                                </button>
+                                <button onclick="generatePaymentLink(<%= service.id %>)" class="btn btn-success btn-sm">
+                                    🔗 Link
+                                </button>
+                                <button onclick="deleteService(<%= service.id %>)" class="btn btn-danger btn-sm">
+                                    🗑️ Deletar
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     <% }); %>
@@ -215,26 +339,32 @@
     
     <script>
         function editService(service) {
+            console.log('Editando serviço:', service);
             document.getElementById('serviceId').value = service.id;
-            document.getElementById('name').value = service.name;
-            document.getElementById('price').value = service.price;
-            document.getElementById('duration').value = service.duration || 30;
+            document.getElementById('name').value = service.name || '';
+            document.getElementById('price').value = service.price || 0;
+            document.getElementById('duration').value = service.duration || 0;
             document.getElementById('description').value = service.description || '';
-            document.querySelector('h2').textContent = 'Editar Serviço';
+            document.getElementById('requires_schedule').checked = service.requires_schedule !== 0 && service.requires_schedule !== false;
+            document.getElementById('is_subscription').checked = service.is_subscription === 1 || service.is_subscription === true;
+            
+            document.getElementById('form-title').textContent = '✏️ Editando Serviço #' + service.id;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         
         function clearForm() {
             document.getElementById('serviceId').value = '';
-            document.querySelector('form').reset();
-            document.querySelector('h2').textContent = 'Adicionar/Editar Serviço';
+            document.getElementById('service-form').reset();
+            document.getElementById('requires_schedule').checked = true;
+            document.getElementById('is_subscription').checked = false;
+            document.getElementById('form-title').textContent = '➕ Adicionar Novo Serviço';
         }
         
         async function deleteService(id) {
             if (!confirm('Deseja realmente deletar este serviço?')) return;
             
             try {
-                const response = await fetch(`/admin/services/${id}/delete`, {
+                const response = await fetch('/admin/services/' + id + '/delete', {
                     method: 'POST'
                 });
                 
@@ -250,7 +380,42 @@
                 alert('Erro ao deletar serviço');
             }
         }
+        
+        function copyLink(serviceId) {
+            const baseUrl = window.location.origin;
+            const link = baseUrl + '/appointments/amigo-secreto?service=' + serviceId;
+            
+            navigator.clipboard.writeText(link).then(function() {
+                alert('Link copiado para a área de transferência!\n\n' + link);
+            }).catch(function() {
+                prompt('Copie o link abaixo:', link);
+            });
+        }
+        
+        function generatePaymentLink(serviceId) {
+            const baseUrl = window.location.origin;
+            const link = baseUrl + '/appointments/amigo-secreto?service=' + serviceId;
+            
+            const html = `
+                <h3>Link de Pagamento</h3>
+                <p>Envie este link para o cliente fazer o pagamento:</p>
+                <input type="text" value="${link}" style="width: 100%; padding: 0.5rem; margin: 0.5rem 0;" readonly onclick="this.select()">
+                <p style="font-size: 0.85rem; color: #666;">O cliente será direcionado para o serviço selecionado automaticamente.</p>
+            `;
+            
+            // Criar modal simples
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;';
+            modal.innerHTML = `
+                <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%;">
+                    ${html}
+                    <button onclick="this.closest('div').parentElement.remove()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;">Fechar</button>
+                    <button onclick="navigator.clipboard.writeText('${link}'); alert('Link copiado!')" style="margin-top: 1rem; margin-left: 0.5rem; padding: 0.5rem 1rem; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer;">Copiar Link</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+        }
     </script>
 </body>
 </html>
-

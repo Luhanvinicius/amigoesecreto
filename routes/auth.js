@@ -99,6 +99,139 @@ router.get('/logout', (req, res) => {
   });
 });
 
+// Página de esqueci a senha
+router.get('/forgot-password', (req, res) => {
+  res.render('auth/forgot-password', {
+    error: null,
+    success: null,
+    title: 'Recuperar Senha - Amigo e Secreto'
+  });
+});
+
+// Processar recuperação de senha
+router.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  
+  try {
+    // Verificar se o email existe
+    const [users] = await pool.query('SELECT id, name FROM users WHERE email = ?', [email]);
+    
+    if (users.length === 0) {
+      return res.render('auth/forgot-password', {
+        error: 'Email não encontrado',
+        success: null,
+        title: 'Recuperar Senha - Amigo e Secreto'
+      });
+    }
+    
+    // Gerar token de reset
+    const crypto = require('crypto');
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const expires = new Date(Date.now() + 3600000); // 1 hora
+    
+    // Salvar token no banco
+    await pool.query(
+      'UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE email = ?',
+      [resetToken, expires, email]
+    );
+    
+    // TODO: Enviar email com link de reset
+    // Por enquanto, apenas mostrar mensagem de sucesso
+    console.log(`🔑 Token de reset para ${email}: ${resetToken}`);
+    
+    res.render('auth/forgot-password', {
+      error: null,
+      success: 'Se o email existir em nossa base, você receberá instruções para recuperar sua senha.',
+      title: 'Recuperar Senha - Amigo e Secreto'
+    });
+  } catch (error) {
+    console.error('Erro na recuperação de senha:', error);
+    res.render('auth/forgot-password', {
+      error: 'Erro ao processar solicitação',
+      success: null,
+      title: 'Recuperar Senha - Amigo e Secreto'
+    });
+  }
+});
+
+// Página de reset de senha (com token)
+router.get('/reset-password/:token', async (req, res) => {
+  const { token } = req.params;
+  
+  try {
+    // Verificar token válido
+    const [users] = await pool.query(
+      'SELECT id, email FROM users WHERE reset_token = ? AND reset_token_expires > NOW()',
+      [token]
+    );
+    
+    if (users.length === 0) {
+      return res.render('auth/reset-password', {
+        error: 'Link inválido ou expirado',
+        token: null,
+        title: 'Redefinir Senha - Amigo e Secreto'
+      });
+    }
+    
+    res.render('auth/reset-password', {
+      error: null,
+      token: token,
+      title: 'Redefinir Senha - Amigo e Secreto'
+    });
+  } catch (error) {
+    console.error('Erro ao verificar token:', error);
+    res.render('auth/reset-password', {
+      error: 'Erro ao processar solicitação',
+      token: null,
+      title: 'Redefinir Senha - Amigo e Secreto'
+    });
+  }
+});
+
+// Processar reset de senha
+router.post('/reset-password', async (req, res) => {
+  const { token, password, confirm_password } = req.body;
+  
+  try {
+    if (password !== confirm_password) {
+      return res.render('auth/reset-password', {
+        error: 'As senhas não coincidem',
+        token: token,
+        title: 'Redefinir Senha - Amigo e Secreto'
+      });
+    }
+    
+    // Verificar token válido
+    const [users] = await pool.query(
+      'SELECT id FROM users WHERE reset_token = ? AND reset_token_expires > NOW()',
+      [token]
+    );
+    
+    if (users.length === 0) {
+      return res.render('auth/reset-password', {
+        error: 'Link inválido ou expirado',
+        token: null,
+        title: 'Redefinir Senha - Amigo e Secreto'
+      });
+    }
+    
+    // Atualizar senha
+    await pool.query(
+      'UPDATE users SET password = ?, reset_token = NULL, reset_token_expires = NULL WHERE id = ?',
+      [password, users[0].id]
+    );
+    
+    res.redirect('/login?success=Senha alterada com sucesso');
+  } catch (error) {
+    console.error('Erro ao resetar senha:', error);
+    res.render('auth/reset-password', {
+      error: 'Erro ao processar solicitação',
+      token: token,
+      title: 'Redefinir Senha - Amigo e Secreto'
+    });
+  }
+});
+
 module.exports = router;
 
 

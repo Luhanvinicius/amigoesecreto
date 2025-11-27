@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            max-width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .admin-logo {
+            height: 40px;
+            width: auto;
+            border-radius: 8px;
+            background: white;
+            padding: 4px;
+        }
+        .header h1 { font-size: 1.2rem; }
+        .header-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+        .header-nav a:hover { background: rgba(255,255,255,0.2); }
+        
+        .chat-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            height: calc(100vh - 60px);
+        }
+        
+        /* Lista de Conversas */
+        .chat-list {
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+        }
+        .chat-list-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+        .chat-list-header input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        .chat-list-header input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .chat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .chat-item:hover { background: #f8f9fa; }
+        .chat-item.active { background: #e8eaff; border-left: 3px solid #667eea; }
+        .chat-item .avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        .chat-item .info {
+            flex: 1;
+            min-width: 0;
+        }
+        .chat-item .name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chat-item .preview {
+            font-size: 0.85rem;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chat-item .meta {
+            text-align: right;
+        }
+        .chat-item .time {
+            font-size: 0.75rem;
+            color: #999;
+        }
+        .chat-item .unread {
+            background: #667eea;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-top: 4px;
+            display: inline-block;
+        }
+        
+        /* Área de Chat */
+        .chat-area {
+            display: flex;
+            flex-direction: column;
+            background: #f8f9fa;
+        }
+        .chat-header {
+            padding: 1rem 1.5rem;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .chat-header .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        .chat-header .name { font-weight: 600; }
+        .chat-header .status { font-size: 0.85rem; color: #666; }
+        .chat-header .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .chat-header .btn-icon {
+            padding: 0.5rem;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+        .chat-header .btn-icon:hover { background: #e0e0e0; }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .message {
+            max-width: 70%;
+            padding: 0.75rem 1rem;
+            border-radius: 16px;
+            position: relative;
+        }
+        .message.sent {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+        .message.received {
+            background: white;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .message .time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 4px;
+            text-align: right;
+        }
+        
+        .chat-input {
+            padding: 1rem 1.5rem;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+        .chat-input textarea {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            resize: none;
+            max-height: 120px;
+            font-family: inherit;
+        }
+        .chat-input textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .chat-input .btn-send {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .chat-input .btn-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #666;
+            text-align: center;
+            padding: 2rem;
+        }
+        .empty-state .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .chat-container {
+                grid-template-columns: 1fr;
+            }
+            .chat-list {
+                display: none;
+            }
+            .chat-list.active {
+                display: block;
+                position: fixed;
+                top: 60px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 100;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="/admin/dashboard">
+                    <img src="/images/logo-amigo-secreto.png" alt="Amigo e Secreto" class="admin-logo">
+                </a>
+                <h1>💬 Chat Interno</h1>
+            </div>
+            <nav class="header-nav">
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/appointments">Agendamentos</a>
+                <a href="/admin/users">Usuários</a>
+                <a href="/admin/services">Serviços</a>
+                <a href="/logout">Sair</a>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="chat-container">
+        <!-- Lista de Conversas -->
+        <div class="chat-list">
+            <div class="chat-list-header">
+                <input type="text" placeholder="🔍 Buscar conversa..." id="search-chat">
+            </div>
+            <div id="conversations-list">
+                <% if (conversations && conversations.length > 0) { %>
+                    <% conversations.forEach(function(conv) { %>
+                    <div class="chat-item" data-user-id="<%= conv.user_id %>" onclick="selectConversation(<%= conv.user_id %>)">
+                        <div class="avatar"><%= conv.user_name ? conv.user_name.charAt(0).toUpperCase() : '?' %></div>
+                        <div class="info">
+                            <div class="name"><%= conv.user_name || 'Usuário' %></div>
+                            <div class="preview"><%= conv.last_message || 'Nenhuma mensagem' %></div>
+                        </div>
+                        <div class="meta">
+                            <div class="time"><%= conv.last_time || '' %></div>
+                            <% if (conv.unread > 0) { %>
+                            <div class="unread"><%= conv.unread %></div>
+                            <% } %>
+                        </div>
+                    </div>
+                    <% }); %>
+                <% } else { %>
+                    <div style="padding: 2rem; text-align: center; color: #666;">
+                        <p>Nenhuma conversa ainda</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+        
+        <!-- Área de Chat -->
+        <div class="chat-area">
+            <div id="chat-content">
+                <div class="empty-state">
+                    <div class="icon">💬</div>
+                    <h3>Selecione uma conversa</h3>
+                    <p>Escolha um cliente na lista para iniciar ou continuar uma conversa.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentUserId = null;
+        let pollInterval = null;
+        
+        async function selectConversation(userId) {
+            currentUserId = userId;
+            
+            // Marcar como ativo
+            document.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`.chat-item[data-user-id="${userId}"]`)?.classList.add('active');
+            
+            // Carregar mensagens
+            await loadMessages(userId);
+            
+            // Iniciar polling para novas mensagens
+            if (pollInterval) clearInterval(pollInterval);
+            pollInterval = setInterval(() => loadMessages(userId), 5000);
+        }
+        
+        async function loadMessages(userId) {
+            try {
+                const response = await fetch(`/api/chat/messages/${userId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderChat(data.user, data.messages);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar mensagens:', error);
+            }
+        }
+        
+        function renderChat(user, messages) {
+            const chatContent = document.getElementById('chat-content');
+            
+            let messagesHtml = messages.map(msg => `
+                <div class="message ${msg.sender_id === <%= userId %> ? 'sent' : 'received'}">
+                    ${msg.message}
+                    <div class="time">${new Date(msg.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</div>
+                </div>
+            `).join('');
+            
+            if (!messagesHtml) {
+                messagesHtml = '<div style="text-align: center; color: #666; padding: 2rem;">Nenhuma mensagem ainda. Comece a conversa!</div>';
+            }
+            
+            chatContent.innerHTML = `
+                <div class="chat-header">
+                    <div class="user-info">
+                        <div class="avatar">${user.name ? user.name.charAt(0).toUpperCase() : '?'}</div>
+                        <div>
+                            <div class="name">${user.name || 'Usuário'}</div>
+                            <div class="status">${user.email}</div>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <a href="/admin/users/${user.id}" class="btn-icon" title="Ver perfil">👤</a>
+                    </div>
+                </div>
+                <div class="chat-messages" id="messages-container">
+                    ${messagesHtml}
+                </div>
+                <div class="chat-input">
+                    <textarea placeholder="Digite sua mensagem..." id="message-input" rows="1" onkeydown="handleKeyDown(event)"></textarea>
+                    <button class="btn-send" onclick="sendMessage()">Enviar</button>
+                </div>
+            `;
+            
+            // Scroll para o final
+            const container = document.getElementById('messages-container');
+            if (container) {
+                container.scrollTop = container.scrollHeight;
+            }
+        }
+        
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+        
+        async function sendMessage() {
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            
+            if (!message || !currentUserId) return;
+            
+            try {
+                const response = await fetch('/api/chat/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        receiver_id: currentUserId,
+                        message: message
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    input.value = '';
+                    await loadMessages(currentUserId);
+                }
+            } catch (error) {
+                console.error('Erro ao enviar mensagem:', error);
+            }
+        }
+        
+        // Buscar conversas
+        document.getElementById('search-chat').addEventListener('input', function(e) {
+            const search = e.target.value.toLowerCase();
+            document.querySelectorAll('.chat-item').forEach(item => {
+                const name = item.querySelector('.name').textContent.toLowerCase();
+                item.style.display = name.includes(search) ? 'flex' : 'none';
+            });
+        });
+        
+        // Carregar conversa da URL se especificada
+        const urlParams = new URLSearchParams(window.location.search);
+        const userParam = urlParams.get('user');
+        if (userParam) {
+            selectConversation(parseInt(userParam));
+        }
+    </script>
+</body>
+</html>
+
