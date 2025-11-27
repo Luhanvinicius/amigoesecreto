@@ -9,8 +9,9 @@ package-lock.json
 # WhatsApp Session
 whatsapp-session/
 
-# Uploads
-uploads/
+# Uploads (root only, not public/images/uploads)
+/uploads/
+!public/images/uploads/
 
 # Logs
 *.log
