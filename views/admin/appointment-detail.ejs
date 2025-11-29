@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamento #<%= appointment.id %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .admin-logo {
+            height: 45px;
+            width: auto;
+            border-radius: 8px;
+            background: white;
+            padding: 4px;
+        }
+        .header h1 { font-size: 1.3rem; }
+        .header-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            transition: background 0.3s;
+            font-size: 0.9rem;
+        }
+        .header-nav a:hover { background: rgba(255,255,255,0.2); }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        .section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        .section h2 {
+            margin-bottom: 1rem;
+            color: #333;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .info-item label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+        .info-item span, .info-item input, .info-item select {
+            font-size: 1rem;
+            color: #333;
+            font-weight: 500;
+        }
+        .info-item input, .info-item select, .info-item textarea {
+            padding: 0.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+        }
+        .info-item input:focus, .info-item select:focus, .info-item textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .status-paid { background: #d4edda; color: #155724; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-confirmed { background: #cfe2ff; color: #084298; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-success { background: #28a745; color: white; }
+        .btn-warning { background: #ffc107; color: #333; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-whatsapp { background: #25D366; color: white; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+        .back-link:hover { opacity: 1; }
+        .full-width { grid-column: 1 / -1; }
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .info-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="/admin/dashboard">
+                    <img src="/images/logo-amigo-secreto.png" alt="Amigo e Secreto" class="admin-logo">
+                </a>
+                <div>
+                    <a href="/admin/appointments" class="back-link">← Voltar</a>
+                    <h1>Agendamento #<%= appointment.id %></h1>
+                </div>
+            </div>
+            <nav class="header-nav">
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/appointments">Agendamentos</a>
+                <a href="/admin/users">Usuários</a>
+                <a href="/admin/agenda">Agenda</a>
+                <a href="/logout">Sair</a>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="grid">
+            <!-- Coluna Esquerda -->
+            <div>
+                <div class="section">
+                    <h2>👤 Dados do Cliente</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Nome</label>
+                            <span><%= appointment.user_name || 'N/A' %></span>
+                        </div>
+                        <div class="info-item">
+                            <label>E-mail</label>
+                            <span><%= appointment.user_email || 'N/A' %></span>
+                        </div>
+                        <div class="info-item">
+                            <label>Telefone</label>
+                            <span><%= appointment.user_contact || 'N/A' %></span>
+                        </div>
+                        <div class="info-item">
+                            <label>Instagram</label>
+                            <span><%= appointment.client_instagram || 'N/A' %></span>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <a href="/admin/users/<%= appointment.user_id %>" class="btn btn-primary">
+                            👤 Ver Perfil Completo
+                        </a>
+                        <% 
+                        var whatsappNumber = null;
+                        if (appointment.user_contact) {
+                            var cleaned = String(appointment.user_contact).replace(/\D/g, '');
+                            if (cleaned.length >= 10) {
+                                if (cleaned.indexOf('55') !== 0) {
+                                    whatsappNumber = '55' + cleaned;
+                                } else {
+                                    whatsappNumber = cleaned;
+                                }
+                            }
+                        }
+                        %>
+                        <% if (whatsappNumber) { %>
+                        <a href="https://wa.me/<%= whatsappNumber %>" target="_blank" class="btn btn-whatsapp">
+                            💬 WhatsApp
+                        </a>
+                        <% } %>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>📦 Detalhes do Serviço</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Serviço</label>
+                            <span><%= appointment.service_name || 'N/A' %></span>
+                        </div>
+                        <div class="info-item">
+                            <label>Local</label>
+                            <span><%= appointment.location_name || 'N/A' %></span>
+                        </div>
+                        <div class="info-item">
+                            <label>Valor</label>
+                            <span style="color: #28a745; font-size: 1.2rem;">
+                                R$ <%= parseFloat(appointment.total_amount || 0).toFixed(2).replace('.', ',') %>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Informações do Formulário -->
+                <div class="section">
+                    <h2>📋 Informações do Cliente</h2>
+                    <div class="info-grid" style="grid-template-columns: 1fr;">
+                        <div class="info-item">
+                            <label>O que espera da Lia?</label>
+                            <span><%= appointment.client_expectation || 'Não informado' %></span>
+                        </div>
+                        <div class="info-item">
+                            <label>Tema da conversa</label>
+                            <span><%= appointment.conversation_topic || 'Não informado' %></span>
+                        </div>
+                        <% if (appointment.custom_fields) { %>
+                        <div class="info-item">
+                            <label>Campos personalizados</label>
+                            <span><%= typeof appointment.custom_fields === 'string' ? appointment.custom_fields : JSON.stringify(appointment.custom_fields) %></span>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Coluna Direita -->
+            <div>
+                <div class="section">
+                    <h2>📅 Data e Horário</h2>
+                    <form id="datetime-form">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Data do Agendamento</label>
+                                <input type="date" name="appointment_date" id="appointment_date" 
+                                       value="<%= appointment.appointment_date ? new Date(appointment.appointment_date).toISOString().split('T')[0] : '' %>">
+                            </div>
+                            <div class="info-item">
+                                <label>Horário</label>
+                                <input type="time" name="appointment_time" id="appointment_time" 
+                                       value="<%= appointment.appointment_time ? appointment.appointment_time.substring(0, 5) : '' %>">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">
+                            💾 Salvar Data/Horário
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="section">
+                    <h2>🔄 Status</h2>
+                    <form id="status-form">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Status do Agendamento</label>
+                                <select name="status" id="status">
+                                    <option value="pending" <%= appointment.status === 'pending' ? 'selected' : '' %>>Pendente</option>
+                                    <option value="confirmed" <%= appointment.status === 'confirmed' ? 'selected' : '' %>>Confirmado</option>
+                                    <option value="completed" <%= appointment.status === 'completed' ? 'selected' : '' %>>Concluído</option>
+                                    <option value="cancelled" <%= appointment.status === 'cancelled' ? 'selected' : '' %>>Cancelado</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Status do Pagamento</label>
+                                <select name="payment_status" id="payment_status">
+                                    <option value="pending" <%= appointment.payment_status === 'pending' ? 'selected' : '' %>>Pendente</option>
+                                    <option value="paid" <%= appointment.payment_status === 'paid' ? 'selected' : '' %>>Pago</option>
+                                    <option value="refunded" <%= appointment.payment_status === 'refunded' ? 'selected' : '' %>>Reembolsado</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Status de Contato</label>
+                                <select name="contact_status" id="contact_status">
+                                    <option value="pending" <%= (appointment.contact_status || 'pending') === 'pending' ? 'selected' : '' %>>Pendente</option>
+                                    <option value="confirmed" <%= appointment.contact_status === 'confirmed' ? 'selected' : '' %>>Contatado</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success" style="margin-top: 1rem;">
+                            ✅ Atualizar Status
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="section">
+                    <h2>👩‍💼 Atendente</h2>
+                    <form id="attendant-form">
+                        <div class="info-item">
+                            <label>Atendente Responsável</label>
+                            <select name="assigned_to" id="assigned_to">
+                                <option value="">-- Selecionar --</option>
+                                <% if (typeof attendants !== 'undefined') { %>
+                                    <% attendants.forEach(function(att) { %>
+                                    <option value="<%= att.id %>" <%= appointment.assigned_to == att.id ? 'selected' : '' %>>
+                                        <%= att.real_name || att.display_name %> (<%= att.display_name %>)
+                                    </option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">
+                            💾 Salvar Atendente
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="section">
+                    <h2>📝 Observações do Atendimento</h2>
+                    <form id="observations-form">
+                        <div class="info-item">
+                            <textarea name="observations" id="observations" rows="4" 
+                                      placeholder="Adicione observações sobre este atendimento..."
+                                      style="width: 100%;"><%= appointment.observations || '' %></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">
+                            💾 Salvar Observações
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Atualizar data/horário
+        document.getElementById('datetime-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const data = {
+                appointment_date: document.getElementById('appointment_date').value,
+                appointment_time: document.getElementById('appointment_time').value
+            };
+            
+            try {
+                const response = await fetch('/admin/appointments/<%= appointment.id %>/update-datetime', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Data/Horário atualizado com sucesso!');
+                } else {
+                    alert('Erro: ' + (result.message || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                alert('Erro ao atualizar');
+            }
+        });
+        
+        // Atualizar status
+        document.getElementById('status-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const data = {
+                status: document.getElementById('status').value,
+                payment_status: document.getElementById('payment_status').value,
+                contact_status: document.getElementById('contact_status').value
+            };
+            
+            try {
+                const response = await fetch('/admin/appointments/<%= appointment.id %>/update-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Status atualizado com sucesso!');
+                } else {
+                    alert('Erro: ' + (result.message || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                alert('Erro ao atualizar');
+            }
+        });
+        
+        // Atualizar atendente
+        document.getElementById('attendant-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const data = {
+                assigned_to: document.getElementById('assigned_to').value || null
+            };
+            
+            try {
+                const response = await fetch('/admin/appointments/<%= appointment.id %>/update-attendant', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Atendente atualizado com sucesso!');
+                } else {
+                    alert('Erro: ' + (result.message || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                alert('Erro ao atualizar');
+            }
+        });
+        
+        // Salvar observações
+        document.getElementById('observations-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const data = {
+                observations: document.getElementById('observations').value
+            };
+            
+            try {
+                const response = await fetch('/admin/appointments/<%= appointment.id %>/update-observations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Observações salvas com sucesso!');
+                } else {
+                    alert('Erro: ' + (result.message || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                alert('Erro ao salvar');
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -273,6 +273,9 @@
                     </div>
                     
                     <div class="action-buttons">
+                        <a href="/admin/users/<%= user.id %>/edit" class="btn btn-primary">
+                            ✏️ Editar Perfil
+                        </a>
                         <% 
                         var whatsappNumber = null;
                         if (user.contact) {
@@ -509,4 +512,5 @@
     </script>
 </body>
 </html>
+
 

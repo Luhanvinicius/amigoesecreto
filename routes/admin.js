@@ -105,23 +105,31 @@ router.get('/appointments', async (req, res) => {
 router.post('/appointments/:id/update-status', async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, payment_status } = req.body;
+    const { status, payment_status, contact_status } = req.body;
     
-    let updateQuery = 'UPDATE appointments SET';
+    let updates = [];
     let params = [];
     
     if (status) {
-      updateQuery += ' status = ?';
+      updates.push('status = ?');
       params.push(status);
     }
     
     if (payment_status) {
-      if (params.length > 0) updateQuery += ',';
-      updateQuery += ' payment_status = ?';
+      updates.push('payment_status = ?');
       params.push(payment_status);
     }
     
-    updateQuery += ' WHERE id = ?';
+    if (contact_status) {
+      updates.push('contact_status = ?');
+      params.push(contact_status);
+    }
+    
+    if (updates.length === 0) {
+      return res.status(400).json({ success: false, message: 'Nenhum campo para atualizar' });
+    }
+    
+    const updateQuery = 'UPDATE appointments SET ' + updates.join(', ') + ' WHERE id = ?';
     params.push(id);
     
     await pool.query(updateQuery, params);
@@ -152,6 +160,103 @@ router.post('/appointments/:id/update-contact-status', async (req, res) => {
   } catch (error) {
     console.error('Erro ao atualizar status de contato:', error);
     res.status(500).json({ success: false, message: 'Erro ao atualizar status de contato' });
+  }
+});
+
+// Ver detalhes do agendamento
+router.get('/appointments/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const [appointments] = await pool.query(`
+      SELECT a.*, 
+             u.name as user_name, 
+             u.email as user_email, 
+             u.contact as user_contact,
+             u.instagram as client_instagram,
+             s.name as service_name, 
+             l.name as location_name
+      FROM appointments a
+      LEFT JOIN users u ON a.user_id = u.id
+      LEFT JOIN services s ON a.service_id = s.id
+      LEFT JOIN locations l ON a.location_id = l.id
+      WHERE a.id = ?
+    `, [id]);
+    
+    if (appointments.length === 0) {
+      return res.redirect('/admin/appointments?error=Agendamento não encontrado');
+    }
+    
+    // Buscar atendentes
+    const [attendants] = await pool.query(`
+      SELECT a.*, u.name as user_name
+      FROM attendants a
+      LEFT JOIN users u ON a.user_id = u.id
+      WHERE a.is_active = 1
+    `);
+    
+    res.render('admin/appointment-detail', {
+      appointment: appointments[0],
+      attendants,
+      title: `Agendamento #${id}`
+    });
+  } catch (error) {
+    console.error('Erro ao carregar agendamento:', error);
+    res.redirect('/admin/appointments?error=Erro ao carregar agendamento');
+  }
+});
+
+// Atualizar data/horário do agendamento
+router.post('/appointments/:id/update-datetime', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { appointment_date, appointment_time } = req.body;
+    
+    await pool.query(
+      'UPDATE appointments SET appointment_date = ?, appointment_time = ? WHERE id = ?',
+      [appointment_date, appointment_time, id]
+    );
+    
+    res.json({ success: true, message: 'Data/Horário atualizado com sucesso' });
+  } catch (error) {
+    console.error('Erro ao atualizar data/horário:', error);
+    res.status(500).json({ success: false, message: 'Erro ao atualizar data/horário' });
+  }
+});
+
+// Atualizar atendente do agendamento
+router.post('/appointments/:id/update-attendant', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { assigned_to } = req.body;
+    
+    await pool.query(
+      'UPDATE appointments SET assigned_to = ? WHERE id = ?',
+      [assigned_to || null, id]
+    );
+    
+    res.json({ success: true, message: 'Atendente atualizado com sucesso' });
+  } catch (error) {
+    console.error('Erro ao atualizar atendente:', error);
+    res.status(500).json({ success: false, message: 'Erro ao atualizar atendente' });
+  }
+});
+
+// Atualizar observações do agendamento
+router.post('/appointments/:id/update-observations', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { observations } = req.body;
+    
+    await pool.query(
+      'UPDATE appointments SET observations = ? WHERE id = ?',
+      [observations || null, id]
+    );
+    
+    res.json({ success: true, message: 'Observações salvas com sucesso' });
+  } catch (error) {
+    console.error('Erro ao salvar observações:', error);
+    res.status(500).json({ success: false, message: 'Erro ao salvar observações' });
   }
 });
 
@@ -316,6 +421,58 @@ router.post('/users/:id/attendant', async (req, res) => {
   } catch (error) {
     console.error('Erro ao atualizar atendente:', error);
     res.status(500).json({ success: false, message: 'Erro ao atualizar' });
+  }
+});
+
+// Editar usuário
+router.get('/users/:id/edit', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const [users] = await pool.query('SELECT * FROM users WHERE id = ?', [id]);
+    if (users.length === 0) {
+      return res.redirect('/admin/users?error=Usuário não encontrado');
+    }
+    
+    res.render('admin/user-edit', {
+      user: users[0],
+      title: `Editar Usuário #${id}`
+    });
+  } catch (error) {
+    console.error('Erro ao carregar usuário:', error);
+    res.redirect('/admin/users?error=Erro ao carregar usuário');
+  }
+});
+
+// Atualizar usuário
+router.post('/users/:id/update', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, contact, gender, instagram, password, role } = req.body;
+    
+    // Verificar se email já existe (exceto o próprio usuário)
+    const [existing] = await pool.query('SELECT id FROM users WHERE email = ? AND id != ?', [email, id]);
+    if (existing.length > 0) {
+      return res.redirect(`/admin/users/${id}/edit?error=Email já cadastrado por outro usuário`);
+    }
+    
+    // Atualizar usuário
+    if (password && password.trim()) {
+      await pool.query(
+        `UPDATE users SET name = ?, email = ?, contact = ?, gender = ?, instagram = ?, password = ?, role = ? WHERE id = ?`,
+        [name, email, contact || null, gender || null, instagram || null, password, role || 'client', id]
+      );
+    } else {
+      await pool.query(
+        `UPDATE users SET name = ?, email = ?, contact = ?, gender = ?, instagram = ?, role = ? WHERE id = ?`,
+        [name, email, contact || null, gender || null, instagram || null, role || 'client', id]
+      );
+    }
+    
+    res.redirect(`/admin/users/${id}?success=Usuário atualizado com sucesso`);
+  } catch (error) {
+    console.error('Erro ao atualizar usuário:', error);
+    res.redirect(`/admin/users/${req.params.id}/edit?error=Erro ao atualizar usuário`);
   }
 });
 
@@ -818,6 +975,183 @@ router.post('/whatsapp/pending/:id/start', async (req, res) => {
   } catch (error) {
     console.error('Erro ao iniciar atendimento:', error);
     res.status(500).json({ error: error.message || 'Erro ao iniciar atendimento' });
+  }
+});
+
+// API: Resumo do cliente (para agenda)
+router.get('/api/client/:id/summary', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const [users] = await pool.query('SELECT * FROM users WHERE id = ?', [id]);
+    if (users.length === 0) {
+      return res.json({ success: false, message: 'Cliente não encontrado' });
+    }
+    
+    const [appointments] = await pool.query(`
+      SELECT a.*, s.name as service_name
+      FROM appointments a
+      LEFT JOIN services s ON a.service_id = s.id
+      WHERE a.user_id = ?
+      ORDER BY a.created_at DESC
+      LIMIT 10
+    `, [id]);
+    
+    const [notes] = await pool.query(`
+      SELECT * FROM client_history
+      WHERE user_id = ?
+      ORDER BY created_at DESC
+      LIMIT 5
+    `, [id]);
+    
+    res.json({
+      success: true,
+      client: users[0],
+      appointments,
+      notes
+    });
+  } catch (error) {
+    console.error('Erro ao carregar resumo do cliente:', error);
+    res.status(500).json({ success: false, message: 'Erro ao carregar dados' });
+  }
+});
+
+// Criar agendamento manual - Formulário
+router.get('/agenda/new', async (req, res) => {
+  try {
+    const { date } = req.query;
+    
+    const [services] = await pool.query('SELECT * FROM services WHERE is_active = 1 OR is_active IS NULL ORDER BY name');
+    const [locations] = await pool.query('SELECT * FROM locations ORDER BY name');
+    const [users] = await pool.query('SELECT id, name, email, contact FROM users WHERE role = "client" OR role IS NULL ORDER BY name');
+    const [attendants] = await pool.query(`
+      SELECT a.*, u.name as user_name
+      FROM attendants a
+      LEFT JOIN users u ON a.user_id = u.id
+      WHERE a.is_active = 1
+    `);
+    
+    res.render('admin/agenda-new', {
+      services,
+      locations,
+      users,
+      attendants,
+      selectedDate: date || new Date().toISOString().split('T')[0],
+      title: 'Novo Agendamento Manual'
+    });
+  } catch (error) {
+    console.error('Erro ao carregar formulário:', error);
+    res.redirect('/admin/agenda?error=Erro ao carregar formulário');
+  }
+});
+
+// Criar agendamento manual - Processar
+router.post('/agenda/new', async (req, res) => {
+  try {
+    const {
+      user_id, new_user_name, new_user_email, new_user_contact,
+      service_id, location_id, appointment_date, appointment_time,
+      payment_status, status, assigned_to, observations,
+      client_expectation, conversation_topic
+    } = req.body;
+    
+    let finalUserId = user_id;
+    
+    // Se não selecionou usuário existente, criar novo
+    if (!user_id || user_id === 'new') {
+      if (!new_user_email) {
+        return res.redirect('/admin/agenda/new?error=E-mail é obrigatório');
+      }
+      
+      // Verificar se email já existe
+      const [existing] = await pool.query('SELECT id FROM users WHERE email = ?', [new_user_email]);
+      
+      if (existing.length > 0) {
+        finalUserId = existing[0].id;
+      } else {
+        // Criar novo usuário
+        const [result] = await pool.query(
+          `INSERT INTO users (name, email, contact, type, role) VALUES (?, ?, ?, 'new', 'client')`,
+          [new_user_name || 'Cliente', new_user_email, new_user_contact || null]
+        );
+        finalUserId = result.insertId;
+      }
+    }
+    
+    // Buscar preço do serviço
+    const [services] = await pool.query('SELECT price FROM services WHERE id = ?', [service_id]);
+    const price = services.length > 0 ? services[0].price : 0;
+    
+    // Criar agendamento
+    const [result] = await pool.query(
+      `INSERT INTO appointments 
+       (user_id, service_id, location_id, appointment_date, appointment_time, 
+        total_amount, payment_status, status, assigned_to, observations,
+        client_expectation, conversation_topic, contact_status, business_id)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'confirmed', 1)`,
+      [
+        finalUserId, service_id, location_id, appointment_date, appointment_time,
+        price, payment_status || 'pending', status || 'confirmed',
+        assigned_to || null, observations || null,
+        client_expectation || null, conversation_topic || null
+      ]
+    );
+    
+    res.redirect(`/admin/appointments/${result.insertId}?success=Agendamento criado com sucesso`);
+  } catch (error) {
+    console.error('Erro ao criar agendamento:', error);
+    res.redirect('/admin/agenda/new?error=Erro ao criar agendamento');
+  }
+});
+
+// Sistema de Notificações
+router.get('/notifications', async (req, res) => {
+  try {
+    // Buscar agendamentos recentes (últimas 24h)
+    const [recentAppointments] = await pool.query(`
+      SELECT a.*, u.name as user_name, s.name as service_name
+      FROM appointments a
+      LEFT JOIN users u ON a.user_id = u.id
+      LEFT JOIN services s ON a.service_id = s.id
+      WHERE a.created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+      ORDER BY a.created_at DESC
+      LIMIT 20
+    `);
+    
+    // Buscar mensagens não lidas do chat
+    const [unreadMessages] = await pool.query(`
+      SELECT cm.*, u.name as sender_name
+      FROM chat_messages cm
+      LEFT JOIN users u ON cm.sender_id = u.id
+      WHERE cm.is_read = 0
+      ORDER BY cm.created_at DESC
+      LIMIT 20
+    `);
+    
+    res.json({
+      success: true,
+      notifications: {
+        appointments: recentAppointments,
+        messages: unreadMessages,
+        appointmentsCount: recentAppointments.length,
+        messagesCount: unreadMessages.length
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao carregar notificações:', error);
+    res.status(500).json({ success: false, message: 'Erro ao carregar notificações' });
+  }
+});
+
+// Página de Configurações/FAQ
+router.get('/settings', async (req, res) => {
+  try {
+    res.render('admin/settings', {
+      title: 'Configurações e FAQ'
+    });
+  } catch (error) {
+    console.error('Erro ao carregar configurações:', error);
+    res.status(500).send('Erro ao carregar configurações');
   }
 });
 

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Configurações e FAQ' %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .admin-logo {
+            height: 45px;
+            width: auto;
+            border-radius: 8px;
+            background: white;
+            padding: 4px;
+        }
+        .header h1 { font-size: 1.3rem; }
+        .header-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            transition: background 0.3s;
+            font-size: 0.9rem;
+        }
+        .header-nav a:hover { background: rgba(255,255,255,0.2); }
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        .section h2 {
+            margin-bottom: 1.5rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 0.75rem;
+        }
+        .faq-item {
+            margin-bottom: 1.5rem;
+            padding: 1.25rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .faq-item h3 {
+            color: #667eea;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+        .faq-item p {
+            color: #555;
+            line-height: 1.6;
+        }
+        .faq-item code {
+            background: #e9ecef;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #e83e8c;
+        }
+        .faq-item ul {
+            margin-top: 0.5rem;
+            padding-left: 1.5rem;
+        }
+        .faq-item li {
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        .highlight-box strong {
+            color: #667eea;
+        }
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .link-card {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .link-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        .link-card .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .link-card h4 {
+            margin-bottom: 0.25rem;
+        }
+        .link-card p {
+            font-size: 0.85rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="/admin/dashboard">
+                    <img src="/images/logo-amigo-secreto.png" alt="Amigo e Secreto" class="admin-logo">
+                </a>
+                <h1>Configurações e FAQ</h1>
+            </div>
+            <nav class="header-nav">
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/appointments">Agendamentos</a>
+                <a href="/admin/users">Usuários</a>
+                <a href="/admin/services">Serviços</a>
+                <a href="/admin/agenda">Agenda</a>
+                <a href="/admin/settings">Configurações</a>
+                <a href="/logout">Sair</a>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="section">
+            <h2>🔗 Acesso Rápido</h2>
+            <div class="links-grid">
+                <a href="/admin/services" class="link-card">
+                    <div class="icon">📦</div>
+                    <h4>Serviços</h4>
+                    <p>Editar serviços e preços</p>
+                </a>
+                <a href="/admin/users" class="link-card">
+                    <div class="icon">👥</div>
+                    <h4>Usuários</h4>
+                    <p>Gerenciar clientes</p>
+                </a>
+                <a href="/admin/agenda" class="link-card">
+                    <div class="icon">📅</div>
+                    <h4>Agenda</h4>
+                    <p>Ver agendamentos</p>
+                </a>
+                <a href="/admin/chat" class="link-card">
+                    <div class="icon">💬</div>
+                    <h4>Chat</h4>
+                    <p>Mensagens internas</p>
+                </a>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>❓ Perguntas Frequentes</h2>
+            
+            <div class="faq-item">
+                <h3>📝 Onde posso editar o formulário caso eu necessite?</h3>
+                <p>O formulário principal de agendamento está no arquivo:</p>
+                <p><code>views/form_layout/Formlayout1/form-content.ejs</code></p>
+                <p style="margin-top: 0.5rem;">Para editar os campos personalizados (expectativas, tema, etc.), basta editar esse arquivo diretamente. Os campos já existentes são:</p>
+                <ul>
+                    <li><strong>O que espera da Lia</strong> - Campo de texto livre</li>
+                    <li><strong>Tema da conversa</strong> - Campo de texto livre</li>
+                    <li><strong>Instagram</strong> - Campo para @ do cliente</li>
+                </ul>
+            </div>
+            
+            <div class="faq-item">
+                <h3>⏰ Onde fica a opção de editar os horários disponíveis?</h3>
+                <p>Os horários disponíveis são configurados no arquivo:</p>
+                <p><code>config/business-hours.js</code> (se existir) ou diretamente no banco de dados.</p>
+                <div class="highlight-box">
+                    <strong>Atualmente:</strong> Os horários são dinâmicos - o sistema mostra horários de 8h às 20h com intervalos de 30 minutos, excluindo horários já ocupados.
+                </div>
+                <p style="margin-top: 0.5rem;">Para alterar, você pode editar o arquivo <code>controllers/appointmentController.js</code> na função que gera os slots de horário.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>🔔 Notificações do painel (Chat, Novos Agendamentos)</h3>
+                <p>As notificações são exibidas em tempo real no Dashboard principal. Para ver todas:</p>
+                <ul>
+                    <li><strong>Novos agendamentos:</strong> Aparecem na seção "Agendamentos Recentes" do Dashboard</li>
+                    <li><strong>Mensagens do chat:</strong> Acesse o menu <a href="/admin/chat" style="color: #667eea;">Chat</a></li>
+                    <li><strong>Atendimentos pendentes:</strong> Acesse <a href="/admin/whatsapp/pending" style="color: #667eea;">WhatsApp > Pendentes</a></li>
+                </ul>
+                <div class="highlight-box">
+                    <strong>Dica:</strong> Para receber notificações por email, configure o SMTP no arquivo <code>.env</code> com suas credenciais de email.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <h3>🎨 Onde edito o layout do site e altero fotos?</h3>
+                <p>O layout do site é editado nos seguintes arquivos:</p>
+                <ul>
+                    <li><strong>Página inicial:</strong> <code>views/index.ejs</code></li>
+                    <li><strong>Cabeçalho/Rodapé:</strong> <code>views/partials/header.ejs</code> e <code>views/partials/footer.ejs</code></li>
+                    <li><strong>Estilos CSS:</strong> <code>public/css/style.css</code></li>
+                    <li><strong>Imagens:</strong> <code>public/images/uploads/</code></li>
+                </ul>
+                <div class="highlight-box">
+                    <strong>Para alterar imagens:</strong> Faça upload das novas imagens na pasta <code>public/images/uploads/</code> e atualize os caminhos nos arquivos EJS correspondentes.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <h3>💳 Onde altero o gateway de pagamento?</h3>
+                <p>O gateway de pagamento (Asaas) é configurado no arquivo <code>.env</code>:</p>
+                <div class="highlight-box">
+                    <code>ASAAS_API_KEY=sua_chave_aqui</code><br>
+                    <code>ASAAS_ENVIRONMENT=production</code> (ou <code>sandbox</code> para testes)
+                </div>
+                <p style="margin-top: 0.5rem;">A integração está no arquivo <code>services/asaasService.js</code>.</p>
+                <p>Para usar outro gateway (PayPal, Stripe, etc.), será necessário criar um novo serviço de integração.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>📧 Como configurar emails automáticos?</h3>
+                <p>Os emails são configurados no arquivo <code>.env</code>:</p>
+                <div class="highlight-box">
+                    <code>SMTP_HOST=smtp.gmail.com</code><br>
+                    <code>SMTP_PORT=587</code><br>
+                    <code>SMTP_USER=seuemail@gmail.com</code><br>
+                    <code>SMTP_PASS=sua_senha_de_app</code>
+                </div>
+                <p style="margin-top: 0.5rem;">Para Gmail, você precisa gerar uma "Senha de App" nas configurações de segurança da sua conta Google.</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📂 Estrutura de Arquivos Importantes</h2>
+            <div class="faq-item" style="background: #fff; border-left-color: #28a745;">
+                <h3 style="color: #28a745;">Arquivos principais</h3>
+                <ul>
+                    <li><code>server.js</code> - Arquivo principal do servidor</li>
+                    <li><code>.env</code> - Configurações (banco, email, pagamento)</li>
+                    <li><code>routes/</code> - Rotas da aplicação</li>
+                    <li><code>controllers/</code> - Lógica de negócios</li>
+                    <li><code>views/</code> - Templates EJS (páginas)</li>
+                    <li><code>public/</code> - Arquivos estáticos (CSS, JS, imagens)</li>
+                    <li><code>services/</code> - Serviços externos (email, pagamento)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🛠️ Suporte Técnico</h2>
+            <p>Para alterações mais complexas ou suporte técnico, entre em contato com o desenvolvedor.</p>
+            <div class="highlight-box">
+                <p>Este sistema foi desenvolvido com <strong>Node.js + Express + MySQL</strong>.</p>
+                <p>Para deploy, o sistema está configurado para rodar no <strong>Render.com</strong>.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -151,7 +151,7 @@
     
     <div class="container">
         <div class="filters">
-            <form method="GET" style="display: flex; gap: 1rem; flex-wrap: wrap; width: 100%;">
+            <form method="GET" style="display: flex; gap: 1rem; flex-wrap: wrap; width: 100%; align-items: center;">
                 <select name="status">
                     <option value="">Todos os Status</option>
                     <option value="pending" <%= filters.status === 'pending' ? 'selected' : '' %>>Pendente</option>
@@ -166,6 +166,7 @@
                 </select>
                 <button type="submit">Filtrar</button>
                 <a href="/admin/appointments" style="padding: 0.5rem 1rem; background: #6c757d; color: white; text-decoration: none; border-radius: 8px;">Limpar</a>
+                <a href="/admin/agenda/new" style="padding: 0.5rem 1rem; background: #28a745; color: white; text-decoration: none; border-radius: 8px; margin-left: auto;">➕ Novo Agendamento</a>
             </form>
         </div>
         
@@ -194,9 +195,13 @@
                         <td><%= new Date(apt.appointment_date).toLocaleDateString('pt-BR') %><br><%= apt.appointment_time %></td>
                         <td>R$ <%= parseFloat(apt.total_amount || 0).toFixed(2).replace('.', ',') %></td>
                         <td>
-                            <span class="status-badge <%= apt.payment_status === 'paid' ? 'status-paid' : 'status-pending' %>">
-                                <%= apt.payment_status === 'paid' ? 'Pago' : 'Pendente' %>
-                            </span>
+                            <select onchange="updatePaymentStatus(<%= apt.id %>, this.value, this)" 
+                                    style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; 
+                                           background: <%= apt.payment_status === 'paid' ? '#d4edda' : '#fff3cd' %>; 
+                                           border: 1px solid <%= apt.payment_status === 'paid' ? '#28a745' : '#ffc107' %>;">
+                                <option value="pending" <%= apt.payment_status === 'pending' ? 'selected' : '' %>>Pendente</option>
+                                <option value="paid" <%= apt.payment_status === 'paid' ? 'selected' : '' %>>Pago</option>
+                            </select>
                         </td>
                         <td>
                             <span class="status-badge <%= apt.status === 'confirmed' ? 'status-confirmed' : 'status-pending' %>">
@@ -323,6 +328,38 @@
             } catch (error) {
                 console.error('Erro ao atualizar status de contato:', error);
                 alert('Erro ao atualizar status de contato');
+                location.reload();
+            }
+        }
+
+        async function updatePaymentStatus(id, paymentStatus, selectElement) {
+            try {
+                const response = await fetch(`/admin/appointments/${id}/update-status`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ payment_status: paymentStatus })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Atualizar visualmente
+                    if (paymentStatus === 'paid') {
+                        selectElement.style.background = '#d4edda';
+                        selectElement.style.borderColor = '#28a745';
+                    } else {
+                        selectElement.style.background = '#fff3cd';
+                        selectElement.style.borderColor = '#ffc107';
+                    }
+                } else {
+                    alert('Erro ao atualizar status de pagamento: ' + (data.message || 'Erro desconhecido'));
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar status de pagamento:', error);
+                alert('Erro ao atualizar status de pagamento');
                 location.reload();
             }
         }

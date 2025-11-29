@@ -16,8 +16,8 @@
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 1.5rem 2rem;
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .header-content {
             max-width: 1400px;
@@ -26,228 +26,445 @@
             justify-content: space-between;
             align-items: center;
         }
-        .header h1 { font-size: 1.5rem; font-weight: 700; }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .admin-logo {
+            height: 45px;
+            width: auto;
+            border-radius: 8px;
+            background: white;
+            padding: 4px;
+        }
+        .header h1 { font-size: 1.3rem; }
         .header-nav a {
             color: white;
             text-decoration: none;
-            margin-left: 1.5rem;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            transition: all 0.3s;
-            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            transition: background 0.3s;
+            font-size: 0.9rem;
         }
-        .header-nav a:hover { 
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-2px);
-        }
+        .header-nav a:hover { background: rgba(255,255,255,0.2); }
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 2rem auto;
             padding: 0 2rem;
         }
-        .day-header-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-        .day-header-card h2 {
-            font-size: 2rem;
-            color: #667eea;
-            margin-bottom: 0.5rem;
-        }
-        .day-header-card .date-info {
-            font-size: 1.1rem;
-            color: #666;
-            margin-bottom: 1.5rem;
-        }
-        .back-button {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             color: white;
             text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
         }
-        .back-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
-        }
-        .agenda-day-view {
+        .back-link:hover { opacity: 1; }
+        .day-header {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        .time-slot {
-            display: grid;
-            grid-template-columns: 120px 1fr;
-            border-bottom: 1px solid #eee;
-            transition: background 0.2s;
-        }
-        .time-slot:hover {
-            background: #f8f9fa;
-        }
-        .time-label {
             padding: 1.5rem;
-            text-align: right;
-            font-weight: 700;
-            font-size: 1rem;
-            color: #667eea;
-            border-right: 2px solid #f0f0f0;
-            background: #fafbfc;
-        }
-        .appointments-container {
-            padding: 1.5rem;
-            min-height: 80px;
-        }
-        .appointment-item {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1rem 1.5rem;
             border-radius: 12px;
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        .appointment-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
-        }
-        .appointment-item:last-child {
-            margin-bottom: 0;
-        }
-        .appointment-header {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .day-title h2 {
+            font-size: 1.5rem;
+            color: #333;
+        }
+        .day-title p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-success { background: #28a745; color: white; }
+        .btn-whatsapp { background: #25D366; color: white; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .appointments-list {
+            display: grid;
+            gap: 1rem;
+        }
+        .appointment-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 100px 1fr auto;
+            transition: all 0.3s;
+        }
+        .appointment-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
         }
         .appointment-time {
-            font-size: 1.1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .appointment-time .time {
+            font-size: 1.5rem;
             font-weight: 700;
         }
-        .appointment-duration {
-            background: rgba(255,255,255,0.2);
+        .appointment-time .duration {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        .appointment-info {
+            padding: 1.5rem;
+            display: grid;
+            gap: 0.5rem;
+        }
+        .appointment-info h3 {
+            font-size: 1.1rem;
+            color: #333;
+        }
+        .appointment-info .service {
+            color: #667eea;
+            font-weight: 600;
+        }
+        .appointment-info .contact {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .appointment-info .topic {
+            font-size: 0.85rem;
+            color: #888;
+            background: #f5f7fa;
+            padding: 0.5rem;
+            border-radius: 6px;
+            margin-top: 0.5rem;
+        }
+        .appointment-actions {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            justify-content: center;
+            border-left: 1px solid #eee;
+        }
+        .badge {
             padding: 0.25rem 0.75rem;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
+            display: inline-block;
         }
-        .appointment-client {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        .appointment-service {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin-bottom: 0.25rem;
-        }
-        .appointment-contact {
-            font-size: 0.85rem;
-            opacity: 0.8;
-        }
-        .empty-day {
-            text-align: center;
+        .badge-paid { background: #d4edda; color: #155724; }
+        .badge-pending { background: #fff3cd; color: #856404; }
+        .empty-state {
+            background: white;
             padding: 3rem;
-            color: #999;
+            border-radius: 12px;
+            text-align: center;
+            color: #666;
         }
-        .empty-day-icon {
-            font-size: 4rem;
+        .empty-state h3 {
             margin-bottom: 1rem;
-            opacity: 0.5;
+            color: #333;
         }
-        .empty-day-text {
-            font-size: 1.2rem;
-            font-weight: 500;
+        
+        /* Modal de detalhes do cliente */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .modal-header h2 { font-size: 1.3rem; }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        .client-detail {
+            display: grid;
+            gap: 1rem;
+        }
+        .detail-section {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .detail-section h4 {
+            margin-bottom: 0.5rem;
+            color: #667eea;
+        }
+        .history-item {
+            padding: 0.75rem;
+            background: white;
+            border-radius: 6px;
+            margin-top: 0.5rem;
+            border-left: 3px solid #667eea;
+        }
+        @media (max-width: 768px) {
+            .appointment-card {
+                grid-template-columns: 1fr;
+            }
+            .appointment-time {
+                flex-direction: row;
+                padding: 1rem;
+            }
+            .appointment-actions {
+                flex-direction: row;
+                border-left: none;
+                border-top: 1px solid #eee;
+            }
         }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="header-content">
-            <h1>Agenda do Dia</h1>
+            <div class="header-left">
+                <a href="/admin/dashboard">
+                    <img src="/images/logo-amigo-secreto.png" alt="Amigo e Secreto" class="admin-logo">
+                </a>
+                <div>
+                    <a href="/admin/agenda?month=<%= selectedMonth %>&year=<%= selectedYear %>" class="back-link">← Voltar à Agenda</a>
+                    <h1>Agenda do Dia</h1>
+                </div>
+            </div>
             <nav class="header-nav">
                 <a href="/admin/dashboard">Dashboard</a>
                 <a href="/admin/appointments">Agendamentos</a>
                 <a href="/admin/users">Usuários</a>
-                <a href="/admin/services">Serviços</a>
                 <a href="/admin/agenda">Agenda</a>
+                <a href="/admin/chat">Chat</a>
                 <a href="/logout">Sair</a>
             </nav>
         </div>
     </div>
     
     <div class="container">
-        <div class="day-header-card">
-            <h2><%= new Date(selectedDate).toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) %></h2>
-            <div class="date-info">
-                <%= String(selectedDay).padStart(2, '0') %>/<%= String(selectedMonth).padStart(2, '0') %>/<%= selectedYear %>
+        <div class="day-header">
+            <div class="day-title">
+                <h2>📅 <%= selectedDay %>/<%= selectedMonth %>/<%= selectedYear %></h2>
+                <p><%= appointments.length %> agendamento(s) para este dia</p>
             </div>
-            <a href="/admin/agenda?month=<%= selectedMonth %>&year=<%= selectedYear %>" class="back-button">
-                ← Voltar para Agenda Mensal
-            </a>
+            <div style="display: flex; gap: 0.5rem;">
+                <a href="/admin/agenda/new?date=<%= selectedYear %>-<%= String(selectedMonth).padStart(2, '0') %>-<%= String(selectedDay).padStart(2, '0') %>" class="btn btn-success">
+                    ➕ Novo Agendamento
+                </a>
+            </div>
         </div>
         
-        <div class="agenda-day-view">
-            <% if (appointments.length === 0) { %>
-                <div class="empty-day">
-                    <div class="empty-day-icon">📅</div>
-                    <div class="empty-day-text">Nenhum agendamento para este dia</div>
+        <% if (appointments.length > 0) { %>
+        <div class="appointments-list">
+            <% appointments.forEach(function(apt) { %>
+            <div class="appointment-card" onclick="showClientDetail(<%= apt.user_id %>, <%= apt.id %>)">
+                <div class="appointment-time">
+                    <span class="time"><%= apt.appointment_time ? apt.appointment_time.substring(0, 5) : 'N/A' %></span>
+                    <span class="duration"><%= apt.service_duration || 30 %> min</span>
                 </div>
-            <% } else { %>
-                <% for (let hour = 8; hour < 20; hour++) { %>
-                    <% 
-                    const hourAppointments = appointments.filter(apt => {
-                        const aptTime = new Date('2000-01-01T' + apt.appointment_time);
-                        return aptTime.getHours() === hour;
-                    });
-                    %>
-                    <% if (hourAppointments.length > 0) { %>
-                        <div class="time-slot">
-                            <div class="time-label">
-                                <%= String(hour).padStart(2, '0') %>:00
-                            </div>
-                            <div class="appointments-container">
-                                <% hourAppointments.forEach(function(apt) { %>
-                                    <div class="appointment-item">
-                                        <div class="appointment-header">
-                                            <div class="appointment-time">
-                                                <%= apt.appointment_time.substring(0, 5) %>
-                                            </div>
-                                            <div class="appointment-duration">
-                                                <%= apt.service_duration || 30 %> min
-                                            </div>
-                                        </div>
-                                        <div class="appointment-client">
-                                            👤 <%= apt.user_name || 'N/A' %>
-                                        </div>
-                                        <div class="appointment-service">
-                                            📋 <%= apt.service_name || 'N/A' %>
-                                        </div>
-                                        <% if (apt.user_contact) { %>
-                                            <div class="appointment-contact">
-                                                📞 <%= apt.user_contact %>
-                                            </div>
-                                        <% } %>
-                                    </div>
-                                <% }); %>
-                            </div>
-                        </div>
+                <div class="appointment-info">
+                    <h3><%= apt.user_name || 'Cliente' %></h3>
+                    <p class="service"><%= apt.service_name || 'Serviço' %></p>
+                    <p class="contact">
+                        📧 <%= apt.user_email || 'N/A' %>
+                        <% if (apt.user_contact) { %> | 📱 <%= apt.user_contact %><% } %>
+                    </p>
+                    <% if (apt.conversation_topic) { %>
+                    <div class="topic">
+                        <strong>Tema:</strong> <%= apt.conversation_topic %>
+                    </div>
                     <% } %>
-                <% } %>
-            <% } %>
+                    <% if (apt.client_expectation) { %>
+                    <div class="topic">
+                        <strong>Expectativa:</strong> <%= apt.client_expectation %>
+                    </div>
+                    <% } %>
+                </div>
+                <div class="appointment-actions" onclick="event.stopPropagation();">
+                    <span class="badge <%= apt.payment_status === 'paid' ? 'badge-paid' : 'badge-pending' %>">
+                        <%= apt.payment_status === 'paid' ? '✓ Pago' : '⏳ Pendente' %>
+                    </span>
+                    <% 
+                    var whatsappNumber = null;
+                    if (apt.user_contact) {
+                        var cleaned = String(apt.user_contact).replace(/\D/g, '');
+                        if (cleaned.length >= 10) {
+                            if (cleaned.indexOf('55') !== 0) {
+                                whatsappNumber = '55' + cleaned;
+                            } else {
+                                whatsappNumber = cleaned;
+                            }
+                        }
+                    }
+                    %>
+                    <% if (whatsappNumber) { %>
+                    <a href="https://wa.me/<%= whatsappNumber %>" target="_blank" class="btn btn-whatsapp" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                        💬 WhatsApp
+                    </a>
+                    <% } %>
+                    <a href="/admin/appointments/<%= apt.id %>" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                        Ver Detalhes
+                    </a>
+                </div>
+            </div>
+            <% }); %>
+        </div>
+        <% } else { %>
+        <div class="empty-state">
+            <h3>Nenhum agendamento para este dia</h3>
+            <p>Os agendamentos confirmados e pagos aparecerão aqui.</p>
+            <a href="/admin/agenda/new?date=<%= selectedYear %>-<%= String(selectedMonth).padStart(2, '0') %>-<%= String(selectedDay).padStart(2, '0') %>" class="btn btn-success" style="margin-top: 1rem;">
+                ➕ Criar Agendamento Manual
+            </a>
+        </div>
+        <% } %>
+    </div>
+    
+    <!-- Modal de Detalhes do Cliente -->
+    <div class="modal" id="client-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">👤 Detalhes do Cliente</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="client-detail" id="client-detail">
+                <p>Carregando...</p>
+            </div>
         </div>
     </div>
+    
+    <script>
+        async function showClientDetail(userId, appointmentId) {
+            document.getElementById('client-modal').classList.add('active');
+            document.getElementById('client-detail').innerHTML = '<p>Carregando...</p>';
+            
+            try {
+                const response = await fetch(`/admin/api/client/${userId}/summary`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const client = data.client;
+                    const appointments = data.appointments || [];
+                    const notes = data.notes || [];
+                    
+                    let html = `
+                        <div class="detail-section">
+                            <h4>📋 Informações</h4>
+                            <p><strong>Nome:</strong> ${client.name || 'N/A'}</p>
+                            <p><strong>Email:</strong> ${client.email || 'N/A'}</p>
+                            <p><strong>Telefone:</strong> ${client.contact || 'N/A'}</p>
+                            <p><strong>Instagram:</strong> ${client.instagram || 'N/A'}</p>
+                        </div>
+                        <div class="detail-section">
+                            <h4>📊 Resumo</h4>
+                            <p><strong>Total de Agendamentos:</strong> ${appointments.length}</p>
+                            <p><strong>Agendamentos Pagos:</strong> ${appointments.filter(a => a.payment_status === 'paid').length}</p>
+                        </div>
+                    `;
+                    
+                    if (appointments.length > 0) {
+                        html += `<div class="detail-section"><h4>📅 Histórico de Atendimentos</h4>`;
+                        appointments.slice(0, 5).forEach(apt => {
+                            html += `
+                                <div class="history-item">
+                                    <strong>${apt.service_name || 'Serviço'}</strong> - 
+                                    ${new Date(apt.appointment_date).toLocaleDateString('pt-BR')} 
+                                    ${apt.appointment_time ? apt.appointment_time.substring(0, 5) : ''}
+                                    <span class="badge ${apt.payment_status === 'paid' ? 'badge-paid' : 'badge-pending'}" style="margin-left: 0.5rem;">
+                                        ${apt.payment_status === 'paid' ? 'Pago' : 'Pendente'}
+                                    </span>
+                                </div>
+                            `;
+                        });
+                        html += `</div>`;
+                    }
+                    
+                    if (notes.length > 0) {
+                        html += `<div class="detail-section"><h4>📝 Observações</h4>`;
+                        notes.slice(0, 3).forEach(note => {
+                            html += `
+                                <div class="history-item">
+                                    ${note.notes}
+                                    <small style="display: block; color: #666; margin-top: 0.25rem;">
+                                        ${new Date(note.created_at).toLocaleDateString('pt-BR')}
+                                    </small>
+                                </div>
+                            `;
+                        });
+                        html += `</div>`;
+                    }
+                    
+                    html += `
+                        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                            <a href="/admin/users/${userId}" class="btn btn-primary">Ver Perfil Completo</a>
+                            <a href="/admin/appointments/${appointmentId}" class="btn btn-success">Ver Agendamento</a>
+                        </div>
+                    `;
+                    
+                    document.getElementById('modal-title').textContent = `👤 ${client.name || 'Cliente'}`;
+                    document.getElementById('client-detail').innerHTML = html;
+                } else {
+                    document.getElementById('client-detail').innerHTML = '<p>Erro ao carregar dados do cliente.</p>';
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('client-detail').innerHTML = '<p>Erro ao carregar dados do cliente.</p>';
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('client-modal').classList.remove('active');
+        }
+        
+        document.getElementById('client-modal').onclick = function(e) {
+            if (e.target === this) closeModal();
+        };
+    </script>
 </body>
 </html>
-
-
-

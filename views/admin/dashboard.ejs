@@ -185,6 +185,11 @@
                 <a href="/admin/agenda">Agenda</a>
                 <a href="/admin/chat">Chat</a>
                 <a href="/admin/whatsapp">WhatsApp</a>
+                <a href="/admin/settings">⚙️ Config</a>
+                <a href="#" id="notifications-btn" onclick="showNotifications()" style="position: relative;">
+                    🔔
+                    <span id="notification-badge" style="display: none; position: absolute; top: -5px; right: -5px; background: #e74c3c; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; display: flex; align-items: center; justify-content: center;">0</span>
+                </a>
                 <a href="/logout">Sair</a>
             </nav>
         </div>
@@ -312,5 +317,104 @@
             </table>
         </div>
     </div>
+    
+    <!-- Modal de Notificações -->
+    <div id="notifications-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 2rem; border-radius: 16px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.3rem;">🔔 Notificações</h2>
+                <button onclick="closeNotifications()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div id="notifications-content">
+                <p>Carregando...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Carregar contagem de notificações ao iniciar
+        async function loadNotificationCount() {
+            try {
+                const response = await fetch('/admin/notifications');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const total = data.notifications.appointmentsCount + data.notifications.messagesCount;
+                    const badge = document.getElementById('notification-badge');
+                    if (total > 0) {
+                        badge.textContent = total > 9 ? '9+' : total;
+                        badge.style.display = 'flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao carregar notificações:', error);
+            }
+        }
+        
+        async function showNotifications() {
+            const modal = document.getElementById('notifications-modal');
+            const content = document.getElementById('notifications-content');
+            modal.style.display = 'flex';
+            content.innerHTML = '<p>Carregando...</p>';
+            
+            try {
+                const response = await fetch('/admin/notifications');
+                const data = await response.json();
+                
+                if (data.success) {
+                    let html = '';
+                    
+                    if (data.notifications.appointments.length > 0) {
+                        html += '<h3 style="margin-bottom: 1rem; color: #667eea;">📅 Novos Agendamentos (24h)</h3>';
+                        data.notifications.appointments.forEach(apt => {
+                            html += `
+                                <div style="padding: 0.75rem; background: #f8f9fa; border-radius: 8px; margin-bottom: 0.5rem; border-left: 3px solid #667eea;">
+                                    <strong>${apt.user_name || 'Cliente'}</strong> - ${apt.service_name || 'Serviço'}
+                                    <br><small style="color: #666;">${new Date(apt.created_at).toLocaleString('pt-BR')}</small>
+                                    <a href="/admin/appointments/${apt.id}" style="float: right; color: #667eea;">Ver →</a>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    if (data.notifications.messages.length > 0) {
+                        html += '<h3 style="margin: 1.5rem 0 1rem; color: #28a745;">💬 Mensagens não lidas</h3>';
+                        data.notifications.messages.forEach(msg => {
+                            html += `
+                                <div style="padding: 0.75rem; background: #f8f9fa; border-radius: 8px; margin-bottom: 0.5rem; border-left: 3px solid #28a745;">
+                                    <strong>${msg.sender_name || 'Usuário'}</strong>: ${msg.message?.substring(0, 50)}...
+                                    <br><small style="color: #666;">${new Date(msg.created_at).toLocaleString('pt-BR')}</small>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    if (!html) {
+                        html = '<p style="text-align: center; color: #666; padding: 2rem;">Nenhuma notificação nova 🎉</p>';
+                    }
+                    
+                    content.innerHTML = html;
+                }
+            } catch (error) {
+                content.innerHTML = '<p style="color: #e74c3c;">Erro ao carregar notificações</p>';
+            }
+        }
+        
+        function closeNotifications() {
+            document.getElementById('notifications-modal').style.display = 'none';
+        }
+        
+        document.getElementById('notifications-modal').onclick = function(e) {
+            if (e.target === this) closeNotifications();
+        };
+        
+        // Carregar notificações ao iniciar
+        loadNotificationCount();
+        
+        // Atualizar a cada 30 segundos
+        setInterval(loadNotificationCount, 30000);
+    </script>
 </body>
 </html>
