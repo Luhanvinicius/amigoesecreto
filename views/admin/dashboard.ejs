@@ -184,8 +184,8 @@
                 <a href="/admin/services">Serviços</a>
                 <a href="/admin/agenda">Agenda</a>
                 <a href="/admin/chat">Chat</a>
-                <a href="/admin/whatsapp">WhatsApp</a>
-                <a href="/admin/settings">⚙️ Config</a>
+                <a href="/admin/site-editor">✏️ Editor</a>
+                <a href="/admin/settings">⚙️</a>
                 <a href="#" id="notifications-btn" onclick="showNotifications()" style="position: relative;">
                     🔔
                     <span id="notification-badge" style="display: none; position: absolute; top: -5px; right: -5px; background: #e74c3c; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; display: flex; align-items: center; justify-content: center;">0</span>
@@ -198,17 +198,17 @@
     <div class="container">
         <!-- Ações Rápidas -->
         <div class="quick-actions">
+            <a href="/admin/site-editor" class="quick-action-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+                ✏️ Editar Site
+            </a>
+            <a href="/admin/agenda/new" class="quick-action-btn">
+                ➕ Novo Agendamento
+            </a>
             <a href="/admin/users?action=create" class="quick-action-btn">
                 👤 Criar Usuário
             </a>
-            <a href="/admin/services" class="quick-action-btn">
-                📦 Gerenciar Serviços
-            </a>
             <a href="/admin/appointments?status=pending" class="quick-action-btn">
                 ⏳ Pendentes
-            </a>
-            <a href="/admin/chat" class="quick-action-btn">
-                💬 Abrir Chat
             </a>
         </div>
         

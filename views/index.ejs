@@ -883,7 +883,7 @@
     <header>
         <nav class="container">
             <a href="/" class="logo">
-                <img src="/images/logo-amigo-secreto.png" alt="Amigo Secreto" class="logo-img" />
+                <img src="<%= siteSettings.site_logo || '/images/logo-amigo-secreto.png' %>" alt="<%= siteSettings.site_name || 'Amigo Secreto' %>" class="logo-img" />
             </a>
             <ul class="nav-links">
                 <li><a href="#inicio">Início</a></li>
@@ -903,12 +903,12 @@
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text">
-                    <h1>Precisa de Alguém Para <span>Conversar?</span> Eu Estou Aqui Para Ouvir.</h1>
-                    <p>Se você tem algo no coração, um segredo ou só precisa de um amigo secreto para conversar, eu estou à disposição. Não importa o que seja, você pode confiar que estou aqui para ouvir.</p>
-                    <a href="/appointments/amigo-secreto" class="btn-primary"><span>Vamos Conversar?</span></a>
+                    <h1><%= siteSettings.hero_title || 'Precisa de Alguém Para <span>Conversar?</span> Eu Estou Aqui Para Ouvir.' %></h1>
+                    <p><%= siteSettings.hero_subtitle || 'Se você tem algo no coração, um segredo ou só precisa de um amigo secreto para conversar, eu estou à disposição. Não importa o que seja, você pode confiar que estou aqui para ouvir.' %></p>
+                    <a href="/appointments/amigo-secreto" class="btn-primary"><span><%= siteSettings.hero_button_text || 'Vamos Conversar?' %></span></a>
                 </div>
                 <div class="hero-image">
-                    <img src="/images/uploads/Lucid_Origin_Create_an_image_of_Lia_a_young_woman_with_mediuml_0-2-1080x1080.jpg" alt="Lia - Amigo e Secreto" />
+                    <img src="<%= siteSettings.hero_image || '/images/uploads/Lucid_Origin_Create_an_image_of_Lia_a_young_woman_with_mediuml_0-2-1080x1080.jpg' %>" alt="<%= siteSettings.site_name || 'Lia - Amigo e Secreto' %>" />
                 </div>
             </div>
         </div>

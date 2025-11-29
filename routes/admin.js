@@ -1155,6 +1155,85 @@ router.get('/settings', async (req, res) => {
   }
 });
 
+// Editor do Site
+router.get('/site-editor', async (req, res) => {
+  try {
+    // Buscar configurações do banco
+    const [rows] = await pool.query('SELECT setting_key, setting_value FROM site_settings');
+    
+    // Converter para objeto
+    const settings = {};
+    rows.forEach(row => {
+      settings[row.setting_key] = row.setting_value;
+    });
+    
+    res.render('admin/site-editor', {
+      settings,
+      success: req.query.success,
+      error: req.query.error,
+      title: 'Editor do Site'
+    });
+  } catch (error) {
+    console.error('Erro ao carregar editor:', error);
+    // Se a tabela não existir, mostrar com configurações vazias
+    res.render('admin/site-editor', {
+      settings: {},
+      error: 'Execute a migração para criar a tabela de configurações: node scripts/migrate-site-settings.js',
+      title: 'Editor do Site'
+    });
+  }
+});
+
+// Salvar configurações do site
+router.post('/site-editor/save', async (req, res) => {
+  try {
+    const settingsToSave = [
+      'site_name', 'site_logo', 'header_phone',
+      'hero_title', 'hero_subtitle', 'hero_button_text', 'hero_image',
+      'about_title', 'about_text', 'about_image',
+      'services_title', 'services_subtitle',
+      'contact_title', 'contact_email', 'contact_phone', 'contact_instagram', 'contact_whatsapp',
+      'footer_text',
+      'primary_color', 'secondary_color',
+      'work_start_hour', 'work_end_hour', 'slot_duration'
+    ];
+    
+    for (const key of settingsToSave) {
+      const value = req.body[key] || '';
+      await pool.query(
+        `INSERT INTO site_settings (setting_key, setting_value) 
+         VALUES (?, ?) 
+         ON DUPLICATE KEY UPDATE setting_value = ?`,
+        [key, value, value]
+      );
+    }
+    
+    // Invalidar cache para que as alterações apareçam imediatamente
+    const { invalidateCache } = require('../middleware/siteSettings');
+    invalidateCache();
+    
+    res.redirect('/admin/site-editor?success=Configurações salvas com sucesso!');
+  } catch (error) {
+    console.error('Erro ao salvar configurações:', error);
+    res.redirect('/admin/site-editor?error=Erro ao salvar configurações');
+  }
+});
+
+// API para obter configurações do site (para uso no frontend)
+router.get('/api/site-settings', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT setting_key, setting_value FROM site_settings');
+    const settings = {};
+    rows.forEach(row => {
+      settings[row.setting_key] = row.setting_value;
+    });
+    res.json({ success: true, settings });
+  } catch (error) {
+    console.error('Erro ao carregar configurações:', error);
+    res.status(500).json({ success: false, message: 'Erro ao carregar configurações' });
+  }
+});
+
 // Chat interno
 router.get('/chat', async (req, res) => {
   try {

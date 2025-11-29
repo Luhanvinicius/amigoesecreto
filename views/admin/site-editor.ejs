@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Editor do Site' %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .admin-logo {
+            height: 45px;
+            width: auto;
+            border-radius: 8px;
+            background: white;
+            padding: 4px;
+        }
+        .header h1 { font-size: 1.3rem; }
+        .header-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            transition: background 0.3s;
+            font-size: 0.9rem;
+        }
+        .header-nav a:hover { background: rgba(255,255,255,0.2); }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .tab-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        .section h2 {
+            margin-bottom: 1.5rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 0.75rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .form-group small {
+            display: block;
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="email"],
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .form-group input[type="color"] {
+            width: 60px;
+            height: 40px;
+            padding: 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .color-preview {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .color-preview span {
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .image-preview {
+            margin-top: 0.5rem;
+            max-width: 200px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+        .image-upload {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+        .image-upload input[type="text"] {
+            flex: 1;
+            min-width: 300px;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .save-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            z-index: 100;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .alert-success { background: #d4edda; color: #155724; }
+        .alert-error { background: #f8d7da; color: #721c24; }
+        .preview-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        .preview-link:hover { text-decoration: underline; }
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="/admin/dashboard">
+                    <img src="/images/logo-amigo-secreto.png" alt="Amigo e Secreto" class="admin-logo">
+                </a>
+                <h1>✏️ Editor do Site</h1>
+            </div>
+            <nav class="header-nav">
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/services">Serviços</a>
+                <a href="/admin/site-editor">Editor</a>
+                <a href="/admin/settings">Config</a>
+                <a href="/" target="_blank">🌐 Ver Site</a>
+                <a href="/logout">Sair</a>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="container">
+        <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert-success">✅ <%= success %></div>
+        <% } %>
+        <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-error">❌ <%= error %></div>
+        <% } %>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('header')">🏠 Header</button>
+            <button class="tab-btn" onclick="showTab('hero')">🎯 Hero</button>
+            <button class="tab-btn" onclick="showTab('about')">📖 Sobre</button>
+            <button class="tab-btn" onclick="showTab('services')">📦 Serviços</button>
+            <button class="tab-btn" onclick="showTab('contact')">📞 Contato</button>
+            <button class="tab-btn" onclick="showTab('footer')">📋 Rodapé</button>
+            <button class="tab-btn" onclick="showTab('colors')">🎨 Cores</button>
+            <button class="tab-btn" onclick="showTab('schedule')">⏰ Horários</button>
+        </div>
+        
+        <form method="POST" action="/admin/site-editor/save" id="editor-form">
+            <!-- Header -->
+            <div class="tab-content active" id="tab-header">
+                <div class="section">
+                    <h2>🏠 Configurações do Header</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nome do Site</label>
+                            <input type="text" name="site_name" value="<%= settings.site_name || '' %>">
+                        </div>
+                        <div class="form-group">
+                            <label>Telefone no Header</label>
+                            <input type="text" name="header_phone" value="<%= settings.header_phone || '' %>" placeholder="+55 11 99999-9999">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Logo do Site</label>
+                        <small>Caminho da imagem (ex: /images/logo.png)</small>
+                        <div class="image-upload">
+                            <input type="text" name="site_logo" value="<%= settings.site_logo || '' %>">
+                        </div>
+                        <% if (settings.site_logo) { %>
+                        <img src="<%= settings.site_logo %>" alt="Logo Preview" class="image-preview">
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Hero Section -->
+            <div class="tab-content" id="tab-hero">
+                <div class="section">
+                    <h2>🎯 Seção Principal (Hero)</h2>
+                    <div class="form-group">
+                        <label>Título Principal</label>
+                        <input type="text" name="hero_title" value="<%= settings.hero_title || '' %>">
+                    </div>
+                    <div class="form-group">
+                        <label>Subtítulo</label>
+                        <textarea name="hero_subtitle"><%= settings.hero_subtitle || '' %></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Texto do Botão</label>
+                        <input type="text" name="hero_button_text" value="<%= settings.hero_button_text || '' %>">
+                    </div>
+                    <div class="form-group">
+                        <label>Imagem Principal</label>
+                        <small>Caminho da imagem</small>
+                        <input type="text" name="hero_image" value="<%= settings.hero_image || '' %>">
+                        <% if (settings.hero_image) { %>
+                        <img src="<%= settings.hero_image %>" alt="Hero Preview" class="image-preview">
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- About Section -->
+            <div class="tab-content" id="tab-about">
+                <div class="section">
+                    <h2>📖 Seção Sobre</h2>
+                    <div class="form-group">
+                        <label>Título da Seção</label>
+                        <input type="text" name="about_title" value="<%= settings.about_title || '' %>">
+                    </div>
+                    <div class="form-group">
+                        <label>Texto Sobre</label>
+                        <textarea name="about_text" rows="5"><%= settings.about_text || '' %></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Imagem da Seção</label>
+                        <input type="text" name="about_image" value="<%= settings.about_image || '' %>">
+                        <% if (settings.about_image) { %>
+                        <img src="<%= settings.about_image %>" alt="About Preview" class="image-preview">
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Services Section -->
+            <div class="tab-content" id="tab-services">
+                <div class="section">
+                    <h2>📦 Seção de Serviços</h2>
+                    <div class="form-group">
+                        <label>Título da Seção</label>
+                        <input type="text" name="services_title" value="<%= settings.services_title || '' %>">
+                    </div>
+                    <div class="form-group">
+                        <label>Subtítulo</label>
+                        <textarea name="services_subtitle"><%= settings.services_subtitle || '' %></textarea>
+                    </div>
+                    <a href="/admin/services" class="preview-link">📦 Gerenciar Serviços e Preços →</a>
+                </div>
+            </div>
+            
+            <!-- Contact Section -->
+            <div class="tab-content" id="tab-contact">
+                <div class="section">
+                    <h2>📞 Informações de Contato</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Título da Seção</label>
+                            <input type="text" name="contact_title" value="<%= settings.contact_title || '' %>">
+                        </div>
+                        <div class="form-group">
+                            <label>E-mail de Contato</label>
+                            <input type="email" name="contact_email" value="<%= settings.contact_email || '' %>">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Telefone</label>
+                            <input type="text" name="contact_phone" value="<%= settings.contact_phone || '' %>">
+                        </div>
+                        <div class="form-group">
+                            <label>WhatsApp (apenas números)</label>
+                            <small>Ex: 5511999999999</small>
+                            <input type="text" name="contact_whatsapp" value="<%= settings.contact_whatsapp || '' %>">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Instagram</label>
+                        <input type="text" name="contact_instagram" value="<%= settings.contact_instagram || '' %>" placeholder="@seuperfil">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="tab-content" id="tab-footer">
+                <div class="section">
+                    <h2>📋 Rodapé</h2>
+                    <div class="form-group">
+                        <label>Texto do Rodapé</label>
+                        <textarea name="footer_text"><%= settings.footer_text || '' %></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Colors -->
+            <div class="tab-content" id="tab-colors">
+                <div class="section">
+                    <h2>🎨 Cores do Site</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Cor Primária</label>
+                            <div class="color-preview">
+                                <input type="color" name="primary_color" value="<%= settings.primary_color || '#667eea' %>" onchange="updateColorPreview(this)">
+                                <span id="primary_color_value"><%= settings.primary_color || '#667eea' %></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Cor Secundária</label>
+                            <div class="color-preview">
+                                <input type="color" name="secondary_color" value="<%= settings.secondary_color || '#764ba2' %>" onchange="updateColorPreview(this)">
+                                <span id="secondary_color_value"><%= settings.secondary_color || '#764ba2' %></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Schedule -->
+            <div class="tab-content" id="tab-schedule">
+                <div class="section">
+                    <h2>⏰ Horários de Trabalho</h2>
+                    <p style="color: #666; margin-bottom: 1.5rem;">Configure os horários disponíveis para agendamento.</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Hora de Início</label>
+                            <small>Ex: 8 para 08:00</small>
+                            <input type="number" name="work_start_hour" value="<%= settings.work_start_hour || '8' %>" min="0" max="23">
+                        </div>
+                        <div class="form-group">
+                            <label>Hora de Fim</label>
+                            <small>Ex: 20 para 20:00</small>
+                            <input type="number" name="work_end_hour" value="<%= settings.work_end_hour || '20' %>" min="0" max="23">
+                        </div>
+                        <div class="form-group">
+                            <label>Duração do Slot (minutos)</label>
+                            <small>Intervalo entre horários</small>
+                            <input type="number" name="slot_duration" value="<%= settings.slot_duration || '30' %>" min="15" max="120">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="save-bar">
+                <button type="submit" class="btn btn-primary">💾 Salvar Alterações</button>
+                <a href="/" target="_blank" class="btn btn-success">🌐 Ver Site</a>
+            </div>
+        </form>
+    </div>
+    
+    <div style="height: 80px;"></div>
+    
+    <script>
+        function showTab(tabId) {
+            // Esconder todas as tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Mostrar tab selecionada
+            document.getElementById('tab-' + tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        function updateColorPreview(input) {
+            const span = document.getElementById(input.name + '_value');
+            if (span) {
+                span.textContent = input.value;
+            }
+        }
+    </script>
+</body>
+</html>
+
