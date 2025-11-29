@@ -257,8 +257,28 @@
         <div class="alert alert-success">✅ <%= success %></div>
         <% } %>
         <% if (typeof error !== 'undefined' && error) { %>
-        <div class="alert alert-error">❌ <%= error %></div>
+        <div class="alert alert-error">
+            ❌ <%= error %>
+            <% if (error.includes('migração') || error.includes('tabela')) { %>
+            <br><br>
+            <a href="/admin/setup-site-settings" class="btn btn-primary" style="margin-top: 0.5rem;">
+                🔧 Criar Tabela de Configurações
+            </a>
+            <% } %>
+        </div>
         <% } %>
+        
+        <% if (!settings || Object.keys(settings).length === 0) { %>
+        <div class="section" style="text-align: center; padding: 3rem;">
+            <h2>🔧 Configuração Inicial Necessária</h2>
+            <p style="margin: 1rem 0; color: #666;">
+                A tabela de configurações ainda não foi criada. Clique no botão abaixo para criar automaticamente.
+            </p>
+            <a href="/admin/setup-site-settings" class="btn btn-primary" style="margin-top: 1rem; font-size: 1.1rem; padding: 1rem 2rem;">
+                ✨ Criar Tabela de Configurações
+            </a>
+        </div>
+        <% } else { %>
         
         <div class="tabs">
             <button class="tab-btn active" onclick="showTab('header')">🏠 Header</button>
@@ -463,6 +483,7 @@
     </div>
     
     <div style="height: 80px;"></div>
+    <% } %>
     
     <script>
         function showTab(tabId) {
